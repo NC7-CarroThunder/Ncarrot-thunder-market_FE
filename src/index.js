@@ -1,17 +1,45 @@
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import './index.css';
+import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
+
+import { createBrowserRouter, RouterProvider } from 'react-router-dom';
+
 import App from './App';
-import reportWebVitals from './reportWebVitals';
+import Main from './pages/Main';
+
+import ROUTER from './constants/router';
+import Login from './pages/Login';
+import Signup from './pages/Signup';
+
+const queryClient = new QueryClient();
+
+const router = createBrowserRouter([
+  {
+    path: ROUTER.PATH.MAIN,
+    element: <App />,
+    children: [
+      {
+        index: true,
+        element: <Main />,
+      },
+      
+      {
+        path: ROUTER.PATH.LOGIN,
+        element: <Login />,
+      },
+      {
+        path: ROUTER.PATH.SIGNUP,
+        element: <Signup />,
+      },
+    ],
+  },
+]);
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
-  <React.StrictMode>
-    <App />
-  </React.StrictMode>
+  <QueryClientProvider client={queryClient}>
+    <RouterProvider router={router} />
+    <ReactQueryDevtools initialIsOpen={true} />
+  </QueryClientProvider>
 );
-
-// If you want to start measuring performance in your app, pass a function
-// to log results (for example: reportWebVitals(console.log))
-// or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
-reportWebVitals();
