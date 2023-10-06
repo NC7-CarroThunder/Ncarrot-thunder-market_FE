@@ -42,7 +42,7 @@ export default function Navbar({ showMyMenu, onShowMyMenu, onLogOut }) {
         <LogoContainer>
           <Link to={ROUTER.PATH.MAIN}>
             <Logo onClick={handleLogoClick}>
-              <img src='/img/dangun.png' alt='' />
+              <img src='/img/logo.png' alt='' />
             </Logo>
           </Link>
           <Link to={ROUTER.PATH.HOT_ARTICLES}>
