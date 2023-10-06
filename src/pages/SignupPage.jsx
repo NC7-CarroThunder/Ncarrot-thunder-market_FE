@@ -6,7 +6,7 @@ import styled from 'styled-components';
 import QUERY from '../constants/query';
 import ROUTER from '../constants/router';
 
-export default function Signup() {
+export default function SignupPage() {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [nickName, setNickname] = useState('');

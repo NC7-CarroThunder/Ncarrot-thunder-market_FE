@@ -4,10 +4,10 @@ const COOKIE = {
 };
 
 const AXIOS_PATH = {
-  LOCAL: 'http://localhost:4000',
-  SEVER: 'http://175.45.194.45',
-  LOGIN: '/users/login',
-  SIGNUP: '/signup',
+  LOCAL: 'http://localhost:8888',
+  SEVER: 'http://localhost:8888',
+  LOGIN: '/api/users/login',
+  SIGNUP: '/api/users/signup',
 };
 
 const STALETIME = {

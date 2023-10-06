@@ -6,11 +6,11 @@ import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 
 import App from './App';
-import Main from './pages/Main';
+import Main from './pages/MainPage';
 
 import ROUTER from './constants/router';
-import Login from './pages/Login';
-import Signup from './pages/Signup';
+import Login from './pages/LoginPage';
+import Signup from './pages/SignupPage';
 
 const queryClient = new QueryClient();
 

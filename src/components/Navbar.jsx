@@ -14,7 +14,7 @@ export default function Navbar({ showMyMenu, onShowMyMenu, onLogOut }) {
   const [keyWord, setKeyWord] = useState('');
 
   const navigate = useNavigate();
-  const userName = Storage.getUserName();
+  const nickname = Storage.getNickName();
   const query = useQueryClient();
 
   const handleSubmit = e => {
@@ -59,7 +59,7 @@ export default function Navbar({ showMyMenu, onShowMyMenu, onLogOut }) {
             value={keyWord}
             onChange={e => setKeyWord(e.target.value)}
           />
-          {userName ? (
+          {nickname ? (
             <ShowMyMenuContainer>
               <Text large_medium>
                 <FaUserCircle id='MyMenu' onClick={onShowMyMenu} />
