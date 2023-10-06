@@ -4,35 +4,54 @@ import styled from 'styled-components';
 import QUERY from '../constants/query';
 import ROUTER from '../constants/router';
 import Axios from '../utils/api/axios';
+import Storage from '../utils/localStorage';
 
 import { RiKakaoTalkFill } from 'react-icons/ri';
 
-export default function Login() {
-  const [username, setUsername] = useState('');
+export default function LoginPage() {
+  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const navigate = useNavigate();
   const axios = new Axios(QUERY.AXIOS_PATH.SEVER);
 
   const onSubmit = async e => {
+    console.log(email);
+    console.log(password);
     e.preventDefault();
-    await axios
-      .post(QUERY.AXIOS_PATH.LOGIN, {
-        username,
+    const response = await axios
+      .post(QUERY.AXIOS_PATH.LOGIN,{
+        email,
         password,
-      })
-      .then(() => navigate(ROUTER.PATH.MAIN));
+      });
+    const jwtToken = response.headers['date'];
+    console.log(response.headers);
+    console.log("jwtToken = " + jwtToken);
+
+    const nickname = Storage.getNickName();
+  
+
+    if (nickname) {
+      console.log('Nickname:', nickname);
+    } else {
+      console.log('Nickname이 저장되어 있지 않습니다.');
+    }
+
+    navigate(ROUTER.PATH.MAIN)
+    
   };
 
   return (
     <LoginContainer>
       <Form onSubmit={onSubmit}>
         <Titleheader>로그인 화면</Titleheader>
-        <Label htmlFor='username'>아이디</Label>
+        <Label htmlFor='email'>아이디</Label>
         <Input
           type='text'
-          id='username'
-          value={username}
-          onChange={e => setUsername(e.target.value)}
+          id='email'
+          value={email}
+          
+          onChange={e => {setEmail(e.target.value);
+             console.log("email:", e.target.value); }}
         />
         <Label htmlFor='password'>비밀번호</Label>
         <Input

@@ -4,13 +4,13 @@ import styled from 'styled-components';
 import ROUTER from '../constants/router';
 
 
-export default function Main() {
+export default function MainPage() {
   return (
     <MainWrapper>
 
     </MainWrapper>
   );
-}
+};
 
 const MainWrapper = styled.main`
   width: 100%;

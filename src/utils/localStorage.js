@@ -1,15 +1,15 @@
 const Storage = {
-  setUserName(name) {
-    removeLocalStorage('userName');
-    setlocalStorage('userName', name);
+  setNickName(name) {
+    removeLocalStorage('nickname');
+    setlocalStorage('nickname', name);
   },
 
-  removeUserName() {
-    removeLocalStorage('userName');
+  removeNickName() {
+    removeLocalStorage('nickname');
   },
 
-  getUserName() {
-    return window.localStorage.getItem('userName');
+  getNickName() {
+    return window.localStorage.getItem('nickname');
   },
 };
 

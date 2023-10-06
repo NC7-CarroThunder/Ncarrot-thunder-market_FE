@@ -8,18 +8,19 @@ export default class Axios {
   constructor(url) {
     this.instance = axios.create({
       baseURL: url,
+      withCredentials: true, // CORS
     });
 
     this.instance.interceptors.response.use(
       response => {
         const token = response.headers.authorization;
-
+        console.log(token);
         if (token) {
           const [, parseToken] = token.split(' ');
           setCookie(QUERY.COOKIE.COOKIE_NAME, parseToken);
 
-          const userName = jwt_decode(parseToken);
-          Storage.setUserName(userName.sub);
+          const nickname = jwt_decode(parseToken);
+          Storage.setNickName(nickname.sub);
         }
         return response;
       },

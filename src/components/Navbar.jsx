@@ -14,7 +14,7 @@ export default function Navbar({ showMyMenu, onShowMyMenu, onLogOut }) {
   const [keyWord, setKeyWord] = useState('');
 
   const navigate = useNavigate();
-  const userName = Storage.getUserName();
+  const nickname = Storage.getNickName();
   const query = useQueryClient();
 
   const handleSubmit = e => {
@@ -42,7 +42,7 @@ export default function Navbar({ showMyMenu, onShowMyMenu, onLogOut }) {
         <LogoContainer>
           <Link to={ROUTER.PATH.MAIN}>
             <Logo onClick={handleLogoClick}>
-              <img src='/img/dangun.png' alt='' />
+              <img src='/img/logo.png' alt='' />
             </Logo>
           </Link>
           <Link to={ROUTER.PATH.HOT_ARTICLES}>
@@ -59,7 +59,7 @@ export default function Navbar({ showMyMenu, onShowMyMenu, onLogOut }) {
             value={keyWord}
             onChange={e => setKeyWord(e.target.value)}
           />
-          {userName ? (
+          {nickname ? (
             <ShowMyMenuContainer>
               <Text large_medium>
                 <FaUserCircle id='MyMenu' onClick={onShowMyMenu} />
