@@ -19,7 +19,7 @@ export default function LoginPage() {
     console.log(password);
     e.preventDefault();
     const response = await axios
-      .post(QUERY.AXIOS_PATH.LOGIN,{
+      .post(QUERY.AXIOS_PATH.LOGIN, {
         email,
         password,
       });
@@ -28,7 +28,7 @@ export default function LoginPage() {
     console.log("jwtToken = " + jwtToken);
 
     const nickname = Storage.getNickName();
-  
+
 
     if (nickname) {
       console.log('Nickname:', nickname);
@@ -37,8 +37,14 @@ export default function LoginPage() {
     }
 
     navigate(ROUTER.PATH.MAIN)
-    
+
   };
+
+  const kakaoURL = "https://kauth.kakao.com/oauth/authorize?client_id=ebf15c39f8ca5872cf2b90da7d699da7&redirect_uri=http://localhost:8888/api/users/kakao/callback&response_type=code";
+
+  const handleLogin = () => {
+    window.location.href = kakaoURL
+  }
 
   return (
     <LoginContainer>
@@ -49,9 +55,11 @@ export default function LoginPage() {
           type='text'
           id='email'
           value={email}
-          
-          onChange={e => {setEmail(e.target.value);
-             console.log("email:", e.target.value); }}
+
+          onChange={e => {
+            setEmail(e.target.value);
+            console.log("email:", e.target.value);
+          }}
         />
         <Label htmlFor='password'>비밀번호</Label>
         <Input
@@ -61,6 +69,9 @@ export default function LoginPage() {
           onChange={e => setPassword(e.target.value)}
         />
         <Button type='submit'>로그인</Button>
+        <Link to={""}>
+          <button onClick={handleLogin}>카카오 로그인</button>
+        </Link>
         <Link to={ROUTER.PATH.SIGNUP}>
           <Button type='button'>회원 가입</Button>
         </Link>

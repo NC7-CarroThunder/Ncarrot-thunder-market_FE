@@ -10,6 +10,7 @@ export default class Axios {
       baseURL: url,
       withCredentials: true, // CORS
     });
+    console.log("기본URL : " + url);
 
     this.instance.interceptors.response.use(
       response => {
