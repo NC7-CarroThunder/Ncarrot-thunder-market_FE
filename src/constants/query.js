@@ -6,8 +6,11 @@ const COOKIE = {
 const AXIOS_PATH = {
   LOCAL: 'http://localhost:8888',
   SEVER: 'http://localhost:8888',
+  KAKAOSERVER: 'https://kauth.kakao.com',
   LOGIN: '/api/users/login',
   SIGNUP: '/api/users/signup',
+  TOKEN: '/oauth/token',
+  KAKAO: '/api/users/kakao/callback',
 };
 
 const STALETIME = {

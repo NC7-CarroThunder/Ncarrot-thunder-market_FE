@@ -7,6 +7,7 @@ import { useState } from 'react';
 import { removeCookie } from './utils/cookie';
 import QUERY from './constants/query';
 import Storage from './utils/localStorage';
+import dotenvExpand from 'dotenv-expand';
 
 function App() {
   const [showMyMenu, setShowMyMenu] = useState(false);
