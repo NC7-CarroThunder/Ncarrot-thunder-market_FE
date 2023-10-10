@@ -5,11 +5,18 @@ import { useState } from 'react';
 import styled from 'styled-components';
 import QUERY from '../constants/query';
 import ROUTER from '../constants/router';
+import DaumPost from './DaumPost';
+
+
 
 export default function SignupPage() {
-  const [username, setUsername] = useState('');
+  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [nickName, setNickname] = useState('');
+  const [nickname, setNickname] = useState('');
+  const [phone, setPhone] = useState(''); 
+  const [address, setAddress] = useState(''); 
+  const [detailAddress, setDetailAddress] = useState('');
+
   const axios = new Axios(QUERY.AXIOS_PATH.SEVER);
   const navigate = useNavigate();
 
@@ -17,24 +24,33 @@ export default function SignupPage() {
     e.preventDefault();
 
     axios
-      .post(QUERY.AXIOS_PATH.SGIN_UP, {
-        username,
+      .post(QUERY.AXIOS_PATH.SIGNUP, {
+        email,
         password,
-        nickName,
+        nickname,
+        phone,
+        address,
+        detailAddress,
       })
       .then(() => navigate(ROUTER.PATH.LOGIN));
   };
+
+  // const kakaologinClick = () => {
+
+  //   setIsKakao(true);
+  //   window.location.href = KAKAO;
+  // };
 
   return (
     <LoginContainer>
       <Form onSubmit={onSubmit}>
         <Titleheader>회원가입</Titleheader>
-        <Label htmlFor='username'>아이디</Label>
+        <Label htmlFor='username'>이메일</Label>
         <Input
           type='text'
-          id='username'
-          value={username}
-          onChange={e => setUsername(e.target.value)}
+          id='email'
+          value={email}
+          onChange={e => setEmail(e.target.value)}
         />
         <Label htmlFor='password'>비밀번호</Label>
         <Input
@@ -43,17 +59,47 @@ export default function SignupPage() {
           value={password}
           onChange={e => setPassword(e.target.value)}
         />
-        <Label htmlFor='nickName'>닉네임</Label>
+        <Label htmlFor='nickname'>닉네임</Label>
         <Input
           type='text'
-          id='nickName'
-          value={nickName}
+          id='nickname'
+          value={nickname}
           onChange={e => setNickname(e.target.value)}
+        />
+        <Label htmlFor="phone">휴대폰 번호</Label>
+        <Input
+          type="text"
+          id="phone"
+          value={phone}
+          onChange={e => setPhone(e.target.value)}
+        />
+        <Label htmlFor="address">주소</Label>
+        <Input
+          type="text"
+          id="address"
+          value={address}
+          onChange={e => setAddress(e.target.value)}
+        />
+
+        {/* <DaumPost setAddress={setAddress} /> */}
+
+
+        <Label htmlFor="detailAddress">상세 주소</Label>
+        <Input
+          type="text"
+          id="detailAddress"
+          value={detailAddress}
+          onChange={e => setDetailAddress(e.target.value)}
         />
         <Button type='submit'>회원가입</Button>
         <Link to={ROUTER.PATH.BACK}>
           <Button type='button'>뒤로가기</Button>
         </Link>
+
+        {/* <ButtonWrap>
+          <KakaoButton onClick={kakaologinClick}>카카오톡 로그인 계속</KakaoButton>
+          <BackButton onClick={() => setIsKakaoModalOpen(false)}>되돌아가기</BackButton>
+        </ButtonWrap> */}
       </Form>
     </LoginContainer>
   );
