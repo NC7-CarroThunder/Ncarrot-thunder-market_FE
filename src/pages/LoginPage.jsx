@@ -5,7 +5,7 @@ import QUERY from '../constants/query';
 import ROUTER from '../constants/router';
 import Axios from '../utils/api/axios';
 import Storage from '../utils/localStorage';
-
+import KakaoLogin from "react-kakao-login";
 import { RiKakaoTalkFill } from 'react-icons/ri';
 
 export default function LoginPage() {
@@ -13,6 +13,8 @@ export default function LoginPage() {
   const [password, setPassword] = useState('');
   const navigate = useNavigate();
   const axios = new Axios(QUERY.AXIOS_PATH.SEVER);
+  const redirect_url = process.env.REACT_APP_REDIRECT_URL;
+  const apiKey = process.env.REACT_APP_API_KEY;
 
   const onSubmit = async e => {
     console.log(email);
@@ -40,7 +42,8 @@ export default function LoginPage() {
 
   };
 
-  const kakaoURL = "https://kauth.kakao.com/oauth/authorize?client_id=ebf15c39f8ca5872cf2b90da7d699da7&redirect_uri=http://localhost:8888/api/users/kakao/callback&response_type=code";
+  const kakaoURL = `https://kauth.kakao.com/oauth/authorize?client_id=${apiKey}&redirect_uri=${redirect_url}&response_type=code`;
+
 
   const handleLogin = () => {
     window.location.href = kakaoURL
