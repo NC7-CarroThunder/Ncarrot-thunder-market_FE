@@ -76,11 +76,6 @@ export default function Navbar({ showMyMenu, onShowMyMenu, onLogOut }) {
                     {' '}
                     <Link to={ROUTER.PATH.WRITE}>게시글 작성 </Link>
                   </span>
-
-                  <span onClick={onLogOut}>
-                    {' '}
-                    <Link to={ROUTER.PATH.MAIN}>로그아웃 </Link>
-                  </span>
                 </ShowMyMenu>
               ) : (
                 ''
