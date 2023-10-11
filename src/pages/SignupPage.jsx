@@ -1,20 +1,18 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import Axios from '../utils/api/axios';
-import { useState } from 'react';
 import styled from 'styled-components';
 import QUERY from '../constants/query';
 import ROUTER from '../constants/router';
 import DaumPost from './DaumPost';
 
 
-
 export default function SignupPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [nickname, setNickname] = useState('');
-  const [phone, setPhone] = useState(''); 
-  const [address, setAddress] = useState(''); 
+  const [phone, setPhone] = useState('');
+  const [address, setAddress] = useState('');
   const [detailAddress, setDetailAddress] = useState('');
 
   const axios = new Axios(QUERY.AXIOS_PATH.SEVER);
@@ -34,12 +32,6 @@ export default function SignupPage() {
       })
       .then(() => navigate(ROUTER.PATH.LOGIN));
   };
-
-  // const kakaologinClick = () => {
-
-  //   setIsKakao(true);
-  //   window.location.href = KAKAO;
-  // };
 
   return (
     <LoginContainer>
@@ -73,16 +65,18 @@ export default function SignupPage() {
           value={phone}
           onChange={e => setPhone(e.target.value)}
         />
+
         <Label htmlFor="address">주소</Label>
+        <div>
+          <DaumPost setAddress={setAddress} />
+        </div>
         <Input
           type="text"
-          id="address"
+          id="areaAddress"
           value={address}
-          onChange={e => setAddress(e.target.value)}
+          readOnly
+          onChange={e => setAddress(e.target.value )}
         />
-
-        {/* <DaumPost setAddress={setAddress} /> */}
-
 
         <Label htmlFor="detailAddress">상세 주소</Label>
         <Input
@@ -95,11 +89,6 @@ export default function SignupPage() {
         <Link to={ROUTER.PATH.BACK}>
           <Button type='button'>뒤로가기</Button>
         </Link>
-
-        {/* <ButtonWrap>
-          <KakaoButton onClick={kakaologinClick}>카카오톡 로그인 계속</KakaoButton>
-          <BackButton onClick={() => setIsKakaoModalOpen(false)}>되돌아가기</BackButton>
-        </ButtonWrap> */}
       </Form>
     </LoginContainer>
   );
