@@ -11,6 +11,7 @@ import Main from './pages/MainPage';
 import ROUTER from './constants/router';
 import Login from './pages/LoginPage';
 import Signup from './pages/SignupPage';
+import Kakao from './pages/KakaoPage';
 
 const queryClient = new QueryClient();
 
@@ -23,7 +24,7 @@ const router = createBrowserRouter([
         index: true,
         element: <Main />,
       },
-      
+
       {
         path: ROUTER.PATH.LOGIN,
         element: <Login />,
@@ -33,6 +34,10 @@ const router = createBrowserRouter([
         element: <Signup />,
       },
     ],
+  },
+  {
+    path: "/kakao",
+    element: <Kakao />,
   },
 ]);
 
