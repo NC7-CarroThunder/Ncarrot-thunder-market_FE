@@ -39,6 +39,7 @@ export default function Navbar({ showMyMenu, onShowMyMenu, onLogOut }) {
   const handleLogout = e => {
     if (window.confirm("로그아웃 하시겠습니까?")) {
       window.localStorage.clear();
+      navigate(ROUTER.PATH.MAIN)
     }
   };
   
