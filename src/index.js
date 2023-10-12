@@ -2,12 +2,10 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
-
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 
 import App from './App';
 import Main from './pages/MainPage';
-
 import ROUTER from './constants/router';
 import Login from './pages/LoginPage';
 import Signup from './pages/SignupPage';
