@@ -35,14 +35,14 @@ export default function Navbar({ showMyMenu, onShowMyMenu, onLogOut }) {
   const handleTransaction = () => {
     query.invalidateQueries(['HotPost']);
   };
-  
+
   const handleLogout = e => {
     if (window.confirm("로그아웃 하시겠습니까?")) {
       window.localStorage.clear();
       navigate(ROUTER.PATH.MAIN)
     }
   };
-  
+
 
   return (
     <NavbarWrapper>
@@ -83,7 +83,7 @@ export default function Navbar({ showMyMenu, onShowMyMenu, onLogOut }) {
 
                   <span>
                     {' '}
-                    <Link to={ROUTER.PATH.WRITE}>게시글 작성 </Link>
+                    <Link to={ROUTER.PATH.ADDPOST}>게시글 작성 </Link>
                   </span>
 
                   <span onClick={handleLogout}>로그아웃</span>
