@@ -6,8 +6,9 @@ const PATH = {
   BACK: -1,
   FRONT: 1,
   SIGNUP: '/signup',
-  KAKAO: `/kakao`,
   ADDPOST: `/addPost`,
+  KAKAO: `/kakao`,
+  PAYMENT: `/payment`
 };
 
 const NAME = {

@@ -13,6 +13,7 @@ import Login from './pages/LoginPage';
 import Signup from './pages/SignupPage';
 import Kakao from './pages/KakaoPage';
 import AddPost from './pages/AddPostPage';
+import Payment from './pages/PaymentPage';
 
 const queryClient = new QueryClient();
 
@@ -41,8 +42,12 @@ const router = createBrowserRouter([
     ],
   },
   {
-    path: "/kakao",
+    path: ROUTER.PATH.KAKAO,
     element: <Kakao />,
+  },
+  {
+    path: ROUTER.PATH.PAYMENT,
+    element: <Payment />,
   },
 ]);
 
