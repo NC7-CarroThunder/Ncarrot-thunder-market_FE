@@ -35,7 +35,11 @@ export default function LoginPage() {
     if (nickname) {
       console.log('Nickname:', nickname);
     } else {
+      navigate(ROUTER.PATH.MAIN)
+      alert('로그인에 실패하였습니다');
       console.log('Nickname이 저장되어 있지 않습니다.');
+      navigate(ROUTER.PATH.LOGIN);
+      return;
     }
 
     navigate(ROUTER.PATH.MAIN)
