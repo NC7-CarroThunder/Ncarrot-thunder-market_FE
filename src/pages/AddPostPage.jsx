@@ -13,11 +13,14 @@ import { Axios } from 'axios';
 import QUERY from '../constants/query';
 import DaumPost from './DaumPost';
 import { useDaumPostcodePopup } from 'react-daum-postcode';
+import { useNavigate } from "react-router-dom";
 
 const axios = new Axios(QUERY.AXIOS_PATH.SEVER);
 
 
-export default function AddPostPage({ children, axiosFn, detail }) {
+export default function AddPostPage({ children, detail }) {
+
+  const navigate = useNavigate();
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
   const [price, setPrice] = useState('');
@@ -25,6 +28,7 @@ export default function AddPostPage({ children, axiosFn, detail }) {
   const [image, setImage] = useState([]);
   const [preview, setPreview] = useState([]);
   const [category, setCategory] = useState([]);
+  const [formData, setFormData] = useState([]);
   const categoryRef = useRef();
 
   useEffect(() => {
@@ -38,8 +42,15 @@ export default function AddPostPage({ children, axiosFn, detail }) {
     }
   }, []);
 
+  const sendPost = async () => {
+    await axios.post(QUERY.AXIOS_PATH.ADDPOST, formData).then(() => {
+      navigate(ROUTER.PATH.MAIN);
+    })
+  };
+
   const handleSubmit = event => {
     event.preventDefault();
+
     if (
       !Valid.emptyPostAddCheck(
         image,
@@ -64,7 +75,7 @@ export default function AddPostPage({ children, axiosFn, detail }) {
         title,
         content,
         price: parsePrice,
-        location: categoryRef.current.value,
+        itemCategory: categoryRef.current.value,
         remainingImagesUrlList: parsePreviewData,
         address,
       };
@@ -75,8 +86,10 @@ export default function AddPostPage({ children, axiosFn, detail }) {
         title,
         content,
         price: parsePrice,
-        location: categoryRef.current.value,
+        dealingType: categoryRef.current.value,
+        itemCategory: "ETC"
       };
+
     }
 
     formData.append(
@@ -89,7 +102,9 @@ export default function AddPostPage({ children, axiosFn, detail }) {
         formData.append('multipartFiles', multipartFiles)
       );
 
-    axiosFn(formData);
+    setFormData(formData);
+    sendPost();
+
   };
 
   const handleImageChange = event => {
