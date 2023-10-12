@@ -1,7 +1,7 @@
 const Storage = {
-  setNickName(name) {
+  setNickName(nickname) {
     removeLocalStorage('nickname');
-    setlocalStorage('nickname', name);
+    setlocalStorage('nickname', nickname);
   },
 
   removeNickName() {

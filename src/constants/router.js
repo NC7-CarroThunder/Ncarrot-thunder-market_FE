@@ -8,7 +8,8 @@ const PATH = {
   SIGNUP: '/signup',
   WRITE: `/write`,
   KAKAO: `/kakao`,
-  PAYMENT: `/payment`
+  PAYMENT: `/payment`,
+  MYPAGE: `/mypage`
 };
 
 const NAME = {

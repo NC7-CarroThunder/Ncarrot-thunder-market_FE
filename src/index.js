@@ -13,6 +13,7 @@ import Login from './pages/LoginPage';
 import Signup from './pages/SignupPage';
 import Kakao from './pages/KakaoPage';
 import Payment from './pages/PaymentPage';
+import MyPage from './pages/MyPage';
 
 const queryClient = new QueryClient();
 
@@ -33,6 +34,10 @@ const router = createBrowserRouter([
       {
         path: ROUTER.PATH.SIGNUP,
         element: <Signup />,
+      },
+      {
+        path: ROUTER.PATH.MYPAGE,
+        element: <MyPage />,
       },
     ],
   },

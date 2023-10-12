@@ -67,6 +67,7 @@ export default function Navbar({ showMyMenu, onShowMyMenu, onLogOut }) {
             value={keyWord}
             onChange={e => setKeyWord(e.target.value)}
           />
+          {nickname}
           {nickname ? (
             <ShowMyMenuContainer>
               <Text large_medium>
@@ -77,7 +78,7 @@ export default function Navbar({ showMyMenu, onShowMyMenu, onLogOut }) {
                   <span onClick={handleChatMenu}>채팅</span>
 
                   <span>
-                    <Link to={ROUTER.PATH.MY}>내 게시글 </Link>
+                    <Link to={ROUTER.PATH.MYPAGE}> 마이페이지 </Link>
                   </span>
 
                   <span>
