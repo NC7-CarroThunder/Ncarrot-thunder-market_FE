@@ -12,6 +12,7 @@ import ROUTER from './constants/router';
 import Login from './pages/LoginPage';
 import Signup from './pages/SignupPage';
 import Kakao from './pages/KakaoPage';
+import AddPost from './pages/AddPostPage';
 import Payment from './pages/PaymentPage';
 
 const queryClient = new QueryClient();
@@ -33,6 +34,10 @@ const router = createBrowserRouter([
       {
         path: ROUTER.PATH.SIGNUP,
         element: <Signup />,
+      },
+      {
+        path: ROUTER.PATH.ADDPOST,
+        element: <AddPost />,
       },
     ],
   },
