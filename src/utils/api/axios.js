@@ -21,7 +21,8 @@ export default class Axios {
           setCookie(QUERY.COOKIE.COOKIE_NAME, parseToken);
 
           const nickname = jwt_decode(parseToken);
-          Storage.setNickName(nickname.sub);
+          Storage.setNickName(nickname.nickname);
+          Storage.setUserId(nickname.userId);
         }
         return response;
       },
