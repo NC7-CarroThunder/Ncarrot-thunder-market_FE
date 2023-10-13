@@ -41,12 +41,6 @@ export default function AddPostPage({ children, detail }) {
     }
   }, []);
 
-  const sendPost = async () => {
-    await axios.post(QUERY.AXIOS_PATH.ADDPOST, formData).then(() => {
-      navigate(ROUTER.PATH.MAIN);
-    })
-  };
-
   const handleSubmit = event => {
     event.preventDefault();
 
@@ -86,7 +80,8 @@ export default function AddPostPage({ children, detail }) {
         content,
         price: parsePrice,
         dealingType: categoryRef.current.value,
-        itemCategory: "ETC"
+        itemCategory: "ETC",
+        address,
       };
 
     }
@@ -101,8 +96,9 @@ export default function AddPostPage({ children, detail }) {
         formData.append('multipartFiles', multipartFiles)
       );
 
-    setFormData(formData);
-    sendPost();
+    axios.post(QUERY.AXIOS_PATH.ADDPOST, formData).then(() => {
+      navigate(ROUTER.PATH.MAIN);
+    });
 
   };
 
@@ -161,9 +157,9 @@ export default function AddPostPage({ children, detail }) {
           <FormButton type='submit'>완료 </FormButton>
         </FormHeader>
         <InputCategory ref={categoryRef} as='select'>
-          <option value='직접거래'>직접거래</option>
-          <option value='안전결제'>안전결제</option>
-          <option value='나눔'>나눔</option>
+          <option value='WITHPERSONAL'>직접거래</option>
+          <option value='FOR_PAY'>안전결제</option>
+          <option value='FOR_FREE'>나눔</option>
         </InputCategory>
         <LableBorder preview={preview.length !== 0 ? true : false}>
           {preview.length !== 0 &&
