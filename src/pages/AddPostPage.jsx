@@ -9,9 +9,8 @@ import { Link } from 'react-router-dom';
 import { v4 as uuidv4 } from 'uuid';
 import ROUTER from '../constants/router';
 import Valid from '../validation/validation';
-import { Axios } from 'axios';
+import Axios from '../utils/api/axios';
 import QUERY from '../constants/query';
-import DaumPost from './DaumPost';
 import { useDaumPostcodePopup } from 'react-daum-postcode';
 import { useNavigate } from "react-router-dom";
 
