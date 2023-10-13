@@ -71,7 +71,7 @@ export default function MainPage() {
               <Col key={post.postid} md={3}>
                 <Card>
                   <CardImg
-                    src={`https://kr.object.ncloudstorage.com/carrot-thunder/article/${post.attachedFilesPaths[0]}`}
+                    src={`https://kr.object.ncloudstorage.com/carrot-thunder/article/${post.attachedFilesPaths[0].filePath}`}
                     alt={'게시글 이미지'}
                     className="card-img-top"
                   />
