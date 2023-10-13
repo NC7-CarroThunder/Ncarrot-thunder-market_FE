@@ -15,7 +15,7 @@ export default class Axios {
     this.instance.interceptors.response.use(
       response => {
         const token = response.headers.authorization;
-        console.log(token);
+        console.log("api"  + token);
         if (token) {
           const [, parseToken] = token.split(' ');
           setCookie(QUERY.COOKIE.COOKIE_NAME, parseToken);

@@ -12,6 +12,7 @@ const AXIOS_PATH = {
   TOKEN: '/oauth/token',
   KAKAO: '/api/users/kakao/callback',
   ADDPOST: '/api/posts',
+  MYPAGE: '/api/mypage/',
 };
 
 const STALETIME = {
