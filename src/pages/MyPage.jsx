@@ -4,105 +4,154 @@ import QUERY from '../constants/query';
 import useGetQuery from '../hooks/useGetQuery';
 import ROUTER from '../constants/router';
 
-
 export default function MyPage() {
   const [userInfo, setUserInfo] = useState({});
 
-  const Profile = () => (
-    <ProfileContainer>
-      <ProfileImage src="/path/to/profile-image.jpg" alt="프로필 이미지" />
-      <h2>사용자 닉네임</h2>
-      {/* <p>평점: 4.5</p> */}
-    </ProfileContainer>
-  );
+// 프로필 컴포넌트
+const Profile = () => (
+  <ProfileContainer>
+    <ProfileImage src="/profile.jpg" alt="프로필 이미지" />
+    <div>
+      <div>
+        <NickName>사용자 닉네임</NickName>
+        {/* <p>평점: 4.5</p> */}
+      </div>
+    </div>
+    <ProfileButton>프로필 편집</ProfileButton>
+  </ProfileContainer>
+);
 
-  const ProfileButton = () => (
-    <EditProfileButton>프로필 편집</EditProfileButton>
-  );
-
+  // 당근, 번개페이, 잔액 정보
   const AdditionalInfo = () => (
     <AdditionalInfoContainer>
-      <p>당근번캐 페이 잔액: 100,000원</p>
+      <p>당근번개 페이 잔액: 100,000원</p>
+      <ButtonContainer>
+        <Button>충전</Button>
+        <Button>환전</Button>
+      </ButtonContainer>
     </AdditionalInfoContainer>
   );
 
+  
+  // 관심 목록 및 거래 후기
   const InterestAndReviews = () => (
     <InterestAndReviewsContainer>
-      <SectionTitle>내 게시글</SectionTitle>
-      <SectionTitle>관심 목록</SectionTitle>
-      <SectionTitle>거래 후기</SectionTitle>
+    <div>
+      <h3>나의 거래</h3>
+      <h3><ThinText>내 게시글</ThinText></h3>
+      <h3><ThinText>관심 목록</ThinText></h3>
+      <h3><ThinText>거래 후기</ThinText></h3>
+    </div>
     </InterestAndReviewsContainer>
   );
 
+  // 팔로우 관리 및 알림 설정
   const FollowAndNotifications = () => (
     <FollowAndNotificationsContainer>
-      <SectionTitle>팔로우 관리</SectionTitle>
-      <SectionTitle>알림 설정</SectionTitle>
+    <div>
+      <h3>기타</h3>
+      <h3><ThinText>팔로우 관리</ThinText></h3>
+      <h3><ThinText>알림 설정</ThinText></h3>
+    </div>
     </FollowAndNotificationsContainer>
   );
 
   return (
     <MyPageContainer>
-      <Profile />
-      <AdditionalInfo />
-      <ProfileButton />
-      <InterestAndReviews />
-      <FollowAndNotifications />
+      <div style={{ marginTop: '50px' }}>
+        <Profile />
+        <AdditionalInfo />
+        <hr style={{ width: '70%', height: '2px', backgroundColor: 'black', margin: '20px auto' }} />
+        <InterestAndReviews />
+        <hr style={{ width: '70%', height: '2px', backgroundColor: 'black', margin: '20px auto' }} />
+        <FollowAndNotifications />
+      </div>
     </MyPageContainer>
   );
-};
+}
 
 const MyPageContainer = styled.div`
+  width: 100%;
+  height: 100%;
+  overflow-y: auto;
+  overflow-x: hidden;
+  background-color: #f7f7f7;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  background-color: #f7f7f7;
-  font-family: 'Nanum Gothic', sans-serif;
-  padding: 20px;
 `;
 
 const ProfileContainer = styled.div`
-  text-align: center;
+  display: flex;
+  align-items: center;
+  margin-left: 250px; 
+  gap: 50px;
+  margin-bottom: 30px;
 `;
 
 const ProfileImage = styled.img`
-  width: 150px;
-  height: 150px;
+  width: 100px;
+  height: 100px;
   border-radius: 50%;
-  margin-bottom: 10px;
+  object-fit: cover;
 `;
 
-const EditProfileButton = styled.button`
-  background-color: #007BFF;
-  color: #fff;
-  padding: 10px 20px;
+const NickName = styled.h2`
+  margin-top: 15px; 
+`;
+
+const ProfileButton = styled.button`
+  padding: 5px 10px;
+  background-color: #ff922b;
+  color: white;
   border: none;
   border-radius: 5px;
   cursor: pointer;
-  font-size: 16px;
   margin-top: 10px;
 `;
 
 const AdditionalInfoContainer = styled.div`
-  margin-top: 20px;
+  width: 30%;
+  margin-left: 17%;
+  background-color: white;
+  border: 1px solid #c0c0c0;
+  padding: 10px 20px;
+  border-radius: 10px;
+  display: flex;
+  flex-direction: column; 
+  align-items: center;
+`;
+
+const ButtonContainer = styled.div`
+  display: flex;
+  justify-content: center;
+  margin-top: 10px;
+`;
+
+const Button = styled.button`
+  padding: 5px 10px;
+  background-color: #ff922b;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  margin-right: 30px;
+
 `;
 
 const InterestAndReviewsContainer = styled.div`
-  margin-top: 20px;
+margin-left: 250px;
+h3 {
+  margin-bottom: 20px; 
+}
 `;
 
 const FollowAndNotificationsContainer = styled.div`
-  margin-top: 20px;
+margin-left: 250px;
+h3 {
+  margin-bottom: 20px; 
+}
 `;
 
-const SectionTitle = styled.h3`
-  font-size: 20px;
-  margin: 10px 0;
-`;
-
-const Profile = styled.img`
-  width: 150px;
-  height: 150px;
-  border-radius: 50%; /* 이미지를 원형으로 만듭니다. */
-  margin-bottom: 10px;
+const ThinText = styled.span`
+  font-weight: normal;
 `;
