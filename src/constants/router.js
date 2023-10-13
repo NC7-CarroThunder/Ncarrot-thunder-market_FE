@@ -9,7 +9,8 @@ const PATH = {
   ADDPOST: `/addPost`,
   KAKAO: `/kakao`,
   PAYMENT: `/payment`,
-  MYPAGE: `/mypage`
+  MYPAGE: `/mypage`,
+  DETAIL:`/post/:postId`
 };
 
 const NAME = {

@@ -15,6 +15,7 @@ import Kakao from './pages/KakaoPage';
 import AddPost from './pages/AddPostPage';
 import Payment from './pages/PaymentPage';
 import MyPage from './pages/MyPage';
+import PostDetail from './pages/PostDetailPage';
 
 const queryClient = new QueryClient();
 
@@ -43,6 +44,10 @@ const router = createBrowserRouter([
       {
         path: ROUTER.PATH.ADDPOST,
         element: <AddPost />,
+      },
+      {
+        path: ROUTER.PATH.DETAIL,
+        element: <PostDetail />,
       },
     ],
   },
