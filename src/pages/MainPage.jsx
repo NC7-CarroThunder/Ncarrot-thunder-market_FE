@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import axios from 'axios';
+import { Link } from 'react-router-dom'; // Link 컴포넌트 import
+import ROUTER from '../constants/router';
 
 export default function MainPage() {
   const [posts, setPosts] = useState([]);
@@ -60,7 +62,9 @@ export default function MainPage() {
                     className="card-img-top"
                   />
                   <CardBody>
+                  <Link to={`/post/${post.postid}`}>
                     <CardTitle>{post.title}</CardTitle>
+                    </Link>
                     <CardText>Price: {post.price}</CardText>
                     <CardText>Address: {post.address}</CardText>
                   </CardBody>
