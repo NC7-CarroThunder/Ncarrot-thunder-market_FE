@@ -9,15 +9,17 @@ import { Link } from 'react-router-dom';
 import { v4 as uuidv4 } from 'uuid';
 import ROUTER from '../constants/router';
 import Valid from '../validation/validation';
-import { Axios } from 'axios';
+import Axios from '../utils/api/axios';
 import QUERY from '../constants/query';
-import DaumPost from './DaumPost';
 import { useDaumPostcodePopup } from 'react-daum-postcode';
+import { useNavigate } from "react-router-dom";
 
 const axios = new Axios(QUERY.AXIOS_PATH.SEVER);
 
 
-export default function AddPostPage({ children, axiosFn, detail }) {
+export default function AddPostPage({ children, detail }) {
+
+  const navigate = useNavigate();
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
   const [price, setPrice] = useState('');
@@ -25,6 +27,7 @@ export default function AddPostPage({ children, axiosFn, detail }) {
   const [image, setImage] = useState([]);
   const [preview, setPreview] = useState([]);
   const [category, setCategory] = useState([]);
+  const [formData, setFormData] = useState([]);
   const categoryRef = useRef();
 
   useEffect(() => {
@@ -40,6 +43,7 @@ export default function AddPostPage({ children, axiosFn, detail }) {
 
   const handleSubmit = event => {
     event.preventDefault();
+
     if (
       !Valid.emptyPostAddCheck(
         image,
@@ -64,7 +68,7 @@ export default function AddPostPage({ children, axiosFn, detail }) {
         title,
         content,
         price: parsePrice,
-        location: categoryRef.current.value,
+        itemCategory: categoryRef.current.value,
         remainingImagesUrlList: parsePreviewData,
         address,
       };
@@ -75,8 +79,11 @@ export default function AddPostPage({ children, axiosFn, detail }) {
         title,
         content,
         price: parsePrice,
-        location: categoryRef.current.value,
+        dealingType: categoryRef.current.value,
+        itemCategory: "ETC",
+        address,
       };
+
     }
 
     formData.append(
@@ -89,7 +96,10 @@ export default function AddPostPage({ children, axiosFn, detail }) {
         formData.append('multipartFiles', multipartFiles)
       );
 
-    axiosFn(formData);
+    axios.post(QUERY.AXIOS_PATH.ADDPOST, formData).then(() => {
+      navigate(ROUTER.PATH.MAIN);
+    });
+
   };
 
   const handleImageChange = event => {
@@ -147,9 +157,9 @@ export default function AddPostPage({ children, axiosFn, detail }) {
           <FormButton type='submit'>완료 </FormButton>
         </FormHeader>
         <InputCategory ref={categoryRef} as='select'>
-          <option value='직접거래'>직접거래</option>
-          <option value='안전결제'>안전결제</option>
-          <option value='나눔'>나눔</option>
+          <option value='WITHPERSONAL'>직접거래</option>
+          <option value='FOR_PAY'>안전결제</option>
+          <option value='FOR_FREE'>나눔</option>
         </InputCategory>
         <LableBorder preview={preview.length !== 0 ? true : false}>
           {preview.length !== 0 &&

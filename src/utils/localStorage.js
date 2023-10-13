@@ -11,6 +11,18 @@ const Storage = {
   getNickName() {
     return window.localStorage.getItem('nickname');
   },
+  setUserId(userId) {
+    removeLocalStorage('userId');
+    setlocalStorage('userId', userId);
+  },
+
+  removeUserId() {
+    removeLocalStorage('userId');
+  },
+
+  getUserId() {
+    return window.localStorage.getItem('userId');
+  },
 };
 
 function setlocalStorage(key, value) {
