@@ -3,6 +3,7 @@ import styled from 'styled-components';
 import QUERY from '../constants/query';
 import useGetQuery from '../hooks/useGetQuery';
 import ROUTER from '../constants/router';
+import MyChatRooms from '../pages/MyChatRooms';
 
 export default function MyPage() {
   const [userInfo, setUserInfo] = useState({});
@@ -65,6 +66,7 @@ const Profile = () => (
         <InterestAndReviews />
         <hr style={{ width: '70%', height: '2px', backgroundColor: 'black', margin: '20px auto' }} />
         <FollowAndNotifications />
+        <MyChatRooms />
       </div>
     </MyPageContainer>
   );
@@ -78,7 +80,9 @@ const MyPageContainer = styled.div`
   background-color: #f7f7f7;
   display: flex;
   flex-direction: column;
+  padding-bottom: 100px;
 `;
+
 
 const ProfileContainer = styled.div`
   display: flex;

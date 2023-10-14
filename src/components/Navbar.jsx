@@ -76,7 +76,6 @@ export default function Navbar({ showMyMenu, onShowMyMenu, onLogOut }) {
               {showMyMenu ? (
                 <ShowMyMenu>
                   <span onClick={handleChatMenu}>채팅</span>
-
                   <span>
                     <Link to={ROUTER.PATH.MYPAGE}> 마이페이지 </Link>
                   </span>

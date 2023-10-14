@@ -10,7 +10,9 @@ const PATH = {
   KAKAO: `/kakao`,
   PAYMENT: `/payment`,
   MYPAGE: `/mypage`,
-  DETAIL:`/post/:postId`
+  DETAIL:`/post/:postId`,
+  CHAT_ROOM: '/chat/:roomId',
+  MY_CHAT_ROOMS: '/api/chatting/myChatRooms',
 };
 
 const NAME = {
