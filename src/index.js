@@ -14,6 +14,8 @@ import AddPost from './pages/AddPostPage';
 import Payment from './pages/PaymentPage';
 import MyPage from './pages/MyPage';
 import PostDetail from './pages/PostDetailPage';
+import ChatRoom from './pages/ChatRoom';
+import MyChatRooms from './pages/MyChatRooms';
 
 const queryClient = new QueryClient();
 
@@ -47,6 +49,14 @@ const router = createBrowserRouter([
         path: ROUTER.PATH.DETAIL,
         element: <PostDetail />,
       },
+      {
+        path: ROUTER.PATH.CHAT_ROOM,
+        element: <ChatRoom />,
+      },
+      {
+        path: ROUTER.PATH.MY_CHAT_ROOMS,
+        element: <MyChatRooms />,  // 이 부분은 해당 경로를 처리하는 React 컴포넌트로 교체해야 합니다.
+      },
     ],
   },
   {
@@ -57,6 +67,7 @@ const router = createBrowserRouter([
     path: ROUTER.PATH.PAYMENT,
     element: <Payment />,
   },
+ 
 ]);
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
