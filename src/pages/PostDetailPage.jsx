@@ -3,6 +3,7 @@ import styled from 'styled-components';
 import axios from 'axios';
 import { useParams, useNavigate } from 'react-router-dom';
 import Storage from '../utils/localStorage';
+import ROUTER from '../constants/router';
 
 export default function PostDetailPage() {
   const { postId } = useParams();
@@ -41,8 +42,8 @@ export default function PostDetailPage() {
       const roomId = response.data.roomId;
       if (roomId) {
         setTimeout(() => {
-          navigate(`/chat/${roomId}`);
-        }, 3500);
+          navigate(ROUTER.PATH.CHATTING);
+        }, 300);
       } else {
         console.error('채팅방 생성에 실패했습니다.');
       }
@@ -69,7 +70,7 @@ export default function PostDetailPage() {
           <CardText>Price: {post.price}</CardText>
           <CardText>Address: {post.address}</CardText>
           <CardDescription>{post.content}</CardDescription>
-          {Number(post.userid) !== Number(currentUserId) && <ChatButton onClick={handleChatButtonClick}>채팅하기</ChatButton>}
+          {Number(post.userid) !== Number(currentUserId) && <ChatButton onClick={handleChatButtonClick}>캐럿톡</ChatButton>}
         </ContentWrapper>
       )}
     </DetailWrapper>

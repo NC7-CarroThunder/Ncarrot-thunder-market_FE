@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import Storage from '../utils/localStorage';
 
-const MyChatRooms = () => {
+const MyChatRooms = ({ onRoomSelect }) => {
   const [chatRooms, setChatRooms] = useState([]);
   const userId = Storage.getUserId();
   const navigate = useNavigate();
@@ -30,23 +30,24 @@ const MyChatRooms = () => {
   };
 
   const handleChatButtonClick = (roomId) => {
-    navigate(`/chat/${roomId}`);
-  };
+    onRoomSelect(roomId);  // UUID형식이므로 유의할것
+};
+
 
   return (
     <ChatRoomsContainer>
-      <h3>채팅방 목록</h3>
-      <ul>
+    <h3>전체대화</h3>
+    <ul>
         {chatRooms.map((room) => (
-          <ChatRoomItem key={room.roomId}>
+                <ChatRoomItem key={room.roomId}>
             <div>
-              {getCounterpartNickname(room)}와의 채팅방: {room.lastMessage}
+              {getCounterpartNickname(room)}{room.lastMessage}
             </div>
             <div>
-              게시글 제목: {room.postTitle}
+              제목: {room.postTitle}
             </div>
             <ChatButton onClick={() => handleChatButtonClick(room.roomId)}> 
-              채팅하기
+              대화시작
             </ChatButton>
           </ChatRoomItem>
         ))}
@@ -56,8 +57,39 @@ const MyChatRooms = () => {
 };
 
 const ChatRoomsContainer = styled.div`
-  margin-left: 250px;
-  margin-bottom: 20px;
+    display: flex;
+    flex-direction: column;
+    height: 60vh;
+    width: 100%;
+    background-color: #f8f9fa;
+    border: 1px solid #c0c0c0;
+    overflow-y: auto;
+    
+    h3 {
+        font-family: 'Arial', sans-serif; 
+        font-size: 24px;
+        font-weight: bold;
+        color: #333;
+        margin-bottom: 20px;
+        text-align: left;
+        margin-left: 20px;
+    }
+    ::-webkit-scrollbar {
+      width: 8px;
+    }
+  
+    ::-webkit-scrollbar-track {
+      background: #f1f1f1;
+    }
+  
+    ::-webkit-scrollbar-thumb {
+      background: #888;
+      border-radius: 4px;
+    }
+  
+    ::-webkit-scrollbar-thumb:hover {
+      background: #555;
+    }
 `;
 
 const ChatRoomItem = styled.li`
