@@ -16,6 +16,7 @@ import MyPage from './pages/MyPage';
 import PostDetail from './pages/PostDetailPage';
 import ChatRoom from './pages/ChatRoom';
 import MyChatRooms from './pages/MyChatRooms';
+import ChattingPage from './pages/ChattingPage'; 
 
 const queryClient = new QueryClient();
 
@@ -56,6 +57,10 @@ const router = createBrowserRouter([
       {
         path: ROUTER.PATH.MY_CHAT_ROOMS,
         element: <MyChatRooms />,  // 이 부분은 해당 경로를 처리하는 React 컴포넌트로 교체해야 합니다.
+      },
+      {
+        path: ROUTER.PATH.CHATTING,
+        element: <ChattingPage />,
       },
     ],
   },

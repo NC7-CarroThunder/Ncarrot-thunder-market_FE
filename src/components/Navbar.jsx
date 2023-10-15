@@ -23,11 +23,6 @@ export default function Navbar({ showMyMenu, onShowMyMenu, onLogOut }) {
     navigate(`/search/${keyWord}`);
   };
 
-  const handleChatMenu = () => {
-    query.invalidateQueries(['rooms']);
-    navigate(`${ROUTER.PATH.MESSENGER}/${-1}`);
-  };
-
   const handleLogoClick = () => {
     query.invalidateQueries(['posts']);
   };
@@ -41,6 +36,10 @@ export default function Navbar({ showMyMenu, onShowMyMenu, onLogOut }) {
       window.localStorage.clear();
       navigate(ROUTER.PATH.MAIN)
     }
+  };
+
+  const handleChatButtonClick = () => {
+    navigate(ROUTER.PATH.CHATTING);  // 이 부분은 새로운 경로를 ROUTER.PATH에 추가하거나 기존 경로를 사용하면 됩니다.
   };
 
 
@@ -75,7 +74,7 @@ export default function Navbar({ showMyMenu, onShowMyMenu, onLogOut }) {
               </Text>
               {showMyMenu ? (
                 <ShowMyMenu>
-                  <span onClick={handleChatMenu}>채팅</span>
+                  <span onClick={handleChatButtonClick}>캐럿톡</span>
                   <span>
                     <Link to={ROUTER.PATH.MYPAGE}> 마이페이지 </Link>
                   </span>

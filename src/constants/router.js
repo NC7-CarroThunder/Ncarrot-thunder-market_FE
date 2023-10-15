@@ -13,6 +13,7 @@ const PATH = {
   DETAIL:`/post/:postId`,
   CHAT_ROOM: '/chat/:roomId',
   MY_CHAT_ROOMS: '/api/chatting/myChatRooms',
+  CHATTING: '/chatting',
 };
 
 const NAME = {

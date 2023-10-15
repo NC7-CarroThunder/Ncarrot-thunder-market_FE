@@ -2,20 +2,16 @@ import React, { useState, useEffect, useRef } from 'react';
 import styled from 'styled-components';
 import { Client } from '@stomp/stompjs';
 import SockJS from 'sockjs-client';
-import { useParams } from 'react-router-dom';
 import Storage from '../utils/localStorage';
 
-function ChatRoom() {
-    const { roomId } = useParams();
+function ChatRoom({ roomId }) {
     const [messages, setMessages] = useState([]);
     const [inputValue, setInputValue] = useState('');
     const stompClient = useRef(null);
     const messagesEndRef = useRef(null);
-    
-    console.log(Storage.getNickName);
-    console.log(Storage.getUserId);
 
     useEffect(() => {
+        setMessages([]);
         const socket = new SockJS('http://localhost:8888/api/chatting-websocket', [], { withCredentials: true });
         const userId = Storage.getUserId();
 
@@ -63,7 +59,7 @@ function ChatRoom() {
     }, [messages]);
 
     const sendMessage = () => {
-        if (inputValue.trim() !== '' && stompClient.current && stompClient.current.connected) {
+        if (roomId && inputValue.trim() !== '' && stompClient.current && stompClient.current.connected) {
             const chatMessage = {
                 roomId: roomId,
                 content: inputValue,
@@ -83,7 +79,7 @@ function ChatRoom() {
     };
 
     return (
-        <ChatRoomContainer>
+        <>
             <MessagesContainer>
                 {messages.map((message, index) => (
                     <MessageBubble 
@@ -97,10 +93,10 @@ function ChatRoom() {
                 <div ref={messagesEndRef}></div>
             </MessagesContainer>
             <InputContainer>
-                <TextInput value={inputValue} onChange={(e) => setInputValue(e.target.value)} onKeyDown={handleKeyDown} />
+                <TextInput value={inputValue} onChange={(e) => setInputValue(e.target.value)} onKeyDown={handleKeyDown} placeholder="Type a message..." />
                 <SendButton onClick={sendMessage}>Send</SendButton>
             </InputContainer>
-        </ChatRoomContainer>
+        </>
     );
 }
 
@@ -108,19 +104,9 @@ export default ChatRoom;
 
 const shouldForwardProp = (prop) => prop !== 'sender';
 
-const ChatRoomContainer = styled.div`
-    display: flex;
-    flex-direction: column;
-    height: 50vh;
-    width: 35vw;
-    margin: 25vh auto;
-    border: 1px solid black;
-    background-color: #f8f9fa;
-`;
-
 const MessagesContainer = styled.div`
     flex: 1;
-    overflow-y: auto;
+    overflow-y: auto;  // 스크롤 가능하게 수정
     padding: 20px;
     display: flex;
     flex-direction: column;
@@ -130,6 +116,24 @@ const MessagesContainer = styled.div`
     background-repeat: no-repeat;
     background-position: center center;
     background-size: 50%; 
+
+    // 웹킷 기반 브라우저용 스크롤바 디자인 수정
+    ::-webkit-scrollbar {
+      width: 8px;
+    }
+  
+    ::-webkit-scrollbar-track {
+      background: #f1f1f1;
+    }
+  
+    ::-webkit-scrollbar-thumb {
+      background: #888;
+      border-radius: 4px;
+    }
+  
+    ::-webkit-scrollbar-thumb:hover {
+      background: #555;
+    }
 `;
 
 const MessageBubble = styled.div.withConfig({

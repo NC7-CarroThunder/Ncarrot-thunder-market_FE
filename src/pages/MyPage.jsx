@@ -1,61 +1,14 @@
-import React, { useState } from 'react';
+import React from 'react';
 import styled from 'styled-components';
-import QUERY from '../constants/query';
-import useGetQuery from '../hooks/useGetQuery';
+import { useNavigate } from 'react-router-dom';
 import ROUTER from '../constants/router';
-import MyChatRooms from '../pages/MyChatRooms';
 
 export default function MyPage() {
-  const [userInfo, setUserInfo] = useState({});
+  const navigate = useNavigate();
 
-// 프로필 컴포넌트
-const Profile = () => (
-  <ProfileContainer>
-    <ProfileImage src="/profile.jpg" alt="프로필 이미지" />
-    <div>
-      <div>
-        <NickName>사용자 닉네임</NickName>
-        {/* <p>평점: 4.5</p> */}
-      </div>
-    </div>
-    <ProfileButton>프로필 편집</ProfileButton>
-  </ProfileContainer>
-);
-
-  // 당근, 번개페이, 잔액 정보
-  const AdditionalInfo = () => (
-    <AdditionalInfoContainer>
-      <p>당근번개 페이 잔액: 100,000원</p>
-      <ButtonContainer>
-        <Button>충전</Button>
-        <Button>환전</Button>
-      </ButtonContainer>
-    </AdditionalInfoContainer>
-  );
-
-  
-  // 관심 목록 및 거래 후기
-  const InterestAndReviews = () => (
-    <InterestAndReviewsContainer>
-    <div>
-      <h3>나의 거래</h3>
-      <h3><ThinText>내 게시글</ThinText></h3>
-      <h3><ThinText>관심 목록</ThinText></h3>
-      <h3><ThinText>거래 후기</ThinText></h3>
-    </div>
-    </InterestAndReviewsContainer>
-  );
-
-  // 팔로우 관리 및 알림 설정
-  const FollowAndNotifications = () => (
-    <FollowAndNotificationsContainer>
-    <div>
-      <h3>기타</h3>
-      <h3><ThinText>팔로우 관리</ThinText></h3>
-      <h3><ThinText>알림 설정</ThinText></h3>
-    </div>
-    </FollowAndNotificationsContainer>
-  );
+  const handleChatButtonClick = () => {
+      navigate(ROUTER.PATH.CHATTING);
+  };
 
   return (
     <MyPageContainer>
@@ -66,7 +19,7 @@ const Profile = () => (
         <InterestAndReviews />
         <hr style={{ width: '70%', height: '2px', backgroundColor: 'black', margin: '20px auto' }} />
         <FollowAndNotifications />
-        <MyChatRooms />
+        <ChatButton onClick={handleChatButtonClick}>캐럿톡</ChatButton>
       </div>
     </MyPageContainer>
   );
@@ -83,6 +36,46 @@ const MyPageContainer = styled.div`
   padding-bottom: 100px;
 `;
 
+const Profile = () => (
+  <ProfileContainer>
+    <ProfileImage src="/profile.jpg" alt="프로필 이미지" />
+    <div>
+      <NickName>사용자 닉네임</NickName>
+    </div>
+    <ProfileButton>프로필 편집</ProfileButton>
+  </ProfileContainer>
+);
+
+const AdditionalInfo = () => (
+  <AdditionalInfoContainer>
+    <p>당근번개 페이 잔액: 100,000원</p>
+    <ButtonContainer>
+      <Button>충전</Button>
+      <Button>환전</Button>
+    </ButtonContainer>
+  </AdditionalInfoContainer>
+);
+
+const InterestAndReviews = () => (
+  <InterestAndReviewsContainer>
+    <div>
+      <h3>나의 거래</h3>
+      <h3><ThinText>내 게시글</ThinText></h3>
+      <h3><ThinText>관심 목록</ThinText></h3>
+      <h3><ThinText>거래 후기</ThinText></h3>
+    </div>
+  </InterestAndReviewsContainer>
+);
+
+const FollowAndNotifications = () => (
+  <FollowAndNotificationsContainer>
+    <div>
+      <h3>기타</h3>
+      <h3><ThinText>팔로우 관리</ThinText></h3>
+      <h3><ThinText>알림 설정</ThinText></h3>
+    </div>
+  </FollowAndNotificationsContainer>
+);
 
 const ProfileContainer = styled.div`
   display: flex;
@@ -139,7 +132,6 @@ const Button = styled.button`
   border-radius: 5px;
   cursor: pointer;
   margin-right: 30px;
-
 `;
 
 const InterestAndReviewsContainer = styled.div`
@@ -158,4 +150,15 @@ h3 {
 
 const ThinText = styled.span`
   font-weight: normal;
+`;
+
+const ChatButton = styled.button`
+    margin-left: 250px;
+    padding: 5px 10px;
+    background-color: #ff922b;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-top: 10px;
 `;
