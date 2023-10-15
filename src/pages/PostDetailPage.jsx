@@ -55,7 +55,6 @@ export default function PostDetailPage() {
   console.log("Current User ID:", currentUserId);
   console.log("Post User ID2:", post.userid);
 
-
   return (
     <DetailWrapper>
       {loading ? (
@@ -63,10 +62,13 @@ export default function PostDetailPage() {
       ) : (
         <ContentWrapper>
           <h1>{post.title}</h1>
-          <CardImg
-            src={`https://kr.object.ncloudstorage.com/carrot-thunder/article/${post.attachedFilesPaths[0].filePath}`}
-            alt={'게시글 이미지'}
-          />
+          {post.attachedFilesPaths && post.attachedFilesPaths.map((image, index) => (
+            <CardImg
+              key={index}
+              src={`https://kr.object.ncloudstorage.com/carrot-thunder/article/${image.filePath}`}
+              alt={`게시글 이미지 ${index}`}
+            />
+          ))}
           <CardText>Price: {post.price}</CardText>
           <CardText>Address: {post.address}</CardText>
           <CardDescription>{post.content}</CardDescription>
@@ -91,6 +93,13 @@ const ContentWrapper = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
+`;
+
+const CardImgWrapper = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  width: 100%;
 `;
 
 const CardImg = styled.img`
