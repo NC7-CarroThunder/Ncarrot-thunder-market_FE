@@ -9,6 +9,10 @@ export default function MainPage() {
   const [loading, setLoading] = useState(true);
   const [selectedCategory, setSelectedCategory] = useState('전체');
 
+const formatPrice = (price) => {
+  return price.toLocaleString('en-US');
+};
+
   useEffect(() => {
     async function fetchPosts() {
       try {
@@ -61,7 +65,7 @@ export default function MainPage() {
     <CategoryButton onClick={() => setSelectedCategory('ETC')}>기타</CategoryButton>
         </div>
       </CategoryButtonRow>
-      <StyledImage src="/vintage-collection.jpg" alt="Vintage Collection" />
+      {/* <StyledImage src="/vintage-collection.jpg" alt="Vintage Collection" /> */}
       <Container>
         {loading ? (
           <p>Loading...</p>
@@ -69,20 +73,21 @@ export default function MainPage() {
           <Row>
             {filterPostsByCategory().map((post) => (
               <Col key={post.postid} md={3}>
+              <Link to={`/post/${post.postid}`}>
                 <Card>
+                {/* http://xflopvzfwqjk19996213.cdn.ntruss.com/article/2501df8f-e7a4-4f28-a15d-405d28fcb7dc?type=f&w=250&h=250 */}
                   <CardImg
-                    src={`https://kr.object.ncloudstorage.com/carrot-thunder/article/${post.attachedFilesPaths[0].filePath}`}
+                    src={`http://xflopvzfwqjk19996213.cdn.ntruss.com/article/${post.attachedFilesPaths[0].filePath}?type=f&w=250&h=250`}
                     alt={'게시글 이미지'}
                     className="card-img-top"
                   />
                   <CardBody>
-                    <Link to={`/post/${post.postid}`}>
                       <CardTitle>{post.title}</CardTitle>
-                    </Link>
-                    <CardText>Price: {post.price}</CardText>
-                    <CardText>Address: {post.address}</CardText>
+                    <CardText><strong>{formatPrice(post.price)}원</strong></CardText>
+                    {/* <CardText>Address: {post.address}</CardText> 게시글 주소 */}
                   </CardBody>
                 </Card>
+                </Link>
               </Col>
             ))}
           </Row>
@@ -93,7 +98,6 @@ export default function MainPage() {
 }
 
 const MainWrapper = styled.main`
-  max-width: 1440px;
   width: 100%;
   height: 100%;
   overflow-y: auto;
@@ -119,12 +123,12 @@ const CategoryButtonRow = styled.div`
   margin-bottom: 10px;
 `;
 
-const StyledImage = styled.img`
-  width: 180px;
-  height: 180px;
-  object-fit: cover;
-  margin: 20px 0;
-`;
+// const StyledImage = styled.img`
+//   width: 180px;
+//   height: 180px;
+//   object-fit: cover;
+//   margin: 20px 0;
+// `;
 
 const CategoryButton = styled.button`
   width: 7rem;
@@ -150,32 +154,35 @@ const Container = styled.div`
 const Card = styled.div`
   border: 1px solid #ddd;
   margin-bottom: 20px;
+  border-radius: 5%;
 `;
 
 const CardImg = styled.img`
   width: 100%;
+  border-radius: 5%
 `;
 
 const CardBody = styled.div`
   padding: 10px;
 `;
 
-const CardTitle = styled.h5`
+const CardTitle = styled.text`
   font-size: 16px;
 `;
 
 const CardText = styled.p`
-  font-size: 14px;
+  font-size: 16px;
   margin-bottom: 5px;
 `;
 
 const Row = styled.div`
   display: flex;
   flex-wrap: wrap;
+  max-width: 1000px; /* 최대 너비 설정 */
 `;
 
 const Col = styled.div`
-  flex: 0 0 calc(25% - 20px);
   max-width: calc(25% - 20px);
+  width: 250px;
   margin: 10px;
 `;
