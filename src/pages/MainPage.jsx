@@ -84,7 +84,6 @@ const formatPrice = (price) => {
                   <CardBody>
                       <CardTitle>{post.title}</CardTitle>
                     <CardText><strong>{formatPrice(post.price)}원</strong></CardText>
-                    {/* <CardText>Address: {post.address}</CardText> 게시글 주소 */}
                   </CardBody>
                 </Card>
                 </Link>
@@ -166,9 +165,14 @@ const CardBody = styled.div`
   padding: 10px;
 `;
 
-const CardTitle = styled.text`
+const CardTitle = styled.div`
   font-size: 16px;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  width: 100%;
 `;
+
 
 const CardText = styled.p`
   font-size: 16px;

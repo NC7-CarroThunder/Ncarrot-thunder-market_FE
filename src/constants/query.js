@@ -13,7 +13,7 @@ const AXIOS_PATH = {
   KAKAO: '/api/users/kakao/callback',
   ADDPOST: '/api/posts',
   POSTLIST: '/api/posts/list',
-  POSTDETAIL: '/api/posts/${postId}',
+  POSTDETAIL: '/api/posts/:postId',
   MYPAGE: '/api/mypage/',
 };
 

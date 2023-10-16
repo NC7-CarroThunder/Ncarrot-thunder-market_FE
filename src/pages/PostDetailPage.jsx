@@ -58,6 +58,10 @@ export default function PostDetailPage() {
   console.log("Current User ID:", currentUserId);
   console.log("Post User ID2:", post.userid);
 
+  const formatPrice = (price) => {
+    return price.toLocaleString('en-US');
+  };
+
   return (
     <MainWrapper>
       <DetailWrapper>
@@ -70,9 +74,12 @@ export default function PostDetailPage() {
             </ImageContainer>
             <PostInfoContainer>
               <h1>{post.title}</h1>
-              <CardText>Price: {post.price}</CardText>
-              <CardText>Address: {post.address}</CardText>
-              <CardDescription>{post.content}</CardDescription>
+              <CardText><strong>{formatPrice(post.price)}원</strong></CardText>
+              <ContentContainer>
+                <CardDescription>{post.content}</CardDescription>
+              </ContentContainer>
+              <CardText>거래지역 {post.address}</CardText>
+              <CardText>카테고리 {post.itemCategory}</CardText>
               {Number(post.userid) !== Number(currentUserId) && (
                 <ChatButton onClick={handleChatButtonClick}>캐럿톡</ChatButton>
               )}
@@ -118,6 +125,12 @@ const PostInfoContainer = styled.div`
   padding: 20px;
 `;
 
+const ContentContainer = styled.div`
+  width: 400px;
+  height: 500px;
+  overflow: auto; /* 스크롤 추가 */
+`;
+
 const CardText = styled.p`
   font-size: 18px;
   margin-bottom: 5px;
@@ -126,6 +139,7 @@ const CardText = styled.p`
 const CardDescription = styled.p`
   font-size: 16px;
   margin: 10px 0;
+  line-height: 1.5; // 원하는 라인 높이로 조절
 `;
 
 const ChatButton = styled.button`
