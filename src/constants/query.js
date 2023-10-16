@@ -12,6 +12,8 @@ const AXIOS_PATH = {
   TOKEN: '/oauth/token',
   KAKAO: '/api/users/kakao/callback',
   ADDPOST: '/api/posts',
+  POSTLIST: '/api/posts/list',
+  POSTDETAIL: '/api/posts/${postId}',
   MYPAGE: '/api/mypage/',
 };
 
