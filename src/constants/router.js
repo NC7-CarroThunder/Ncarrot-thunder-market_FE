@@ -14,6 +14,7 @@ const PATH = {
   CHAT_ROOM: '/chat/:roomId',
   MY_CHAT_ROOMS: '/api/chatting/myChatRooms',
   CHATTING: '/chatting',
+  PROFILE_EDIT:'/profile/edit',
 };
 
 const NAME = {
