@@ -10,39 +10,17 @@ export default function MyPage() {
       navigate(ROUTER.PATH.CHATTING);
   };
 
-  return (
-    <MyPageContainer>
-      <div style={{ marginTop: '50px' }}>
-        <Profile />
-        <AdditionalInfo />
-        <hr style={{ width: '70%', height: '2px', backgroundColor: 'black', margin: '20px auto' }} />
-        <InterestAndReviews />
-        <hr style={{ width: '70%', height: '2px', backgroundColor: 'black', margin: '20px auto' }} />
-        <FollowAndNotifications />
-        <ChatButton onClick={handleChatButtonClick}>캐럿톡</ChatButton>
-      </div>
-    </MyPageContainer>
-  );
-}
+  const handleProfileEditClick = () => {
+    navigate(ROUTER.PATH.PROFILE_EDIT); 
+};
 
-const MyPageContainer = styled.div`
-  width: 100%;
-  height: 100%;
-  overflow-y: auto;
-  overflow-x: hidden;
-  background-color: #f7f7f7;
-  display: flex;
-  flex-direction: column;
-  padding-bottom: 100px;
-`;
-
-const Profile = () => (
+const Profile = ({ onProfileEditClick }) => (
   <ProfileContainer>
     <ProfileImage src="/profile.jpg" alt="프로필 이미지" />
     <div>
       <NickName>사용자 닉네임</NickName>
     </div>
-    <ProfileButton>프로필 편집</ProfileButton>
+    <ProfileButton onClick={onProfileEditClick}>프로필 편집</ProfileButton>
   </ProfileContainer>
 );
 
@@ -76,6 +54,36 @@ const FollowAndNotifications = () => (
     </div>
   </FollowAndNotificationsContainer>
 );
+
+return (
+  <MyPageContainer>
+    <ContentContainer>
+      <Profile onProfileEditClick={handleProfileEditClick} />
+      <AdditionalInfo />
+      <Separator />
+      <InterestAndReviews />
+      <Separator />
+      <FollowAndNotifications />
+      <ChatButton onClick={handleChatButtonClick}>캐럿톡</ChatButton>
+      </ContentContainer>
+  </MyPageContainer>
+);
+}
+
+const MyPageContainer = styled.div`
+  width: 100%;
+  height: 100%;
+  overflow-y: auto;
+  overflow-x: hidden;
+  background-color: #f7f7f7;
+  display: flex;
+  flex-direction: column;
+  padding-bottom: 100px;
+`;
+
+const ContentContainer = styled.div`
+  margin-top: 50px;
+`;
 
 const ProfileContainer = styled.div`
   display: flex;
@@ -161,4 +169,11 @@ const ChatButton = styled.button`
     border-radius: 5px;
     cursor: pointer;
     margin-top: 10px;
+`;
+
+const Separator = styled.hr`
+  width: 70%;
+  height: 2px;
+  background-color: black;
+  margin: 20px auto;
 `;

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import axios from 'axios';
 import { Link } from 'react-router-dom';
-import ROUTER from '../constants/router';
+import QUERY from '../constants/query';
 
 export default function MainPage() {
   const [target, setTarget] = useState(null);
@@ -16,13 +16,14 @@ export default function MainPage() {
   async function fetchPosts() {
     if (!stop && loading) {
       try {
-        const response = await axios.get(`http://localhost:8888/api/posts/list?pageNo=${pageNo}`);
+        const response = await axios.get(`${QUERY.AXIOS_PATH.SEVER}${QUERY.AXIOS_PATH.POSTLIST}?pageNo=${pageNo}`);
         posts.concat(response.data.result);
         if (response.data.result.length < 8) {
           setStop(true);
         }
 
         setPosts((posts) => posts.concat(response.data.result));
+
         setLoading(false);
       } catch (error) {
         console.error('Error fetching posts:', error);
@@ -127,22 +128,22 @@ export default function MainPage() {
                       className="card-img-top"
                     />
                     <CardBody>
-                      {/* <CardTitle>{post.title}</CardTitle> */}
                       <CardTitle>{post.postid}</CardTitle>
                       <CardText><strong>{formatPrice(post.price)}원</strong></CardText>
-                      {/* <CardText>Address: {post.address}</CardText> 게시글 주소 */}
                     </CardBody>
                   </Card>
+
                 </Link>
               </Col>
-            ))}
+            ))
+            }
 
-          </Row>
+          </Row >
         )}
         <div ref={setTarget}>
         </div>
-      </Container>
-    </MainWrapper>
+      </Container >
+    </MainWrapper >
   );
 }
 
@@ -215,9 +216,14 @@ const CardBody = styled.div`
   padding: 10px;
 `;
 
-const CardTitle = styled.text`
+const CardTitle = styled.div`
   font-size: 16px;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  width: 100%;
 `;
+
 
 const CardText = styled.p`
   font-size: 16px;

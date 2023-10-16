@@ -4,6 +4,8 @@ import axios from 'axios';
 import { useParams, useNavigate } from 'react-router-dom';
 import Storage from '../utils/localStorage';
 import ROUTER from '../constants/router';
+import ImageSlider from '../components/ImageSlider';
+import QUERY from '../constants/query';
 
 export default function PostDetailPage() {
   const { postId } = useParams();
@@ -14,7 +16,7 @@ export default function PostDetailPage() {
   useEffect(() => {
     async function fetchPostDetails() {
       try {
-        const response = await axios.get(`http://localhost:8888/api/posts/${postId}`);
+        const response = await axios.get(`${QUERY.AXIOS_PATH.SEVER}/api/posts/${postId}`);
         console.log(response.data.result);
         setPost(response.data.result);
         setLoading(false);
@@ -38,7 +40,7 @@ export default function PostDetailPage() {
           postId: post.postid
         }
       });
-  
+
       const roomId = response.data.roomId;
       if (roomId) {
         setTimeout(() => {
@@ -51,36 +53,59 @@ export default function PostDetailPage() {
       console.error('Error creating or accessing the chat room:', error);
     }
   };
+
   const currentUserId = Storage.getUserId();
   console.log("Current User ID:", currentUserId);
   console.log("Post User ID2:", post.userid);
 
+  const formatPrice = (price) => {
+    return price.toLocaleString('en-US');
+  };
+
   return (
-    <DetailWrapper>
-      {loading ? (
-        <p>Loading...</p>
-      ) : (
-        <ContentWrapper>
-          <h1>{post.title}</h1>
-          {post.attachedFilesPaths && post.attachedFilesPaths.map((image, index) => (
-            <CardImg
-              key={index}
-              src={`https://kr.object.ncloudstorage.com/carrot-thunder/article/${image.filePath}`}
-              alt={`게시글 이미지 ${index}`}
-            />
-          ))}
-          <CardText>Price: {post.price}</CardText>
-          <CardText>Address: {post.address}</CardText>
-          <CardDescription>{post.content}</CardDescription>
-          {Number(post.userid) !== Number(currentUserId) && <ChatButton onClick={handleChatButtonClick}>캐럿톡</ChatButton>}
-        </ContentWrapper>
-      )}
-    </DetailWrapper>
+    <MainWrapper>
+      <DetailWrapper>
+        {loading ? (
+          <p>Loading...</p>
+        ) : (
+          <>
+            <ImageContainer>
+              <ImageSlider images={post.attachedFilesPaths} />
+            </ImageContainer>
+            <PostInfoContainer>
+              <h1>{post.title}</h1>
+              <CardText><strong>{formatPrice(post.price)}원</strong></CardText>
+              <ContentContainer>
+                <CardDescription>{post.content}</CardDescription>
+              </ContentContainer>
+              <CardText>거래지역 {post.address}</CardText>
+              <CardText>카테고리 {post.itemCategory}</CardText>
+              {Number(post.userid) !== Number(currentUserId) && (
+                <ChatButton onClick={handleChatButtonClick}>캐럿톡</ChatButton>
+              )}
+            </PostInfoContainer>
+          </>
+        )}
+      </DetailWrapper>
+    </MainWrapper>
   );
 }
 
+const MainWrapper = styled.main`
+  width: 100%;
+  height: 100%;
+  overflow-y: auto;
+  overflow-x: hidden;
+  background-color: #f7f7f7;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 0 auto; 
+`;
+
 const DetailWrapper = styled.div`
-  max-width: 800px;
+  display: flex;
+  max-width: 1000px;
   width: 100%;
   margin: 30px auto;
   background-color: #fff;
@@ -89,25 +114,21 @@ const DetailWrapper = styled.div`
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 `;
 
-const ContentWrapper = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
+const ImageContainer = styled.div`
+  flex: 1;
+  padding: 20px;
+  position: relative;
 `;
 
-const CardImgWrapper = styled.div`
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-  width: 100%;
+const PostInfoContainer = styled.div`
+  flex: 1;
+  padding: 20px;
 `;
 
-const CardImg = styled.img`
-  width: 100%;
-  max-width: 600px;
-  height: 400px;
-  object-fit: cover;
-  margin: 20px 0;
+const ContentContainer = styled.div`
+  width: 400px;
+  height: 500px;
+  overflow: auto; /* 스크롤 추가 */
 `;
 
 const CardText = styled.p`
@@ -118,6 +139,7 @@ const CardText = styled.p`
 const CardDescription = styled.p`
   font-size: 16px;
   margin: 10px 0;
+  line-height: 1.5; // 원하는 라인 높이로 조절
 `;
 
 const ChatButton = styled.button`
