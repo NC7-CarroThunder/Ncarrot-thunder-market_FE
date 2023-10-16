@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import axios from 'axios';
 import { Link } from 'react-router-dom';
-import ROUTER from '../constants/router';
+import QUERY from '../constants/query';
 
 export default function MainPage() {
   const [posts, setPosts] = useState([]);
@@ -16,7 +16,7 @@ const formatPrice = (price) => {
   useEffect(() => {
     async function fetchPosts() {
       try {
-        const response = await axios.get('http://localhost:8888/api/posts/list');
+        const response = await axios.get(`${QUERY.AXIOS_PATH.SEVER}${QUERY.AXIOS_PATH.POSTLIST}`);
         setPosts(response.data.result);
         setLoading(false);
       } catch (error) {
