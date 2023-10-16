@@ -18,6 +18,7 @@ import ChatRoom from './pages/ChatRoom';
 import MyChatRooms from './pages/MyChatRooms';
 import ChattingPage from './pages/ChattingPage'; 
 import ProfileEdit from './pages/ProfileEdit';
+import FollowList from './pages/FollowList';
 
 const queryClient = new QueryClient();
 
@@ -67,6 +68,10 @@ const router = createBrowserRouter([
         path: ROUTER.PATH.PROFILE_EDIT,
         element: <ProfileEdit />,
       },
+      {
+        path: ROUTER.PATH.FOLLOW_LIST,
+        element: <FollowList />,
+    },
     ],
   },
   {
