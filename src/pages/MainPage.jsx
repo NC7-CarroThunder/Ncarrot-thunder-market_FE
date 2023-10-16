@@ -5,28 +5,76 @@ import { Link } from 'react-router-dom';
 import QUERY from '../constants/query';
 
 export default function MainPage() {
+  const [target, setTarget] = useState(null);
   const [posts, setPosts] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [pageNo, setpageNo] = useState(0);
   const [selectedCategory, setSelectedCategory] = useState('전체');
+  const [stop, setStop] = useState(false);
+  const [loading, setLoading] = useState(false);
 
-const formatPrice = (price) => {
-  return price.toLocaleString('en-US');
-};
 
-  useEffect(() => {
-    async function fetchPosts() {
+  async function fetchPosts() {
+    if (!stop && loading) {
       try {
-        const response = await axios.get(`${QUERY.AXIOS_PATH.SEVER}${QUERY.AXIOS_PATH.POSTLIST}`);
-        setPosts(response.data.result);
+        const response = await axios.get(`${QUERY.AXIOS_PATH.SEVER}${QUERY.AXIOS_PATH.POSTLIST}?pageNo=${pageNo}`);
+        posts.concat(response.data.result);
+        if (response.data.result.length < 8) {
+          setStop(true);
+        }
+
+        setPosts((posts) => posts.concat(response.data.result));
+
         setLoading(false);
       } catch (error) {
         console.error('Error fetching posts:', error);
-        setLoading(false);
       }
     }
+  }
 
-    fetchPosts();
-  }, []);
+
+
+  //--------------------무한스크롤링 세팅
+  //  1. 감시에 들어올 시, 로딩 true로 설정
+  //  2. 로딩 true 설정시, page 를 + 1한다.
+  //  3. page 설정시, 서버에 요청해서 값 업데이트를 한다.
+  //  4. posts 업데이트시, 다시 로딩을 false로 설정한다.
+
+  useEffect(() => {
+    if (loading) {
+      setpageNo(pageNo + 1);
+    }
+  }, [loading]);
+
+  useEffect(() => {
+    if (loading) {
+      fetchPosts();
+    }
+  }, [pageNo]);
+
+
+  const callback = () => {
+    if (!loading && !stop) {
+      setLoading(true);
+    }
+  };
+
+  //-------------------------------------------------
+
+  const formatPrice = (price) => {
+    return price.toLocaleString('en-US');
+  };
+
+  useEffect(() => {
+
+    let observer;
+    if (target) {
+      console.log("무한스크롤 세팅");
+      observer = new IntersectionObserver(callback);
+      observer.observe(target);
+    }
+    return () => observer && observer.disconnect();
+  }, [target]);
+
 
   const filterPostsByCategory = () => {
     if (selectedCategory === '전체') {
@@ -40,65 +88,68 @@ const formatPrice = (price) => {
     setSelectedCategory('전체');
   };
 
-// 게시글 등록시 카테고리선택이 구현이 되면 setSelectedCategory에 카테고리 명을 적으면 됩니다
+  // 게시글 등록시 카테고리선택이 구현이 되면 setSelectedCategory에 카테고리 명을 적으면 됩니다
 
   return (
     <MainWrapper>
       <CategoryTitle>전체 카테고리</CategoryTitle>
       <CategoryButtonRow>
         <div>
-    <CategoryButton onClick={showAllPosts}>전체 게시글</CategoryButton>
-    <CategoryButton onClick={() => setSelectedCategory('DIGITAL')}>디지털 기기</CategoryButton>
-    <CategoryButton onClick={() => setSelectedCategory('가구/인테리어')}>가구/인테리어</CategoryButton>
-    <CategoryButton onClick={() => setSelectedCategory('의류')}>의류</CategoryButton>
-    <CategoryButton onClick={() => setSelectedCategory('생활가전')}>생활가전</CategoryButton>
-    <CategoryButton onClick={() => setSelectedCategory('생활/주방')}>생활/주방</CategoryButton>
-    </div>
-    </CategoryButtonRow>
-    <CategoryButtonRow>
-    <div>
-    <CategoryButton onClick={() => setSelectedCategory('스포츠/레저')}>스포츠/레저</CategoryButton>
-    <CategoryButton onClick={() => setSelectedCategory('자동차/공구')}>자동차/공구</CategoryButton>
-    <CategoryButton onClick={() => setSelectedCategory('BOOK')}>도서</CategoryButton>
-    <CategoryButton onClick={() => setSelectedCategory('뷰티/미용')}>뷰티/미용</CategoryButton>
-    <CategoryButton onClick={() => setSelectedCategory('반려동물용품')}>반려동물용품</CategoryButton>
-    <CategoryButton onClick={() => setSelectedCategory('ETC')}>기타</CategoryButton>
+          <CategoryButton onClick={showAllPosts}>전체 게시글</CategoryButton>
+          <CategoryButton onClick={() => setSelectedCategory('DIGITAL')}>디지털 기기</CategoryButton>
+          <CategoryButton onClick={() => setSelectedCategory('가구/인테리어')}>가구/인테리어</CategoryButton>
+          <CategoryButton onClick={() => setSelectedCategory('의류')}>의류</CategoryButton>
+          <CategoryButton onClick={() => setSelectedCategory('생활가전')}>생활가전</CategoryButton>
+          <CategoryButton onClick={() => setSelectedCategory('생활/주방')}>생활/주방</CategoryButton>
+        </div>
+      </CategoryButtonRow>
+      <CategoryButtonRow>
+        <div>
+          <CategoryButton onClick={() => setSelectedCategory('스포츠/레저')}>스포츠/레저</CategoryButton>
+          <CategoryButton onClick={() => setSelectedCategory('자동차/공구')}>자동차/공구</CategoryButton>
+          <CategoryButton onClick={() => setSelectedCategory('BOOK')}>도서</CategoryButton>
+          <CategoryButton onClick={() => setSelectedCategory('뷰티/미용')}>뷰티/미용</CategoryButton>
+          <CategoryButton onClick={() => setSelectedCategory('반려동물용품')}>반려동물용품</CategoryButton>
+          <CategoryButton onClick={() => setSelectedCategory('ETC')}>기타</CategoryButton>
         </div>
       </CategoryButtonRow>
       {/* <StyledImage src="/vintage-collection.jpg" alt="Vintage Collection" /> */}
       <Container>
-        {loading ? (
-          <p>Loading...</p>
-        ) : (
+        {(
           <Row>
             {filterPostsByCategory().map((post) => (
               <Col key={post.postid} md={3}>
-              <Link to={`/post/${post.postid}`}>
-                <Card>
-                {/* http://xflopvzfwqjk19996213.cdn.ntruss.com/article/2501df8f-e7a4-4f28-a15d-405d28fcb7dc?type=f&w=250&h=250 */}
-                  <CardImg
-                    src={`http://xflopvzfwqjk19996213.cdn.ntruss.com/article/${post.attachedFilesPaths[0].filePath}?type=f&w=250&h=250`}
-                    alt={'게시글 이미지'}
-                    className="card-img-top"
-                  />
-                  <CardBody>
-                      <CardTitle>{post.title}</CardTitle>
-                    <CardText><strong>{formatPrice(post.price)}원</strong></CardText>
-                  </CardBody>
-                </Card>
+                <Link to={`/post/${post.postid}`}>
+                  <Card>
+                    {/* http://xflopvzfwqjk19996213.cdn.ntruss.com/article/2501df8f-e7a4-4f28-a15d-405d28fcb7dc?type=f&w=250&h=250 */}
+                    <CardImg
+                      src={`http://xflopvzfwqjk19996213.cdn.ntruss.com/article/${post.attachedFilesPaths[0].filePath}?type=f&w=250&h=250`}
+                      alt={'게시글 이미지'}
+                      className="card-img-top"
+                    />
+                    <CardBody>
+                      <CardTitle>{post.postid}</CardTitle>
+                      <CardText><strong>{formatPrice(post.price)}원</strong></CardText>
+                    </CardBody>
+                  </Card>
+
                 </Link>
               </Col>
-            ))}
-          </Row>
+            ))
+            }
+
+          </Row >
         )}
-      </Container>
-    </MainWrapper>
+        <div ref={setTarget}>
+        </div>
+      </Container >
+    </MainWrapper >
   );
 }
 
 const MainWrapper = styled.main`
   width: 100%;
-  height: 100%;
+  height: 90%;
   overflow-y: auto;
   overflow-x: hidden;
   background-color: #f7f7f7;
