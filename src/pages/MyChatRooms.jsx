@@ -1,18 +1,31 @@
-import React, {useEffect, useState} from 'react';
+import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import styled from 'styled-components';
 import Storage from '../utils/localStorage';
 
-const MyChatRooms = ({onRoomSelect}) => {
+const MyChatRooms = ({ onRoomSelect }) => {
   const [chatRooms, setChatRooms] = useState([]);
+  const [images, setImages] = useState({});
   const userId = Storage.getUserId();
 
   useEffect(() => {
     const fetchChatRooms = async () => {
       try {
-        const response = await axios.get(
-            `http://localhost:8888/api/chatting/myChatRooms?userId=${userId}`);
+        const response = await axios.get(`http://localhost:8888/api/chatting/myChatRooms?userId=${userId}`);
         setChatRooms(response.data.chatRooms);
+
+        const validChatRooms = response.data.chatRooms.filter(room => room.postId !== 0);
+
+        const imagePromises = validChatRooms.map(room =>
+          axios.get(`http://localhost:8888/api/chatting/getFirstAttachment?postId=${room.postId}`)
+        );
+
+        const imageResponses = await Promise.all(imagePromises);
+        const tempImages = {};
+        validChatRooms.forEach((room, index) => {
+          tempImages[room.postId] = `http://xflopvzfwqjk19996213.cdn.ntruss.com/article/${imageResponses[index].data}?type=f&w=250&h=250`;
+        });
+        setImages(tempImages);
       } catch (error) {
         console.error("Failed to fetch chat rooms:", error);
       }
@@ -28,29 +41,39 @@ const MyChatRooms = ({onRoomSelect}) => {
     return room.sellerNickname;
   };
 
+  const formatTime = (dateString) => {
+    const date = new Date(dateString);
+    const month = date.getMonth() + 1;
+    const day = date.getDate();
+    const hours = date.getHours();
+    const minutes = date.getMinutes().toString().padStart(2, '0');
+    return `${month}월 ${day}일 ${hours}:${minutes}분`;
+  };
+
   const handleChatButtonClick = (roomId) => {
-    onRoomSelect(roomId);  // UUID형식이므로 유의할것
+    onRoomSelect(roomId);
   };
 
   return (
-      <ChatRoomsContainer>
-        <h3>전체대화</h3>
-        <ul>
-          {chatRooms.map((room) => (
-              <ChatRoomItem key={room.roomId}>
-                <div>
-                  {getCounterpartNickname(room)}{room.lastMessage}
-                </div>
-                <div>
-                  제목: {room.postTitle}
-                </div>
-                <ChatButton onClick={() => handleChatButtonClick(room.roomId)}>
-                  대화시작
-                </ChatButton>
-              </ChatRoomItem>
-          ))}
-        </ul>
-      </ChatRoomsContainer>
+    <ChatRoomsContainer>
+      <h3>전체대화</h3>
+      <ul>
+        {chatRooms.map((room) => (
+          <ChatRoomItem key={room.roomId}>
+            <ChatRoomImage src={images[room.postId]} alt="게시글 이미지" />
+            <ChatRoomContent>
+              <ChatRoomName>{getCounterpartNickname(room)}</ChatRoomName>
+              <MessageTitle>제목: {room.postTitle}</MessageTitle>
+              <LastMessage>최근대화: {room.lastMessage?.length > 13 ? room.lastMessage.slice(0, 13) + '...' : room.lastMessage}</LastMessage>
+              <DateText>{formatTime(room.lastUpdated)}</DateText>
+            </ChatRoomContent>
+            <ChatButton onClick={() => handleChatButtonClick(room.roomId)}>
+              대화<br />시작
+            </ChatButton>
+          </ChatRoomItem>
+        ))}
+      </ul>
+    </ChatRoomsContainer>
   );
 };
 
@@ -62,9 +85,11 @@ const ChatRoomsContainer = styled.div`
   background-color: #f8f9fa;
   border: 1px solid #c0c0c0;
   overflow-y: auto;
+  border-radius: 5px;
+
+  font-family: 'Noto Sans KR', sans-serif;
 
   h3 {
-    font-family: 'Arial', sans-serif;
     font-size: 24px;
     font-weight: bold;
     color: #333;
@@ -92,11 +117,26 @@ const ChatRoomsContainer = styled.div`
 `;
 
 const ChatRoomItem = styled.li`
+  display: flex;
+  align-items: center;
   margin-bottom: 20px;
   background-color: white;
   border: 1px solid #c0c0c0;
-  padding: 10px 20px;
+  padding: 15px;
   border-radius: 10px;
+`;
+
+const ChatRoomContent = styled.div`
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  padding-left: 20px;
+`;
+
+const ChatRoomName = styled.div`
+  font-size: 18px;
+  font-weight: bold;
+  margin-bottom: 5px;  // 간격 줄임
 `;
 
 const ChatButton = styled.button`
@@ -106,7 +146,37 @@ const ChatButton = styled.button`
   border: none;
   border-radius: 5px;
   cursor: pointer;
-  margin-top: 10px;
+  width: 60px;
+  height: 60px;
+  text-align: center;
+  font-size: 14px;
+  line-height: 1.2;
+`;
+
+const MessageTitle = styled.div`
+  font-size: 16px;
+  font-weight: normal;  // 폰트 굵기를 일반으로 변경
+  margin-bottom: 5px;  // 간격 늘림
+`;
+
+const LastMessage = styled.span`
+  font-size: 14px;
+  color: #777;
+  display: block;
+  margin-bottom: 5px;
+`;
+
+const DateText = styled.span`
+  font-size: 14px;
+  color: #777;
+`;
+
+const ChatRoomImage = styled.img`
+  width: 80px;
+  height: 80px;
+  object-fit: cover;
+  margin-right: 10px;
+  border-radius: 5px;
 `;
 
 export default MyChatRooms;
