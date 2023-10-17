@@ -3,6 +3,11 @@ import styled from 'styled-components';
 import { Client } from '@stomp/stompjs';
 import SockJS from 'sockjs-client';
 import Storage from '../utils/localStorage';
+import Axios from '../utils/api/axios';
+import QUERY from '../constants/query';
+import ROUTER from '../constants/router';
+
+const axios = new Axios(QUERY.AXIOS_PATH.SEVER);
 
 function ChatRoom({ roomId }) {
   const [messages, setMessages] = useState([]);
@@ -40,13 +45,15 @@ function ChatRoom({ roomId }) {
           ]);
         });
       });
-
-      fetch(`http://localhost:8888/api/chatting/message/${roomId}`)
+      axios.get(`/api/chatting/message/${roomId}`)
         .then((response) => response.json())
         .then((data) => {
           setMessages(data);
         })
         .catch((error) => {
+          if (error.response.status == 401) {
+            navigator(ROUTER.PATH.LOGIN)
+          }
           console.error('Error fetching old messages:', error);
         });
     };
@@ -177,7 +184,7 @@ const MessageBubble = styled.div.withConfig({
   margin-bottom: 10px;
   background-color: ${props => props.sender ? '#73aace' : '#7c7979'};
   border-radius: ${props => props.sender ? '10px 10px 10px 0'
-          : '10px 10px 0 10px'};
+    : '10px 10px 0 10px'};
   align-self: ${props => props.sender ? 'flex-end' : 'flex-start'};
   color: #ffffff;
   display: inline-block;

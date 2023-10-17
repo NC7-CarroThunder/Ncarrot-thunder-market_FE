@@ -1,7 +1,12 @@
 import React, { useEffect, useState } from 'react';
-import axios from 'axios';
+import Axios from '../utils/api/axios';
+import QUERY from '../constants/query';
 import styled from 'styled-components';
 import Storage from '../utils/localStorage';
+import ROUTER from '../constants/router';
+
+const axios = new Axios(QUERY.AXIOS_PATH.SEVER);
+
 
 const MyChatRooms = ({ onRoomSelect }) => {
   const [chatRooms, setChatRooms] = useState([]);
@@ -11,13 +16,13 @@ const MyChatRooms = ({ onRoomSelect }) => {
   useEffect(() => {
     const fetchChatRooms = async () => {
       try {
-        const response = await axios.get(`http://localhost:8888/api/chatting/myChatRooms?userId=${userId}`);
+        const response = await axios.get(`/api/chatting/myChatRooms?userId=${userId}`);
         setChatRooms(response.data.chatRooms);
 
         const validChatRooms = response.data.chatRooms.filter(room => room.postId !== 0);
 
         const imagePromises = validChatRooms.map(room =>
-          axios.get(`http://localhost:8888/api/chatting/getFirstAttachment?postId=${room.postId}`)
+          axios.get(`/api/chatting/getFirstAttachment?postId=${room.postId}`)
         );
 
         const imageResponses = await Promise.all(imagePromises);
@@ -27,6 +32,9 @@ const MyChatRooms = ({ onRoomSelect }) => {
         });
         setImages(tempImages);
       } catch (error) {
+        if (error.response.status == 401) {
+          navigator(ROUTER.PATH.LOGIN)
+        }
         console.error("Failed to fetch chat rooms:", error);
       }
     };

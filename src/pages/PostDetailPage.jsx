@@ -6,6 +6,9 @@ import Storage from '../utils/localStorage';
 import ROUTER from '../constants/router';
 import ImageSlider from '../components/ImageSlider';
 import QUERY from '../constants/query';
+import Axios from '../utils/api/axios';
+
+const axiosForLoginUser = new Axios(QUERY.AXIOS_PATH.SEVER);
 
 export default function PostDetailPage() {
   const { postId } = useParams();
@@ -33,7 +36,7 @@ export default function PostDetailPage() {
     try {
       const currentUserId = Storage.getUserId();
       console.log("게시글 작성자 ID:", post.userid);
-      const response = await axios.get(`http://localhost:8888/api/chatting/createOrGetChatRoom`, {
+      const response = await axiosForLoginUser.get(`/api/chatting/createOrGetChatRoom`, {
         params: {
           sellerId: post.userid,
           currentUserId: currentUserId,
@@ -50,6 +53,9 @@ export default function PostDetailPage() {
         console.error('채팅방 생성에 실패했습니다.');
       }
     } catch (error) {
+      if (error.response.status == 401) {
+        navigate(ROUTER.PATH.LOGIN);
+      }
       console.error('Error creating or accessing the chat room:', error);
     }
   };
