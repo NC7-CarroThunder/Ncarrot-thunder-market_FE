@@ -2,76 +2,128 @@ import React from 'react';
 import styled from 'styled-components';
 import { useNavigate } from 'react-router-dom';
 import ROUTER from '../constants/router';
+import { useState } from 'react';
+import Storage from '../utils/localStorage';
 
 export default function MyPage() {
+  const [isModalOpen, setModalOpen] = useState(false);
+  const [amount, setAmount] = useState('');
   const navigate = useNavigate();
 
+
+  //결제관련 
+  const openModal = () => {
+    setModalOpen(true);
+  };
+
+  const closeModal = () => {
+    setModalOpen(false);
+  };
+
+  const handlePayment = () => {
+    // 실제 충전 로직을 처리하는 부분
+    if (amount) {
+      Storage.setAmount(amount);
+      navigate(ROUTER.PATH.PAYMENT)
+    } else {
+      alert('충전할 금액을 입력해주세요.');
+    }
+  };
+
   const handleChatButtonClick = () => {
-      navigate(ROUTER.PATH.CHATTING);
+    navigate(ROUTER.PATH.CHATTING);
   };
 
   const handleProfileEditClick = () => {
-    navigate(ROUTER.PATH.PROFILE_EDIT); 
-};
+    navigate(ROUTER.PATH.PROFILE_EDIT);
+  };
 
-const handleFollowListClick = () => {
-  navigate(ROUTER.PATH.FOLLOW_LIST);
-};
+  const handleFollowListClick = () => {
+    navigate(ROUTER.PATH.FOLLOW_LIST);
+  };
 
-const Profile = ({ onProfileEditClick }) => (
-  <ProfileContainer>
-    <ProfileImage src="/profile.jpg" alt="프로필 이미지" />
-    <div>
-      <NickName>사용자 닉네임</NickName>
-    </div>
-    <ProfileButton onClick={onProfileEditClick}>프로필 편집</ProfileButton>
-  </ProfileContainer>
-);
+  const Profile = ({ onProfileEditClick }) => (
+    <ProfileContainer>
+      <ProfileImage src="/profile.jpg" alt="프로필 이미지" />
+      <div>
+        <NickName>사용자 닉네임</NickName>
+      </div>
+      <ProfileButton onClick={onProfileEditClick}>프로필 편집</ProfileButton>
+    </ProfileContainer>
+  );
 
-const AdditionalInfo = () => (
-  <AdditionalInfoContainer>
-    <p>당근번개 페이 잔액: 100,000원</p>
-    <ButtonContainer>
-      <Button>충전</Button>
-      <Button>환전</Button>
-    </ButtonContainer>
-  </AdditionalInfoContainer>
-);
+  const AdditionalInfo = () => (
+    <AdditionalInfoContainer>
+      <p>당근번개 페이 잔액: 100,000원</p>
+      <ButtonContainer>
+        <Button onClick={openModal}>충전</Button>
+        <Button>환전</Button>
+      </ButtonContainer>
+    </AdditionalInfoContainer>
+  );
 
-const InterestAndReviews = () => (
-  <InterestAndReviewsContainer>
-    <div>
-      <h3>나의 거래</h3>
-      <h3><ThinText>내 게시글</ThinText></h3>
-      <h3><ThinText>관심 목록</ThinText></h3>
-      <h3><ThinText>거래 후기</ThinText></h3>
-    </div>
-  </InterestAndReviewsContainer>
-);
+  const InterestAndReviews = () => (
+    <InterestAndReviewsContainer>
+      <div>
+        <h3>나의 거래</h3>
+        <h3><ThinText>내 게시글</ThinText></h3>
+        <h3><ThinText>관심 목록</ThinText></h3>
+        <h3><ThinText>거래 후기</ThinText></h3>
+      </div>
+    </InterestAndReviewsContainer>
+  );
 
-const FollowAndNotifications = () => (
-  <FollowAndNotificationsContainer>
-    <div>
-      <h3>기타</h3>
-      <h3 onClick={handleFollowListClick}><ThinText>팔로우 관리</ThinText></h3>
-      <h3><ThinText>알림 설정</ThinText></h3>
-    </div>
-  </FollowAndNotificationsContainer>
-);
+  const FollowAndNotifications = () => (
+    <FollowAndNotificationsContainer>
+      <div>
+        <h3>기타</h3>
+        <h3 onClick={handleFollowListClick}><ThinText>팔로우 관리</ThinText></h3>
+        <h3><ThinText>알림 설정</ThinText></h3>
+      </div>
+    </FollowAndNotificationsContainer>
+  );
 
-return (
-  <MyPageContainer>
-    <ContentContainer>
-      <Profile onProfileEditClick={handleProfileEditClick} />
-      <AdditionalInfo />
-      <Separator />
-      <InterestAndReviews />
-      <Separator />
-      <FollowAndNotifications />
-      <ChatButton onClick={handleChatButtonClick}>캐럿톡</ChatButton>
+  return (
+    <MyPageContainer>
+      <ContentContainer>
+        <Profile onProfileEditClick={handleProfileEditClick} />
+        <AdditionalInfo />
+        <Separator />
+        <InterestAndReviews />
+        <Separator />
+        <FollowAndNotifications />
+        <ChatButton onClick={handleChatButtonClick}>캐럿톡</ChatButton>
       </ContentContainer>
-  </MyPageContainer>
-);
+      {isModalOpen && (
+        <div style={modalOverlayStyle}>
+          <div style={modalStyle}>
+            <span style={closeBtnStyle} onClick={closeModal}>&times;</span>
+            <h2>충전 금액 입력</h2>
+            <form>
+              <label>
+                충전 금액:
+                <input
+                  type="number"
+                  placeholder="충전 금액을 입력하세요"
+                  value={amount}
+                  onChange={(e) => setAmount(e.target.value)}
+                  style={inputStyle}
+                />
+              </label>
+              <button
+                type="button"
+                onClick={handlePayment}
+                style={buttonStyle}
+              >
+                충전
+              </button>
+            </form>
+          </div>
+        </div>
+      )}
+    </MyPageContainer>
+
+  );
 }
 
 const MyPageContainer = styled.div`
@@ -181,3 +233,49 @@ const Separator = styled.hr`
   background-color: black;
   margin: 20px auto;
 `;
+
+
+/// 모달 관련 css 설정
+
+const modalOverlayStyle = {
+  position: 'fixed',
+  top: 0,
+  left: 0,
+  width: '100%',
+  height: '100%',
+  background: 'rgba(0, 0, 0, 0.5)',
+  display: 'flex',
+  justifyContent: 'center',
+  alignItems: 'center',
+};
+
+const modalStyle = {
+  background: 'white',
+  padding: '20px',
+  borderRadius: '8px',
+  boxShadow: '0 0 10px rgba(0, 0, 0, 0.1)',
+};
+
+const closeBtnStyle = {
+  position: 'absolute',
+  top: '10px',
+  right: '10px',
+  fontSize: '20px',
+  cursor: 'pointer',
+};
+
+const inputStyle = {
+  padding: '8px',
+  marginTop: '5px',
+  border: '1px solid #ccc',
+  borderRadius: '4px',
+};
+
+const buttonStyle = {
+  background: '#007BFF',
+  color: 'white',
+  padding: '10px',
+  border: 'none',
+  borderRadius: '4px',
+  cursor: 'pointer',
+};

@@ -23,6 +23,33 @@ const Storage = {
   getUserId() {
     return window.localStorage.getItem('userId');
   },
+
+  setPoint(point) {
+    removeLocalStorage('point');
+    setlocalStorage('point', point);
+  },
+
+  removePoint() {
+    removeLocalStorage('point');
+  },
+
+  getPoint() {
+    return window.localStorage.getItem('point');
+  },
+
+  setAmount(mount) {
+    removeLocalStorage('mount');
+    setlocalStorage('mount', mount);
+  },
+
+  removeAmount() {
+    removeLocalStorage('mount');
+  },
+
+  getAmount() {
+    return window.localStorage.getItem('mount');
+  },
+
 };
 
 function setlocalStorage(key, value) {
