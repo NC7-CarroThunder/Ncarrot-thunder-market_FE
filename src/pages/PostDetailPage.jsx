@@ -24,7 +24,8 @@ export default function PostDetailPage() {
     async function fetchPostDetails() {
       try {
         const response = await axios.get(
-            `${QUERY.AXIOS_PATH.SEVER}/api/posts/${postId}`);
+            `${QUERY.AXIOS_PATH.SEVER}/api/posts/${postId}`
+        );
         console.log(response.data.result);
         setPost(response.data.result);
         setLoading(false);
@@ -45,24 +46,26 @@ export default function PostDetailPage() {
   const handleChatButtonClick = async () => {
     try {
       const currentUserId = Storage.getUserId();
-      console.log("게시글 작성자 ID:", post.userid);
+      console.log('게시글 작성자 ID:', post.userid);
       const response = await axios.get(
-          `http://localhost:8888/api/chatting/createOrGetChatRoom`, {
+          `http://localhost:8888/api/chatting/createOrGetChatRoom`,
+          {
             params: {
               sellerId: post.userid,
               currentUserId: currentUserId,
-              postId: post.postId
-            }
-          });
+              postId: post.postId,
+            },
+          }
+      );
 
-      const roomId = response.data.roomId;
-      if (roomId) {
-        setTimeout(() => {
+      setTimeout(async () => {
+        const roomId = response.data.roomId;
+        if (roomId) {
           navigate(ROUTER.PATH.CHATTING);
-        }, 300);
-      } else {
-        console.error('채팅방 생성에 실패했습니다.');
-      }
+        } else {
+          console.error('채팅방 생성에 실패했습니다.');
+        }
+      },);
     } catch (error) {
       console.error('Error creating or accessing the chat room:', error);
     }
@@ -86,8 +89,8 @@ export default function PostDetailPage() {
   };
 
   const currentUserId = Storage.getUserId();
-  console.log("현재 사용자 ID:", currentUserId);
-  console.log("게시글 작성자 ID:", post.userid);
+  console.log('현재 사용자 ID:', currentUserId);
+  console.log('게시글 작성자 ID:', post.userid);
 
   const formatPrice = (price) => {
     return price.toLocaleString('en-US');
@@ -105,8 +108,9 @@ export default function PostDetailPage() {
                 </ImageContainer>
                 <PostInfoContainer>
                   <h1>{post.title}</h1>
-                  <CardText><strong>{formatPrice(
-                      post.price)}원</strong></CardText>
+                  <CardText>
+                    <strong>{formatPrice(post.price)}원</strong>
+                  </CardText>
                   <ContentContainer>
                     <CardDescription>{post.content}</CardDescription>
                   </ContentContainer>
@@ -114,14 +118,45 @@ export default function PostDetailPage() {
                   <CardText>카테고리 {post.itemCategory}</CardText>
                   {Number(post.userid) !== Number(currentUserId) && (
                       <ButtonWrapper>
-                        <LikeButton onClick={handleWishlistButtonClick}
-                                    isLiked={isLiked}>
-                          <HeartIcon isLiked={isLiked}
-                                     icon={isLiked ? solidHeart
-                                         : regularHeart}/>
-                        </LikeButton>
-                        <ChatButton
-                            onClick={handleChatButtonClick}>캐럿톡</ChatButton>
+                        {post.dealingType === 'FOR_PAY' && (
+                            <>
+                              <LikeButton onClick={handleWishlistButtonClick}
+                                          isLiked={isLiked}>
+                                <HeartIcon isLiked={isLiked}
+                                           icon={isLiked ? solidHeart
+                                               : regularHeart}/>
+                              </LikeButton>
+                              <ChatButton
+                                  onClick={handleChatButtonClick}>캐럿톡</ChatButton>
+                              <SafePaymentButton>안전결제하기</SafePaymentButton>
+                            </>
+                        )}
+                        {post.dealingType === 'WITHPERSONAL' && (
+                            <>
+                              <LikeButton onClick={handleWishlistButtonClick}
+                                          isLiked={isLiked}>
+                                <HeartIcon isLiked={isLiked}
+                                           icon={isLiked ? solidHeart
+                                               : regularHeart}/>
+                              </LikeButton>
+                              <ChatButton
+                                  onClick={handleChatButtonClick}>캐럿톡</ChatButton>
+                            </>
+                        )}
+                        {post.dealingType === 'FOR_FREE' && (
+                            <>
+                              <LikeButton onClick={handleWishlistButtonClick}
+                                          isLiked={isLiked}>
+                                <HeartIcon isLiked={isLiked}
+                                           icon={isLiked ? solidHeart
+                                               : regularHeart}/>
+                              </LikeButton>
+                              <FreeShareText>나눔</FreeShareText>
+                              <CarrotEmoji>🥕</CarrotEmoji>
+                              <ChatButton
+                                  onClick={handleChatButtonClick}>캐럿톡</ChatButton>
+                            </>
+                        )}
                       </ButtonWrapper>
                   )}
                 </PostInfoContainer>
@@ -197,10 +232,19 @@ const ChatButton = styled.button`
   }
 `;
 
+const SafePaymentButton = styled(ChatButton)`
+  background-color: #4caf50;
+  margin-right: 10px;
+
+  &:hover {
+    background-color: #45a049;
+  }
+`;
+
 const ButtonWrapper = styled.div`
   display: flex;
   align-items: center;
-  gap: 16px; /* 원하는 간격으로 조절하세요 */
+  gap: 16px;
 `;
 
 const LikeButton = styled.button`
@@ -219,5 +263,15 @@ const LikeButton = styled.button`
 
 const HeartIcon = styled(FontAwesomeIcon)`
   font-size: 24px;
-  color: ${props => (props.isLiked ? '#ff4d4f' : '#000')};
+  color: ${(props) => (props.isLiked ? '#ff4d4f' : '#000')};
+`;
+
+const FreeShareText = styled.span`
+  font-size: 18px;
+  color: #ff4d4f;
+`;
+
+const CarrotEmoji = styled.span`
+  font-size: 27px;
+  margin-left: -17px;
 `;

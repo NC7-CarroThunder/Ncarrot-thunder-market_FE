@@ -54,7 +54,7 @@ const ChatRoomContainer = styled.div`
   border-left: 1px solid #c0c0c0;
   overflow-y: hidden;
   border-radius: 5px;
-  border: 1px solid rgba(128, 128, 128, 0.2);  // 연한 회색 테두리 추가
+  border: 1px solid rgba(128, 128, 128, 0.2); // 연한 회색 테두리 추가
 `;
 
 const MyChatRoomsContainer = styled.div`
@@ -64,7 +64,7 @@ const MyChatRoomsContainer = styled.div`
   border-right: 1px solid #c0c0c0;
   overflow-y: hidden;
   border-radius: 5px;
-  border: 1px solid rgba(128, 128, 128, 0.2);  // 연한 회색 테두리 추가
+  border: 1px solid rgba(128, 128, 128, 0.2); // 연한 회색 테두리 추가
 `;
 
 const PlaceholderContainer = styled.div`
