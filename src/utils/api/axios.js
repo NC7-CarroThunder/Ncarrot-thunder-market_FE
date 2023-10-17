@@ -1,8 +1,11 @@
 import axios from 'axios';
 import QUERY from '../../constants/query';
-import { getCookie, setCookie } from '../cookie';
+import { getCookie, setCookie, removeCookie } from '../cookie';
 import jwt_decode from 'jwt-decode';
 import Storage from '../localStorage';
+import { useNavigate } from "react-router-dom";
+import ROUTER from '../../constants/router';
+
 
 export default class Axios {
   constructor(url) {
@@ -15,7 +18,7 @@ export default class Axios {
     this.instance.interceptors.response.use(
       response => {
         const token = response.headers.authorization;
-        console.log("api"  + token);
+        console.log("api" + token);
         if (token) {
           const [, parseToken] = token.split(' ');
           setCookie(QUERY.COOKIE.COOKIE_NAME, parseToken);
@@ -24,10 +27,19 @@ export default class Axios {
           Storage.setNickName(nickname.nickname);
           Storage.setUserId(nickname.userId);
         }
+
         return response;
       },
       error => {
-        alert(error.response.data.result);
+        //토큰 인증 실패일 경우, 현재 적용된 토큰 제거후, 로그인 페이지로 이동시킨다.
+        console.log(error.response.status);
+        if (error.response.status == 401) {
+          alert("토큰 인증에 실패했습니다.\n 로그인 화면으로 이동합니다.");
+          removeCookie(QUERY.COOKIE.COOKIE_NAME);
+          Storage.removeNickName();
+          Storage.removeUserId();
+        }
+
         return Promise.reject(error);
       }
     );

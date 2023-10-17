@@ -122,7 +122,6 @@ export default function MainPage() {
           <CategoryButton onClick={() => setSelectedCategory('ETC')}>기타</CategoryButton>
         </div>
       </CategoryButtonRow>
-      {/* <StyledImage src="/vintage-collection.jpg" alt="Vintage Collection" /> */}
       <Container>
         {posts.length === 0 ? (
           <p>조건에 만족하는 게시물이 존재하지 않습니다.</p>
@@ -138,7 +137,7 @@ export default function MainPage() {
                       className="card-img-top"
                     />
                     <CardBody>
-                      <CardTitle>{post.postid}</CardTitle>
+                      <CardTitle>{post.title}</CardTitle>
                       <CardText><strong>{formatPrice(post.price)}원</strong></CardText>
                     </CardBody>
                   </Card>
