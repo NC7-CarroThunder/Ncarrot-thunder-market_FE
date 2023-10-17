@@ -17,8 +17,9 @@ import PostDetail from './pages/PostDetailPage';
 import ChatRoom from './pages/ChatRoom';
 import MyChatRooms from './pages/MyChatRooms';
 import ChattingPage from './pages/ChattingPage'; 
-import ProfileEdit from './pages/ProfileEdit';
+import ProfileEditPage from './pages/ProfileEditPage';
 import FollowList from './pages/FollowList';
+
 
 const queryClient = new QueryClient();
 
@@ -66,7 +67,7 @@ const router = createBrowserRouter([
       },
       {
         path: ROUTER.PATH.PROFILE_EDIT,
-        element: <ProfileEdit />,
+        element: <ProfileEditPage />,
       },
       {
         path: ROUTER.PATH.FOLLOW_LIST,
@@ -89,6 +90,5 @@ const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <QueryClientProvider client={queryClient}>
     <RouterProvider router={router} />
-    <ReactQueryDevtools initialIsOpen={true} />
   </QueryClientProvider>
 );
