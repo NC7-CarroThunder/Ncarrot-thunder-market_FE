@@ -5,101 +5,161 @@ import { Link } from 'react-router-dom';
 import QUERY from '../constants/query';
 
 export default function MainPage() {
+  const [target, setTarget] = useState(null);
   const [posts, setPosts] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [selectedCategory, setSelectedCategory] = useState('전체');
+  const [pageNo, setpageNo] = useState(0);
+  const [selectedCategory, setSelectedCategory] = useState(null);
+  const [stop, setStop] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [isEmptyPost, setIsEmptyPost] = useState(false);
 
-const formatPrice = (price) => {
-  return price.toLocaleString('en-US');
-};
 
-  useEffect(() => {
-    async function fetchPosts() {
+  async function fetchPosts(page, isStop) {
+    if (!isStop) {
       try {
-        const response = await axios.get(`${QUERY.AXIOS_PATH.SEVER}${QUERY.AXIOS_PATH.POSTLIST}`);
-        setPosts(response.data.result);
-        setLoading(false);
+        //console.log("서버 요청하기전 데이터값  " + pageNo + "   " + selectedCategory)
+        const response = await axios.get(`${QUERY.AXIOS_PATH.SEVER}${QUERY.AXIOS_PATH.POSTLIST}?pageNo=${page}&category=${selectedCategory == null ? "TOTAL" : selectedCategory}`);
+        posts.concat(response.data.result);
+        // console.log("데이터확인중 ----------------------------");
+        // console.log(response.data.result);
+        if (response.data.result) {
+          setIsEmptyPost(false);
+          if (response.data.result.length < 8) {
+            setStop(true);
+          }
+          setPosts((posts) => posts.concat(response.data.result));
+
+        } else {
+          setIsEmptyPost(true);
+        }
+
       } catch (error) {
         console.error('Error fetching posts:', error);
-        setLoading(false);
       }
     }
+  }
 
-    fetchPosts();
-  }, []);
 
-  const filterPostsByCategory = () => {
-    if (selectedCategory === '전체') {
-      return posts;
-    } else {
-      return posts.filter((post) => post.itemCategory === selectedCategory);
+
+  //--------------------무한스크롤링 세팅
+  //  1. 감시에 들어올 시, 로딩 true로 설정
+  //  2. 로딩 true 설정시, page 를 + 1한다.
+  //  3. page 설정시, 서버에 요청해서 값 업데이트를 한다.
+  //  4. posts 업데이트시, 다시 로딩을 false로 설정한다.
+
+
+  useEffect(() => {
+    if (pageNo > 0) {
+      fetchPosts(pageNo, stop);
+    }
+  }, [pageNo]);
+
+
+  const callback = () => {
+    if (!stop) {
+      //console.log("감시했음   " + pageNo);
+      setpageNo((prevPageNo) => prevPageNo + 1);
     }
   };
 
-  const showAllPosts = () => {
-    setSelectedCategory('전체');
+  useEffect(() => {
+    // console.log("카테고리 갱신시 요구되는값 :  false   null   0아님   false");
+    // console.log("카테고리 갱신 " + stop + "  " + posts + "  " + pageNo + "  " + loading);
+    setStop((prevStop) => prevStop ? false : false);
+    setPosts((posts) => []);
+    if (pageNo != 1) {
+      setpageNo((prevPageNo) => prevPageNo - prevPageNo + 1);
+    } else {
+      fetchPosts(1, false);
+    }
+
+  }, [selectedCategory]);
+
+  //-------------------------------------------------
+
+  useEffect(() => {
+
+    let observer;
+    if (target) {
+      console.log("무한스크롤 세팅");
+      observer = new IntersectionObserver(callback);
+      observer.observe(target);
+    }
+    return () => observer && observer.disconnect();
+  }, [target]);
+
+  const formatPrice = (price) => {
+    return price.toLocaleString('en-US');
   };
 
-// 게시글 등록시 카테고리선택이 구현이 되면 setSelectedCategory에 카테고리 명을 적으면 됩니다
+
+  const showAllPosts = () => {
+    setSelectedCategory('TOTAL');
+  };
+
+  // 게시글 등록시 카테고리선택이 구현이 되면 setSelectedCategory에 카테고리 명을 적으면 됩니다
 
   return (
     <MainWrapper>
       <CategoryTitle>전체 카테고리</CategoryTitle>
       <CategoryButtonRow>
         <div>
-    <CategoryButton onClick={showAllPosts}>전체 게시글</CategoryButton>
-    <CategoryButton onClick={() => setSelectedCategory('DIGITAL')}>디지털 기기</CategoryButton>
-    <CategoryButton onClick={() => setSelectedCategory('가구/인테리어')}>가구/인테리어</CategoryButton>
-    <CategoryButton onClick={() => setSelectedCategory('의류')}>의류</CategoryButton>
-    <CategoryButton onClick={() => setSelectedCategory('생활가전')}>생활가전</CategoryButton>
-    <CategoryButton onClick={() => setSelectedCategory('생활/주방')}>생활/주방</CategoryButton>
-    </div>
-    </CategoryButtonRow>
-    <CategoryButtonRow>
-    <div>
-    <CategoryButton onClick={() => setSelectedCategory('스포츠/레저')}>스포츠/레저</CategoryButton>
-    <CategoryButton onClick={() => setSelectedCategory('자동차/공구')}>자동차/공구</CategoryButton>
-    <CategoryButton onClick={() => setSelectedCategory('BOOK')}>도서</CategoryButton>
-    <CategoryButton onClick={() => setSelectedCategory('뷰티/미용')}>뷰티/미용</CategoryButton>
-    <CategoryButton onClick={() => setSelectedCategory('반려동물용품')}>반려동물용품</CategoryButton>
-    <CategoryButton onClick={() => setSelectedCategory('ETC')}>기타</CategoryButton>
+          <CategoryButton onClick={showAllPosts}>전체 게시글</CategoryButton>
+          <CategoryButton onClick={() => setSelectedCategory('DIGITAL')}>디지털 기기</CategoryButton>
+          <CategoryButton onClick={() => setSelectedCategory('FURNITURE_INTERIOR')}>가구/인테리어</CategoryButton>
+          <CategoryButton onClick={() => setSelectedCategory('CLOTHING')}>의류</CategoryButton>
+          <CategoryButton onClick={() => setSelectedCategory('APPLIANCES')}>생활가전</CategoryButton>
+          <CategoryButton onClick={() => setSelectedCategory('KITCHENWARE')}>생활/주방</CategoryButton>
+        </div>
+      </CategoryButtonRow>
+      <CategoryButtonRow>
+        <div>
+          <CategoryButton onClick={() => setSelectedCategory('SPORTS_LEISURE')}>스포츠/레저</CategoryButton>
+          <CategoryButton onClick={() => setSelectedCategory('CAR_TOOLS')}>자동차/공구</CategoryButton>
+          <CategoryButton onClick={() => setSelectedCategory('BOOK')}>도서</CategoryButton>
+          <CategoryButton onClick={() => setSelectedCategory('BEAUTY_COSMETIC')}>뷰티/미용</CategoryButton>
+          <CategoryButton onClick={() => setSelectedCategory('PET')}>반려동물용품</CategoryButton>
+          <CategoryButton onClick={() => setSelectedCategory('ETC')}>기타</CategoryButton>
         </div>
       </CategoryButtonRow>
       {/* <StyledImage src="/vintage-collection.jpg" alt="Vintage Collection" /> */}
       <Container>
-        {loading ? (
-          <p>Loading...</p>
+        {posts.length === 0 ? (
+          <p>조건에 만족하는 게시물이 존재하지 않습니다.</p>
         ) : (
           <Row>
-            {filterPostsByCategory().map((post) => (
+            {posts.map((post) => (
               <Col key={post.postid} md={3}>
-              <Link to={`/post/${post.postid}`}>
-                <Card>
-                {/* http://xflopvzfwqjk19996213.cdn.ntruss.com/article/2501df8f-e7a4-4f28-a15d-405d28fcb7dc?type=f&w=250&h=250 */}
-                  <CardImg
-                    src={`http://xflopvzfwqjk19996213.cdn.ntruss.com/article/${post.attachedFilesPaths[0].filePath}?type=f&w=250&h=250`}
-                    alt={'게시글 이미지'}
-                    className="card-img-top"
-                  />
-                  <CardBody>
-                      <CardTitle>{post.title}</CardTitle>
-                    <CardText><strong>{formatPrice(post.price)}원</strong></CardText>
-                    {/* <CardText>Address: {post.address}</CardText> 게시글 주소 */}
-                  </CardBody>
-                </Card>
+                <Link to={`/post/${post.postid}`}>
+                  <Card>
+                    <CardImg
+                      src={`http://xflopvzfwqjk19996213.cdn.ntruss.com/article/${post.attachedFilesPaths[0].filePath}?type=f&w=250&h=250`}
+                      alt={'게시글 이미지'}
+                      className="card-img-top"
+                    />
+                    <CardBody>
+                      <CardTitle>{post.postid}</CardTitle>
+                      <CardText><strong>{formatPrice(post.price)}원</strong></CardText>
+                    </CardBody>
+                  </Card>
+
                 </Link>
               </Col>
-            ))}
-          </Row>
+            ))
+            }
+
+          </Row >
         )}
-      </Container>
-    </MainWrapper>
+        <div ref={setTarget}>
+        </div>
+      </Container >
+    </MainWrapper >
   );
 }
 
 const MainWrapper = styled.main`
   width: 100%;
-  height: 100%;
+  height: 90%;
   overflow-y: auto;
   overflow-x: hidden;
   background-color: #f7f7f7;
@@ -122,13 +182,6 @@ const CategoryButtonRow = styled.div`
   margin-top: 30px;
   margin-bottom: 10px;
 `;
-
-// const StyledImage = styled.img`
-//   width: 180px;
-//   height: 180px;
-//   object-fit: cover;
-//   margin: 20px 0;
-// `;
 
 const CategoryButton = styled.button`
   width: 7rem;
@@ -166,9 +219,14 @@ const CardBody = styled.div`
   padding: 10px;
 `;
 
-const CardTitle = styled.text`
+const CardTitle = styled.div`
   font-size: 16px;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  width: 100%;
 `;
+
 
 const CardText = styled.p`
   font-size: 16px;

@@ -1,19 +1,19 @@
-import React, {useEffect, useRef, useState} from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
-import {Client} from '@stomp/stompjs';
+import { Client } from '@stomp/stompjs';
 import SockJS from 'sockjs-client';
 import Storage from '../utils/localStorage';
 
-function ChatRoom({roomId}) {
+function ChatRoom({ roomId }) {
   const [messages, setMessages] = useState([]);
   const [inputValue, setInputValue] = useState('');
+  const [targetLang, setTargetLang] = useState('ko'); // 초기값을 한국어로 설정
   const stompClient = useRef(null);
   const messagesEndRef = useRef(null);
 
   useEffect(() => {
     setMessages([]);
-    const socket = new SockJS('http://localhost:8888/api/chatting-websocket',
-        [], {withCredentials: true});
+    const socket = new SockJS('http://localhost:8888/api/chatting-websocket', [], { withCredentials: true });
     const userId = Storage.getUserId();
 
     stompClient.current = new Client({
@@ -22,8 +22,8 @@ function ChatRoom({roomId}) {
       heartbeatIncoming: 4000,
       heartbeatOutgoing: 4000,
       connectHeaders: {
-        userId: userId
-      }
+        userId: userId,
+      },
     });
 
     stompClient.current.onConnect = (frame) => {
@@ -31,18 +31,24 @@ function ChatRoom({roomId}) {
       console.error('Broker reported error: ' + frame.headers['message']);
       console.error('Additional details: ' + frame.body);
       stompClient.current.subscribe(`/topic/messages/${roomId}`, (message) => {
-        setMessages(
-            (prevMessages) => [...prevMessages, JSON.parse(message.body)]);
+        const parsedMessage = JSON.parse(message.body);
+        // 수정: 백엔드로 번역 요청
+        translateMessage(parsedMessage.content, targetLang).then((translatedMessage) => {
+          setMessages((prevMessages) => [
+            ...prevMessages,
+            { ...parsedMessage, content: translatedMessage },
+          ]);
+        });
       });
 
       fetch(`http://localhost:8888/api/chatting/message/${roomId}`)
-      .then(response => response.json())
-      .then(data => {
-        setMessages(data);
-      })
-      .catch(error => {
-        console.error("Error fetching old messages:", error);
-      });
+        .then((response) => response.json())
+        .then((data) => {
+          setMessages(data);
+        })
+        .catch((error) => {
+          console.error('Error fetching old messages:', error);
+        });
     };
 
     stompClient.current.activate();
@@ -52,28 +58,20 @@ function ChatRoom({roomId}) {
         stompClient.current.deactivate();
       }
     };
-  }, [roomId]);
-
-  useEffect(() => {
-    if (messagesEndRef.current) {
-      messagesEndRef.current.scrollIntoView({behavior: "smooth"});
-    }
-  }, [messages]);
+  }, [roomId, targetLang]);
 
   const sendMessage = () => {
-    if (roomId && inputValue.trim() !== '' && stompClient.current
-        && stompClient.current.connected) {
+    if (roomId && inputValue.trim() !== '' && stompClient.current && stompClient.current.connected) {
       const chatMessage = {
         roomId: roomId,
         content: inputValue,
-        senderId: parseInt(Storage.getUserId())
+        senderId: parseInt(Storage.getUserId()),
+        targetLang: targetLang, // 프론트에서 선택한 타겟 언어 전달
       };
-      stompClient.current.publish(
-          {destination: '/app/send', body: JSON.stringify(chatMessage)});
+      stompClient.current.publish({ destination: '/app/send', body: JSON.stringify(chatMessage) });
       setInputValue('');
     }
   };
-
   const handleKeyDown = (e) => {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
@@ -82,27 +80,56 @@ function ChatRoom({roomId}) {
     }
   };
 
+  // 수정: 백엔드 서비스로 번역 요청 보내기
+  const translateMessage = async (message, targetLang) => {
+    try {
+      const response = await fetch('http://localhost:8888/api/chatting/translate', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ message, targetLang }),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        return data.translatedText;
+      } else {
+        console.error('Failed to translate message.');
+        return message; // 번역 실패 시 원본 메시지 반환
+      }
+    } catch (error) {
+      console.error('Error during translation:', error);
+      return message; // 번역 실패 시 원본 메시지 반환
+    }
+  };
+
+  const handleTargetLangChange = (e) => {
+    setTargetLang(e.target.value);
+  };
+
   return (
-      <>
-        <MessagesContainer>
-          {messages.map((message, index) => (
-              <MessageBubble
-                  key={index}
-                  sender={Storage.getUserId() === String(message.senderId)}
-              >
-                <span className="senderNickname">{message.senderNickname}</span>
-                {message.content}
-              </MessageBubble>
-          ))}
-          <div ref={messagesEndRef}></div>
-        </MessagesContainer>
-        <InputContainer>
-          <TextInput value={inputValue}
-                     onChange={(e) => setInputValue(e.target.value)}
-                     onKeyDown={handleKeyDown} placeholder="메세지를 입력해주세요..."/>
-          <SendButton onClick={sendMessage}>보내기</SendButton>
-        </InputContainer>
-      </>
+    <>
+      <MessagesContainer>
+        {messages.map((message, index) => (
+          <MessageBubble key={index} sender={Storage.getUserId() === String(message.senderId)}>
+            <span className="senderNickname">{message.senderNickname}</span>
+            {message.content}
+          </MessageBubble>
+        ))}
+        <div ref={messagesEndRef}></div>
+      </MessagesContainer>
+      <InputContainer>
+        <TextInput value={inputValue} onChange={(e) => setInputValue(e.target.value)} onKeyDown={handleKeyDown} placeholder="메시지를 입력해주세요..." />
+        <select value={targetLang} onChange={handleTargetLangChange}>
+          <option value="ko">한국어</option>
+          <option value="en">English</option>
+          <option value="es">Español</option>
+          {/* 다른 언어 옵션을 추가할 수 있음 */}
+        </select>
+        <SendButton onClick={sendMessage}>보내기</SendButton>
+      </InputContainer>
+    </>
   );
 }
 

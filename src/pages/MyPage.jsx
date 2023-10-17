@@ -14,6 +14,10 @@ export default function MyPage() {
     navigate(ROUTER.PATH.PROFILE_EDIT); 
 };
 
+const handleFollowListClick = () => {
+  navigate(ROUTER.PATH.FOLLOW_LIST);
+};
+
 const Profile = ({ onProfileEditClick }) => (
   <ProfileContainer>
     <ProfileImage src="/profile.jpg" alt="프로필 이미지" />
@@ -49,7 +53,7 @@ const FollowAndNotifications = () => (
   <FollowAndNotificationsContainer>
     <div>
       <h3>기타</h3>
-      <h3><ThinText>팔로우 관리</ThinText></h3>
+      <h3 onClick={handleFollowListClick}><ThinText>팔로우 관리</ThinText></h3>
       <h3><ThinText>알림 설정</ThinText></h3>
     </div>
   </FollowAndNotificationsContainer>

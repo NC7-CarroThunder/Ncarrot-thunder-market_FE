@@ -37,7 +37,7 @@ const ImageSlider = ({ images }) => {
       <SliderContent
         style={{
           transform: `translateX(-${currentImageIndex * 100}%)`,
-          transition: isSliding ? 'transform 0.5s ease-in-out' : 'none',
+          transition: isSliding ? 'transform 0.4s ease-in-out' : 'none',
         }}
       >
         {images.map((image, index) => (
@@ -49,12 +49,16 @@ const ImageSlider = ({ images }) => {
           />
         ))}
       </SliderContent>
-      <PreviousButton onClick={handlePreviousImage}>
-        <ButtonCircle>&lt;</ButtonCircle>
-      </PreviousButton>
-      <NextButton onClick={handleNextImage}>
-        <ButtonCircle>&gt;</ButtonCircle>
-      </NextButton>
+      {images.length > 1 && (
+        <>
+          <PreviousButton onClick={handlePreviousImage}>
+            <ButtonCircle>&lt;</ButtonCircle>
+          </PreviousButton>
+          <NextButton onClick={handleNextImage}>
+            <ButtonCircle>&gt;</ButtonCircle>
+          </NextButton>
+        </>
+      )}
       {isModalOpen && (
         <Modal>
           <ModalContent>
@@ -88,6 +92,7 @@ const SliderImage = styled.img`
   object-fit: cover;
   flex: none;
   cursor: pointer;
+  border-radius: 5%
 `;
 
 const PreviousButton = styled.button`
