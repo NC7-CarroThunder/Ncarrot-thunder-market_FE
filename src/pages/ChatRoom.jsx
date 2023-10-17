@@ -12,7 +12,7 @@ const axios = new Axios(QUERY.AXIOS_PATH.SEVER);
 function ChatRoom({ roomId }) {
   const [messages, setMessages] = useState([]);
   const [inputValue, setInputValue] = useState('');
-  const [targetLang, setTargetLang] = useState('ko'); // 초기값을 한국어로 설정
+  const [targetLang, setTargetLang] = useState('ko');
   const stompClient = useRef(null);
   const messagesEndRef = useRef(null);
   const [isTranslationOptionsVisible, setTranslationOptionsVisible] = useState(false);
@@ -38,7 +38,6 @@ function ChatRoom({ roomId }) {
       console.error('Additional details: ' + frame.body);
       stompClient.current.subscribe(`/topic/messages/${roomId}`, (message) => {
         const parsedMessage = JSON.parse(message.body);
-        // 수정: 백엔드로 번역 요청
         translateMessage(parsedMessage.content, targetLang).then((translatedMessage) => {
           setMessages((prevMessages) => [
             ...prevMessages,
@@ -47,13 +46,13 @@ function ChatRoom({ roomId }) {
         });
       });
       axios.get(`/api/chatting/message/${roomId}`)
-        .then((response) => response.json())
+        .then((response) => response.data)
         .then((data) => {
           setMessages(data);
         })
         .catch((error) => {
-          if (error.response.status == 401) {
-            navigator(ROUTER.PATH.LOGIN)
+          if (error.response && error.response.status === 401) {
+            navigator(ROUTER.PATH.LOGIN);
           }
           console.error('Error fetching old messages:', error);
         });
@@ -74,7 +73,7 @@ function ChatRoom({ roomId }) {
         roomId: roomId,
         content: inputValue,
         senderId: parseInt(Storage.getUserId()),
-        targetLang: targetLang, // 프론트에서 선택한 타겟 언어 전달
+        targetLang: targetLang,
       };
       stompClient.current.publish({ destination: '/app/send', body: JSON.stringify(chatMessage) });
       setInputValue('');
@@ -88,7 +87,6 @@ function ChatRoom({ roomId }) {
     }
   };
 
-  // 수정: 백엔드 서비스로 번역 요청 보내기
   const translateMessage = async (message, targetLang) => {
     try {
       const response = await fetch('http://localhost:8888/api/chatting/translate', {
@@ -104,11 +102,11 @@ function ChatRoom({ roomId }) {
         return data.translatedText;
       } else {
         console.error('Failed to translate message.');
-        return message; // 번역 실패 시 원본 메시지 반환
+        return message;
       }
     } catch (error) {
       console.error('Error during translation:', error);
-      return message; // 번역 실패 시 원본 메시지 반환
+      return message;
     }
   };
 
@@ -138,7 +136,7 @@ function ChatRoom({ roomId }) {
 
   return (
     <>
-    <button onClick={handleToggleTranslationOptions}>언어 선택</button>
+      <button onClick={handleToggleTranslationOptions}>언어 선택</button>
       <TranslationOptions isVisible={isTranslationOptionsVisible}>
         <div className="accordion-bar" onClick={handleToggleTranslationOptions}>
           <div>닫기</div>
@@ -177,11 +175,10 @@ function ChatRoom({ roomId }) {
 
 export default ChatRoom;
 
-const shouldForwardProp = (prop) => prop !== 'sender';
-
+const shouldForwardProp = (prop) => prop !== 'sender' && prop !== 'isVisible';
 const MessagesContainer = styled.div`
   flex: 1;
-  overflow-y: auto; // 스크롤 가능하게 수정
+  overflow-y: auto;
   padding: 20px;
   display: flex;
   flex-direction: column;
@@ -192,7 +189,6 @@ const MessagesContainer = styled.div`
   background-position: center center;
   background-size: 50%;
 
-  // 웹킷 기반 브라우저용 스크롤바 디자인 수정
   ::-webkit-scrollbar {
     width: 8px;
   }
@@ -218,8 +214,7 @@ const MessageBubble = styled.div.withConfig({
   padding: 10px 15px;
   margin-bottom: 10px;
   background-color: ${props => props.sender ? '#73aace' : '#7c7979'};
-  border-radius: ${props => props.sender ? '10px 10px 10px 0'
-    : '10px 10px 0 10px'};
+  border-radius: ${props => props.sender ? '10px 10px 10px 0' : '10px 10px 0 10px'};
   align-self: ${props => props.sender ? 'flex-end' : 'flex-start'};
   color: #ffffff;
   display: inline-block;
@@ -295,4 +290,4 @@ const TranslationOptions = styled.div`
     margin-right: 5px;
     cursor: pointer;
   }
-`;
+}`;
