@@ -62,7 +62,6 @@ export default function LoginPage() {
           type='text'
           id='email'
           value={email}
-
           onChange={e => {
             setEmail(e.target.value);
             console.log("email:", e.target.value);
@@ -77,15 +76,15 @@ export default function LoginPage() {
         />
         <Button type='submit'>로그인</Button>
         <Link to={""}>
-          <button onClick={handleLogin}>카카오 로그인</button>
+          <KakaoBtn onClick={handleLogin}>
+            <img src="/path/to/Kakao_login.png" alt=""/>
+          </KakaoBtn>
         </Link>
-        <Link to={ROUTER.PATH.SIGNUP}>
-          <Button type='button'>회원 가입</Button>
-        </Link>
+        <Button type='button'>회원 가입</Button>
       </Form>
     </LoginContainer>
-  );
-}
+);
+        }
 
 const LoginContainer = styled.div`
   display: flex;
@@ -148,20 +147,17 @@ const Button = styled.button`
   }
 `;
 
-const KakaoBtn = styled.div`
-  button {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    padding: 0.5rem;
-    background-color: #f6d900;
-    gap: 0.5rem;
-    :hover {
-      background-color: #ffe83b;
-    }
+const KakaoBtn = styled.button`
+  width: 14rem;  // 로그인 및 회원가입 버튼과 동일한 너비
+  font-size: 18px;
+  padding: 12px;
+  background: url('/Kakao_login.png') no-repeat center/cover; // 배경 이미지 설정
+  border: none;
+  border-radius: 8px; 
+  cursor: pointer;
+  transition: background-color 0.3s;
 
-    svg {
-      font-size: 2rem;
-    }
+  &:hover {
+    opacity: 0.8;
   }
 `;

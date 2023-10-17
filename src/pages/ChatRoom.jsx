@@ -12,9 +12,10 @@ const axios = new Axios(QUERY.AXIOS_PATH.SEVER);
 function ChatRoom({ roomId }) {
   const [messages, setMessages] = useState([]);
   const [inputValue, setInputValue] = useState('');
-  const [targetLang, setTargetLang] = useState('ko'); // 초기값을 한국어로 설정
+  const [targetLang, setTargetLang] = useState('ko');
   const stompClient = useRef(null);
   const messagesEndRef = useRef(null);
+  const [isTranslationOptionsVisible, setTranslationOptionsVisible] = useState(false);
 
   useEffect(() => {
     setMessages([]);
@@ -37,7 +38,6 @@ function ChatRoom({ roomId }) {
       console.error('Additional details: ' + frame.body);
       stompClient.current.subscribe(`/topic/messages/${roomId}`, (message) => {
         const parsedMessage = JSON.parse(message.body);
-        // 수정: 백엔드로 번역 요청
         translateMessage(parsedMessage.content, targetLang).then((translatedMessage) => {
           setMessages((prevMessages) => [
             ...prevMessages,
@@ -46,13 +46,13 @@ function ChatRoom({ roomId }) {
         });
       });
       axios.get(`/api/chatting/message/${roomId}`)
-        .then((response) => response.json())
+        .then((response) => response.data)
         .then((data) => {
           setMessages(data);
         })
         .catch((error) => {
-          if (error.response.status == 401) {
-            navigator(ROUTER.PATH.LOGIN)
+          if (error.response && error.response.status === 401) {
+            navigator(ROUTER.PATH.LOGIN);
           }
           console.error('Error fetching old messages:', error);
         });
@@ -73,7 +73,7 @@ function ChatRoom({ roomId }) {
         roomId: roomId,
         content: inputValue,
         senderId: parseInt(Storage.getUserId()),
-        targetLang: targetLang, // 프론트에서 선택한 타겟 언어 전달
+        targetLang: targetLang,
       };
       stompClient.current.publish({ destination: '/app/send', body: JSON.stringify(chatMessage) });
       setInputValue('');
@@ -87,7 +87,6 @@ function ChatRoom({ roomId }) {
     }
   };
 
-  // 수정: 백엔드 서비스로 번역 요청 보내기
   const translateMessage = async (message, targetLang) => {
     try {
       const response = await fetch('http://localhost:8888/api/chatting/translate', {
@@ -103,11 +102,11 @@ function ChatRoom({ roomId }) {
         return data.translatedText;
       } else {
         console.error('Failed to translate message.');
-        return message; // 번역 실패 시 원본 메시지 반환
+        return message;
       }
     } catch (error) {
       console.error('Error during translation:', error);
-      return message; // 번역 실패 시 원본 메시지 반환
+      return message;
     }
   };
 
@@ -115,8 +114,48 @@ function ChatRoom({ roomId }) {
     setTargetLang(e.target.value);
   };
 
+  const handleToggleTranslationOptions = () => {
+    setTranslationOptionsVisible(!isTranslationOptionsVisible);
+  };
+
+  const languageOptions = [
+    { value: 'ko', label: '한국어' },
+    { value: 'en', label: '영어 English' },
+    { value: 'ja', label: '일본어 日本語' },
+    { value: 'zh-CN', label: '중국어 간체 中文(简体)' },
+    { value: 'zh-TW', label: '중국어 번체 中文(繁體)' },
+    { value: 'vi', label: '베트남어 Tiếng Việt' },
+    { value: 'th', label: '태국어 ไทย' },
+    { value: 'id', label: '인도네시아어 Bahasa Indonesia' },
+    { value: 'fr', label: '프랑스어 Français' },
+    { value: 'es', label: '스페인어 Español' },
+    { value: 'ru', label: '러시아어 Русский' },
+    { value: 'de', label: '독일어 Deutsch' },
+    { value: 'it', label: '이탈리아어 Italiano' },
+  ];
+
   return (
     <>
+      <button onClick={handleToggleTranslationOptions}>언어 선택</button>
+      <TranslationOptions isVisible={isTranslationOptionsVisible}>
+        <div className="accordion-bar" onClick={handleToggleTranslationOptions}>
+          <div>닫기</div>
+        </div>
+        <div className="language-list">
+          {languageOptions.map((option) => (
+            <label key={option.value}>
+              <input
+                type="radio"
+                name="language"
+                value={option.value}
+                checked={targetLang === option.value}
+                onChange={handleTargetLangChange}
+              />
+              {option.label}
+            </label>
+          ))}
+        </div>
+      </TranslationOptions>
       <MessagesContainer>
         {messages.map((message, index) => (
           <MessageBubble key={index} sender={Storage.getUserId() === String(message.senderId)}>
@@ -128,12 +167,6 @@ function ChatRoom({ roomId }) {
       </MessagesContainer>
       <InputContainer>
         <TextInput value={inputValue} onChange={(e) => setInputValue(e.target.value)} onKeyDown={handleKeyDown} placeholder="메시지를 입력해주세요..." />
-        <select value={targetLang} onChange={handleTargetLangChange}>
-          <option value="ko">한국어</option>
-          <option value="en">English</option>
-          <option value="es">Español</option>
-          {/* 다른 언어 옵션을 추가할 수 있음 */}
-        </select>
         <SendButton onClick={sendMessage}>보내기</SendButton>
       </InputContainer>
     </>
@@ -142,11 +175,10 @@ function ChatRoom({ roomId }) {
 
 export default ChatRoom;
 
-const shouldForwardProp = (prop) => prop !== 'sender';
-
+const shouldForwardProp = (prop) => prop !== 'sender' && prop !== 'isVisible';
 const MessagesContainer = styled.div`
   flex: 1;
-  overflow-y: auto; // 스크롤 가능하게 수정
+  overflow-y: auto;
   padding: 20px;
   display: flex;
   flex-direction: column;
@@ -157,7 +189,6 @@ const MessagesContainer = styled.div`
   background-position: center center;
   background-size: 50%;
 
-  // 웹킷 기반 브라우저용 스크롤바 디자인 수정
   ::-webkit-scrollbar {
     width: 8px;
   }
@@ -183,8 +214,7 @@ const MessageBubble = styled.div.withConfig({
   padding: 10px 15px;
   margin-bottom: 10px;
   background-color: ${props => props.sender ? '#73aace' : '#7c7979'};
-  border-radius: ${props => props.sender ? '10px 10px 10px 0'
-    : '10px 10px 0 10px'};
+  border-radius: ${props => props.sender ? '10px 10px 10px 0' : '10px 10px 0 10px'};
   align-self: ${props => props.sender ? 'flex-end' : 'flex-start'};
   color: #ffffff;
   display: inline-block;
@@ -224,3 +254,40 @@ const SendButton = styled.button`
     background-color: #497da0;
   }
 `;
+
+const TranslationOptions = styled.div`
+  position: fixed;
+  top: 0;
+  right: ${props => (props.isVisible ? '0' : '-300px')};
+  width: 300px;
+  height: 100%;
+  background-color: #fff;
+  box-shadow: -5px 0 5px rgba(0, 0, 0, 0.2);
+  transition: right 0.3s ease-in-out;
+  z-index: 2;
+  margin-top: 70px;
+
+  .accordion-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 20px;
+    border-bottom: 1px solid #ccc;
+    cursor: pointer;
+  }
+
+  .language-list {
+    overflow-y: auto;
+    max-height: calc(100% - 40px);
+  }
+
+  label {
+    display: block;
+    margin: 10px;
+  }
+
+  input[type="radio"] {
+    margin-right: 5px;
+    cursor: pointer;
+  }
+}`;
