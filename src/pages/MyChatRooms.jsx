@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, {useEffect, useState} from 'react';
 import Axios from '../utils/api/axios';
 import QUERY from '../constants/query';
 import styled from 'styled-components';
@@ -7,8 +7,7 @@ import ROUTER from '../constants/router';
 
 const axios = new Axios(QUERY.AXIOS_PATH.SEVER);
 
-
-const MyChatRooms = ({ onRoomSelect }) => {
+const MyChatRooms = ({onRoomSelect}) => {
   const [chatRooms, setChatRooms] = useState([]);
   const [images, setImages] = useState({});
   const userId = Storage.getUserId();
@@ -16,13 +15,15 @@ const MyChatRooms = ({ onRoomSelect }) => {
   useEffect(() => {
     const fetchChatRooms = async () => {
       try {
-        const response = await axios.get(`/api/chatting/myChatRooms?userId=${userId}`);
+        const response = await axios.get(
+            `/api/chatting/myChatRooms?userId=${userId}`);
         setChatRooms(response.data.chatRooms);
 
-        const validChatRooms = response.data.chatRooms.filter(room => room.postId !== 0);
+        const validChatRooms = response.data.chatRooms.filter(
+            room => room.postId !== 0);
 
         const imagePromises = validChatRooms.map(room =>
-          axios.get(`/api/chatting/getFirstAttachment?postId=${room.postId}`)
+            axios.get(`/api/chatting/getFirstAttachment?postId=${room.postId}`)
         );
 
         const imageResponses = await Promise.all(imagePromises);
@@ -63,25 +64,27 @@ const MyChatRooms = ({ onRoomSelect }) => {
   };
 
   return (
-    <ChatRoomsContainer>
-      <h3>전체대화</h3>
-      <ul>
-        {chatRooms.map((room) => (
-          <ChatRoomItem key={room.roomId}>
-            <ChatRoomImage src={images[room.postId]} alt="게시글 이미지" />
-            <ChatRoomContent>
-              <ChatRoomName>{getCounterpartNickname(room)}</ChatRoomName>
-              <MessageTitle>제목: {room.postTitle}</MessageTitle>
-              <LastMessage>최근대화: {room.lastMessage?.length > 13 ? room.lastMessage.slice(0, 13) + '...' : room.lastMessage}</LastMessage>
-              <DateText>{formatTime(room.lastUpdated)}</DateText>
-            </ChatRoomContent>
-            <ChatButton onClick={() => handleChatButtonClick(room.roomId)}>
-              대화<br />시작
-            </ChatButton>
-          </ChatRoomItem>
-        ))}
-      </ul>
-    </ChatRoomsContainer>
+      <ChatRoomsContainer>
+        <h3>전체대화</h3>
+        <ul>
+          {chatRooms.map((room) => (
+              <ChatRoomItem key={room.roomId}>
+                <ChatRoomImage src={images[room.postId]} alt="게시글 이미지"/>
+                <ChatRoomContent>
+                  <ChatRoomName>{getCounterpartNickname(room)}</ChatRoomName>
+                  <MessageTitle>제목: {room.postTitle}</MessageTitle>
+                  <LastMessage>최근대화: {room.lastMessage?.length > 13
+                      ? room.lastMessage.slice(0, 13) + '...'
+                      : room.lastMessage}</LastMessage>
+                  <DateText>{formatTime(room.lastUpdated)}</DateText>
+                </ChatRoomContent>
+                <ChatButton onClick={() => handleChatButtonClick(room.roomId)}>
+                  대화<br/>시작
+                </ChatButton>
+              </ChatRoomItem>
+          ))}
+        </ul>
+      </ChatRoomsContainer>
   );
 };
 
@@ -144,7 +147,7 @@ const ChatRoomContent = styled.div`
 const ChatRoomName = styled.div`
   font-size: 18px;
   font-weight: bold;
-  margin-bottom: 5px;  // 간격 줄임
+  margin-bottom: 5px; // 간격 줄임
 `;
 
 const ChatButton = styled.button`
@@ -163,8 +166,8 @@ const ChatButton = styled.button`
 
 const MessageTitle = styled.div`
   font-size: 16px;
-  font-weight: normal;  // 폰트 굵기를 일반으로 변경
-  margin-bottom: 5px;  // 간격 늘림
+  font-weight: normal; // 폰트 굵기를 일반으로 변경
+  margin-bottom: 5px; // 간격 늘림
 `;
 
 const LastMessage = styled.span`
