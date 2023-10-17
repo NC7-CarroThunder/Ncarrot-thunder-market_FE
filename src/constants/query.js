@@ -17,6 +17,7 @@ const AXIOS_PATH = {
   MYPAGE: '/api/mypage/',
   TOGGLE_WISHLIST: '/api/wishlist/toggle',
   CHECK_WISHLIST: '/api/wishlist/check',
+  POSTDELETE: '/api/posts/:postId',
 };
 
 const STALETIME = {

@@ -16,6 +16,7 @@ const PATH = {
   CHATTING: '/chatting',
   PROFILE_EDIT:'/profile/edit',
   FOLLOW_LIST: '/follow/list'
+
 };
 
 const NAME = {

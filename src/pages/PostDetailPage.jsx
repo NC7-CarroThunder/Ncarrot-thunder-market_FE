@@ -11,6 +11,7 @@ import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
 import {faHeart as solidHeart} from '@fortawesome/free-solid-svg-icons';
 import {faHeart as regularHeart} from '@fortawesome/free-regular-svg-icons';
 
+
 const axiosForLoginUser = new Axios(QUERY.AXIOS_PATH.SEVER);
 
 export default function PostDetailPage() {
@@ -88,6 +89,22 @@ export default function PostDetailPage() {
     }
   };
 
+
+
+
+  const handleDeleteButtonClick = async () => {
+    try {
+      const apiUrl = `${QUERY.AXIOS_PATH.POSTDELETE.replace(':postId', postId)}`;
+      const response = await axiosInstance.delete(apiUrl);
+
+      console.log('게시물이 성공적으로 삭제되었습니다.');
+      navigate(ROUTER.PATH.BACK); // 삭제 후 POSTLIST 페이지로 이동
+    } catch (error) {
+      console.error('게시물 삭제 오류:', error);
+    }
+  };
+
+
   const currentUserId = Storage.getUserId();
   console.log('현재 사용자 ID:', currentUserId);
   console.log('게시글 작성자 ID:', post.userid);
@@ -107,15 +124,17 @@ export default function PostDetailPage() {
                   <ImageSlider images={post.attachedFilesPaths}/>
                 </ImageContainer>
                 <PostInfoContainer>
-                  <h1>{post.title}</h1>
-                  <CardText>
-                    <strong>{formatPrice(post.price)}원</strong>
-                  </CardText>
+                  <TitleText>{post.title}</TitleText>
+                  <PriceText>
+                    <strong>{formatPrice(post.price)} 원</strong>
+                  </PriceText>
                   <ContentContainer>
                     <CardDescription>{post.content}</CardDescription>
                   </ContentContainer>
-                  <CardText>거래지역 {post.address}</CardText>
-                  <CardText>카테고리 {post.itemCategory}</CardText>
+                  <CardText>거래지역 : {post.address}</CardText>
+                  <CardText>카테고리 : {post.itemCategory}</CardText>
+                  <CardText>판매자 :  {post.nickName}</CardText>
+                  <CardText>조회수 :  {post.viewCount}</CardText>
                   {Number(post.userid) !== Number(currentUserId) && (
                       <ButtonWrapper>
                         {post.dealingType === 'FOR_PAY' && (
@@ -159,6 +178,12 @@ export default function PostDetailPage() {
                         )}
                       </ButtonWrapper>
                   )}
+
+                  {Number(post.userid) === Number(currentUserId) && (
+                      <ButtonWrapper>
+                        <DeleteButton onClick={handleDeleteButtonClick}>삭제하기</DeleteButton>
+
+                      </ButtonWrapper>)}
                 </PostInfoContainer>
               </>
           )}
@@ -205,10 +230,21 @@ const ContentContainer = styled.div`
   width: 400px;
   height: 500px;
   overflow: auto;
+
 `;
 
 const CardText = styled.p`
-  font-size: 18px;
+  font-size: 16px;
+  margin-bottom: 10px;
+
+`;
+
+const PriceText = styled.p`
+  font-size: 30px;
+`
+
+const TitleText = styled.p`
+  font-size: 24px;
   margin-bottom: 5px;
 `;
 
@@ -258,6 +294,20 @@ const LikeButton = styled.button`
 
   &:hover {
     color: #ff4d4f;
+  }
+`;
+
+const DeleteButton = styled.button`
+  padding: 10px 20px;
+  background-color: #ff922b;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+
+  &:hover {
+    background-color: #497da0;
   }
 `;
 
