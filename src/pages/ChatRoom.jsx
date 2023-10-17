@@ -15,6 +15,7 @@ function ChatRoom({ roomId }) {
   const [targetLang, setTargetLang] = useState('ko'); // 초기값을 한국어로 설정
   const stompClient = useRef(null);
   const messagesEndRef = useRef(null);
+  const [isTranslationOptionsVisible, setTranslationOptionsVisible] = useState(false);
 
   useEffect(() => {
     setMessages([]);
@@ -115,8 +116,48 @@ function ChatRoom({ roomId }) {
     setTargetLang(e.target.value);
   };
 
+  const handleToggleTranslationOptions = () => {
+    setTranslationOptionsVisible(!isTranslationOptionsVisible);
+  };
+
+  const languageOptions = [
+    { value: 'ko', label: '한국어' },
+    { value: 'en', label: '영어 English' },
+    { value: 'ja', label: '일본어 日本語' },
+    { value: 'zh-CN', label: '중국어 간체 中文(简体)' },
+    { value: 'zh-TW', label: '중국어 번체 中文(繁體)' },
+    { value: 'vi', label: '베트남어 Tiếng Việt' },
+    { value: 'th', label: '태국어 ไทย' },
+    { value: 'id', label: '인도네시아어 Bahasa Indonesia' },
+    { value: 'fr', label: '프랑스어 Français' },
+    { value: 'es', label: '스페인어 Español' },
+    { value: 'ru', label: '러시아어 Русский' },
+    { value: 'de', label: '독일어 Deutsch' },
+    { value: 'it', label: '이탈리아어 Italiano' },
+  ];
+
   return (
     <>
+    <button onClick={handleToggleTranslationOptions}>언어 선택</button>
+      <TranslationOptions isVisible={isTranslationOptionsVisible}>
+        <div className="accordion-bar" onClick={handleToggleTranslationOptions}>
+          <div>닫기</div>
+        </div>
+        <div className="language-list">
+          {languageOptions.map((option) => (
+            <label key={option.value}>
+              <input
+                type="radio"
+                name="language"
+                value={option.value}
+                checked={targetLang === option.value}
+                onChange={handleTargetLangChange}
+              />
+              {option.label}
+            </label>
+          ))}
+        </div>
+      </TranslationOptions>
       <MessagesContainer>
         {messages.map((message, index) => (
           <MessageBubble key={index} sender={Storage.getUserId() === String(message.senderId)}>
@@ -128,12 +169,6 @@ function ChatRoom({ roomId }) {
       </MessagesContainer>
       <InputContainer>
         <TextInput value={inputValue} onChange={(e) => setInputValue(e.target.value)} onKeyDown={handleKeyDown} placeholder="메시지를 입력해주세요..." />
-        <select value={targetLang} onChange={handleTargetLangChange}>
-          <option value="ko">한국어</option>
-          <option value="en">English</option>
-          <option value="es">Español</option>
-          {/* 다른 언어 옵션을 추가할 수 있음 */}
-        </select>
         <SendButton onClick={sendMessage}>보내기</SendButton>
       </InputContainer>
     </>
@@ -222,5 +257,42 @@ const SendButton = styled.button`
 
   &:hover {
     background-color: #497da0;
+  }
+`;
+
+const TranslationOptions = styled.div`
+  position: fixed;
+  top: 0;
+  right: ${props => (props.isVisible ? '0' : '-300px')};
+  width: 300px;
+  height: 100%;
+  background-color: #fff;
+  box-shadow: -5px 0 5px rgba(0, 0, 0, 0.2);
+  transition: right 0.3s ease-in-out;
+  z-index: 2;
+  margin-top: 70px;
+
+  .accordion-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 20px;
+    border-bottom: 1px solid #ccc;
+    cursor: pointer;
+  }
+
+  .language-list {
+    overflow-y: auto;
+    max-height: calc(100% - 40px);
+  }
+
+  label {
+    display: block;
+    margin: 10px;
+  }
+
+  input[type="radio"] {
+    margin-right: 5px;
+    cursor: pointer;
   }
 `;
