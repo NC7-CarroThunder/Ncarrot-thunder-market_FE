@@ -17,7 +17,7 @@ import PostDetail from './pages/PostDetailPage';
 import ChatRoom from './pages/ChatRoom';
 import MyChatRooms from './pages/MyChatRooms';
 import ChattingPage from './pages/ChattingPage'; 
-import ProfileEdit from './pages/ProfileEdit';
+import ProfileEditPage from './pages/ProfileEditPage';
 
 const queryClient = new QueryClient();
 
@@ -65,7 +65,7 @@ const router = createBrowserRouter([
       },
       {
         path: ROUTER.PATH.PROFILE_EDIT,
-        element: <ProfileEdit />,
+        element: <ProfileEditPage />,
       },
     ],
   },

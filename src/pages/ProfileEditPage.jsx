@@ -1,16 +1,56 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
+import { useEffect } from "react";
 import { AiOutlineMail, AiOutlineLock, AiOutlineSmile, AiOutlineHome } from 'react-icons/ai';
 import DaumPost from './DaumPost';
+import Axios from '../utils/api/axios';
+import QUERY from '../constants/query';
+import useGetQuery from '../hooks/useGetQuery';
 
 
-export default function EditProfile() {
+export default function ProfileEditPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');  // 비밀번호 확인용
   const [nickname, setNickname] = useState('');
   const [address, setAddress] = useState('');
+  const [detailAddress, setDetailAddress] = useState('');
   const [profileImage, setProfileImage] = useState(null);  // 프로필 이미지
+
+
+  const [loading, setLoading] = useState(true);
+
+  const [userDetails, setUserDetails] = useState({});
+  const axios = new Axios(QUERY.AXIOS_PATH.SEVER);
+
+  useEffect(() => {
+    async function getUserDetails() {
+      try {
+        const response = await axios.get(`/api/profiles`);
+        console.log(response.data.result);
+        setUserDetails(response.data.result);
+
+        setEmail(userDetails.email); 
+        setPassword(userDetails.password);
+        setNickname(userDetails.nickname); 
+        setAddress(userDetails.address); 
+        setDetailAddress(userDetails.detailAddress);
+        setProfileImage(userDetails.photo);
+        setLoading(false);
+      } catch (error) {
+        console.error('유저 호출 중 오류 발생', error);
+        alert("유저 호출 중 오류 발생");
+        setLoading(false);
+      }
+    }
+
+    getUserDetails();
+  }, []);
+
+
+
+
+
 
   const updateProfileImage = (e) => {
     const file = e.target.files[0];
@@ -23,9 +63,6 @@ export default function EditProfile() {
     }
   };
   
-  const updateEmail = (e) => {
-    setEmail(e.target.value);
-  };
 
   const updatePassword = (e) => {
     setPassword(e.target.value);
@@ -52,6 +89,9 @@ export default function EditProfile() {
   
     // 수정된 정보를 서버에 전송하고 저장하는 로직을 구현해야 합니다.
     // 이 부분은 서버와의 통신 또는 데이터 저장 로직을 추가해야 합니다.
+    
+
+
   };
 
   const handleAddressSearch = (selectedAddress) => {
@@ -73,22 +113,22 @@ export default function EditProfile() {
       <UploadButton onClick={() => document.getElementById("profileImageInput").click()}>
         사진변경
       </UploadButton>
-        
+      
       <InputContainer>
+        이메일
         <InputGroup>
           <IconStyle as={AiOutlineMail}/>
           <PaddedInputField 
           type="email" 
-          placeholder="이메일" 
-          value={email} 
-          onChange={updateEmail}
+          value={userDetails.email} 
            />
         </InputGroup>
+        비밀번호 변경
         <InputGroup>
           <IconStyle as={AiOutlineLock}/>
           <PaddedInputField 
           type="password" 
-          placeholder="비밀번호" 
+          placeholder="새 비밀번호" 
           value={password} 
           onChange={updatePassword}
            />
@@ -97,40 +137,43 @@ export default function EditProfile() {
           <IconStyle as={AiOutlineLock}/>
           <PaddedInputField 
           type="password" 
-          placeholder="비밀번호 확인" 
+          placeholder="새 비밀번호 확인" 
           value={confirmPassword}
           onChange={updateConfirmPassword}
            />
         </InputGroup>
+        닉네임 변경
         <InputGroup>
           <IconStyle as={AiOutlineSmile}/>
           <PaddedInputField 
           type="text" 
-          placeholder="닉네임" 
+          placeholder={userDetails.nickname} 
           value={nickname} 
           onChange={updateNickname}
            />
         </InputGroup>
+
+        주소
+        <AddressContainer>
+        <AddressIconStyle as={AiOutlineHome} />
+          <AddressInput 
+            type="text" 
+            placeholder="주소" 
+            value={userDetails.address} 
+            onChange={updateAddress}
+          />
+          <DaumPost setAddress={handleAddressSearch} />
+        </AddressContainer>
         <AddressContainer>
         <AddressIconStyle as={AiOutlineHome} />
         <AddressInput 
           type="text" 
-          placeholder="주소" 
-          value={address} 
-          onChange={updateAddress}
-        />
-        <DaumPost setAddress={handleAddressSearch} />
-      </AddressContainer>
-      <AddressContainer>
-        <AddressIconStyle as={AiOutlineHome} />
-        <AddressInput 
-          type="text" 
-          placeholder="상세주소" 
-          // 여기서는 상세주소를 관리하기 위한 별도의 state와 함수가 필요합니다.
+          placeholder={userDetails.detailAddress}
+          value={detailAddress} 
         />
       </AddressContainer>
         </InputContainer>
-      <SaveButton onClick={handleSave}>저장하기</SaveButton>
+      <SaveButton onClick={handleSave}>변경하기</SaveButton>
     </EditProfileContainer>
   );
 }
