@@ -50,6 +50,19 @@ const Storage = {
     return window.localStorage.getItem('mount');
   },
 
+  setPhoto(photo) {
+    removeLocalStorage('photo');
+    setlocalStorage('photo', photo);
+  },
+
+  removePhoto() {
+    removeLocalStorage('photo');
+  },
+
+  getPhoto() {
+    return window.localStorage.getItem('photo');
+  },
+
 };
 
 function setlocalStorage(key, value) {

@@ -41,12 +41,18 @@ export default function MyPage() {
   const handleFollowListClick = () => {
     navigate(ROUTER.PATH.FOLLOW_LIST);
   };
+  const getNickname = () => {
+    return Storage.getNickName();
+  }
+  const getPoint = () => {
+    return `당근번개 페이 잔액:${Storage.getPoint()}원`
+  }
 
   const Profile = ({ onProfileEditClick }) => (
     <ProfileContainer>
       <ProfileImage src="/profile.jpg" alt="프로필 이미지" />
       <div>
-        <NickName>사용자 닉네임</NickName>
+        <NickName>{getNickname()}</NickName>
       </div>
       <ProfileButton onClick={onProfileEditClick}>프로필 편집</ProfileButton>
     </ProfileContainer>
@@ -54,7 +60,7 @@ export default function MyPage() {
 
   const AdditionalInfo = () => (
     <AdditionalInfoContainer>
-      <p>당근번개 페이 잔액: 100,000원</p>
+      <p>{getPoint()}</p>
       <ButtonContainer>
         <Button onClick={openModal}>충전</Button>
         <Button>환전</Button>

@@ -1,13 +1,15 @@
 import React from "react";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 //import { useDispatch } from "react-redux";
 import Storage from '../utils/localStorage';
 import { useNavigate } from 'react-router-dom';
 import ROUTER from '../constants/router';
-
-
+import Axios from '../utils/api/axios';
+import QUERY from "../constants/query";
 
 import axios from 'axios';
+
+const axiosForLoginUser = new Axios(QUERY.AXIOS_PATH.SEVER);
 
 const Payment = () => {
   const navigator = useNavigate();
@@ -22,6 +24,18 @@ const Payment = () => {
   }, []);
 
   const requestPay = () => {
+    console.log("결제서비스 하기전에, 해당 유저가 로그인 했는지 확인하는 과정");
+    const res = [];
+    const response = axiosForLoginUser.get(`/api/profiles`)
+      .then((response) => {
+        console.log(response.data.result);
+      })
+      .catch((error) => {
+        if (error.response.status == 401) {
+          navigator(ROUTER.PATH.LOGIN)
+        }
+        console.error('Error fetching old messages:', error);
+      });
     const { IMP } = window;
     IMP.init(`${process.env.REACT_APP_IMP}`);
 
@@ -38,22 +52,23 @@ const Payment = () => {
       buyer_postcode: '123-456',
     }, async (rsp) => {
       try {
+        // console.log(rsp.paid_amount);
+        // console.log(chargePoint);
         //TODO  : 결제완료후, 해당 결제 정보사항 DB에 저장하고, 현재 사용자 포인트 정보 업데이트 해야함
-        //const { data } = await axios.post('http://localhost:8080/verifyIamport/' + rsp.imp_uid);
-        console.log(rsp.paid_amount);
+        const userId = Storage.getUserId();
+        console.log("userId : " + userId);
         console.log(chargePoint);
-        if (rsp.paid_amount === parseInt(chargePoint)) {
-          alert('결제 성공');
-        } else {
-          alert('결제 실패');
-        }
+        const { data } = await axios.post('http://localhost:8888/api/payments'
+          , { userId, chargePoint });
+        console.log(data);
+        Storage.setPoint(data);
+        alert('결제 성공');
         Storage.removeAmount();
-        console.log("안타냐???");
         navigator(ROUTER.PATH.MYPAGE);
       } catch (error) {
         console.error('Error while verifying payment:', error);
-        alert('결제 실패1');
-        navigator(ROUTER.PATH.BACK);
+        alert('결제 실패');
+        navigator(ROUTER.PATH.MYPAGE);
       }
 
 

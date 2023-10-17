@@ -70,7 +70,8 @@ export default function Navbar({ showMyMenu, onShowMyMenu, onLogOut }) {
           {nickname ? (
             <ShowMyMenuContainer>
               <Text large_medium>
-                <FaUserCircle id='MyMenu' onClick={onShowMyMenu} />
+                {(Storage.getPhoto() == undefined) ? (<FaUserCircle id='MyMenu' onClick={onShowMyMenu} />) : (<img src={`http://xflopvzfwqjk19996213.cdn.ntruss.com/user/${Storage.getPhoto()}`} id='MyMenu' onClick={onShowMyMenu} />)}
+
               </Text>
               {showMyMenu ? (
                 <ShowMyMenu>
