@@ -6,11 +6,10 @@ import DaumPost from './DaumPost';
 import Axios from '../utils/api/axios';
 import QUERY from '../constants/query';
 import ROUTER from '../constants/router';
-import useGetQuery from '../hooks/useGetQuery';
 
 
 export default function ProfileEditPage() {
-  const [email, setEmail] = useState('');
+  const [email, setEmail] = useState(' ');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');  // 비밀번호 확인용
   const [nickname, setNickname] = useState('');
@@ -80,6 +79,10 @@ export default function ProfileEditPage() {
     setAddress(e.target.value);
   };
 
+  const updateDetailAddress = (e) => {
+    setDetailAddress(e.target.value);
+  };
+
   const handleSave = async () => {
     
     if (password !== confirmPassword) {
@@ -88,12 +91,12 @@ export default function ProfileEditPage() {
     }
     // 수정된 정보만을 저장
     const updatedProfile = {
-      password,
       nickname,
+      profileImage,
       phone,
       address,
       detailAddress,
-      profileImage,
+      password,
     };
 
     // api 전송
@@ -107,7 +110,7 @@ export default function ProfileEditPage() {
   
   async function updateProfile(updatedProfile) {
     try {
-      const response = await axios.post('/api/profiles', updatedProfile);
+      const response = await axios.put(`/api/profiles`, updatedProfile);
   
       if (response.status === 200) {
         alert('프로필이 성공적으로 업데이트되었습니다.');
@@ -149,13 +152,14 @@ export default function ProfileEditPage() {
           <PaddedInputField 
           type="email" 
           value={userDetails.email} 
+          disabled
            />
         </InputGroup>
         비밀번호 변경
         <InputGroup>
           <IconStyle as={AiOutlineLock}/>
           <PaddedInputField 
-          type="password" 
+          type="password"
           placeholder="새 비밀번호" 
           value={password} 
           onChange={updatePassword}
@@ -164,32 +168,32 @@ export default function ProfileEditPage() {
         <InputGroup>
           <IconStyle as={AiOutlineLock}/>
           <PaddedInputField 
-          type="password" 
-          placeholder="새 비밀번호 확인" 
-          value={confirmPassword}
-          onChange={updateConfirmPassword}
-           />
+            type="password"
+            placeholder="새 비밀번호 확인" 
+            value={confirmPassword}
+            onChange={updateConfirmPassword}
+          />
         </InputGroup>
-        닉네임 변경
+        닉네임
         <InputGroup>
           <IconStyle as={AiOutlineSmile}/>
           <PaddedInputField 
-          type="text" 
-          placeholder={userDetails.nickname} 
-          value={nickname} 
-          onChange={updateNickname}
-           />
+            type="text" 
+            placeholder={userDetails.nickname} 
+            value={nickname} 
+            onChange={updateNickname}
+          />
         </InputGroup>
 
         전화번호
         <InputGroup>
           <IconStyle as={AiOutlineMobile}/>
           <PaddedInputField 
-          type="text" 
-          placeholder={userDetails.phone} 
-          value={phone} 
-          onChange={updatePhone}
-           />
+            type="text" 
+            placeholder={userDetails.phone} 
+            value={phone} 
+            onChange={updatePhone}
+          />
         </InputGroup>
 
         주소
@@ -197,18 +201,20 @@ export default function ProfileEditPage() {
         <AddressIconStyle as={AiOutlineHome} />
           <AddressInput 
             type="text" 
-            placeholder="주소" 
-            value={userDetails.address} 
-            onChange={updateAddress}
+            placeholder={userDetails.address}
+            value={address} 
+            onChange={setAddress}
+            disabled
           />
-          <DaumPost setAddress={handleAddressSearch} />
+        <DaumPost setAddress={handleAddressSearch} />
         </AddressContainer>
         <AddressContainer>
         <AddressIconStyle as={AiOutlineHome} />
         <AddressInput 
           type="text" 
-          placeholder={userDetails.detailAddress}
+          placeholder={userDetails.detailAddress} 
           value={detailAddress} 
+          onChange={updateDetailAddress}
         />
       </AddressContainer>
         </InputContainer>
