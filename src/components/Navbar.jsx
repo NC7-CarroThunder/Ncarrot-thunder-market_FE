@@ -66,12 +66,12 @@ export default function Navbar({ showMyMenu, onShowMyMenu, onLogOut }) {
             value={keyWord}
             onChange={e => setKeyWord(e.target.value)}
           />
-          {nickname}
           {nickname ? (
-            <ShowMyMenuContainer>
-              <Text large_medium>
-                <FaUserCircle id='MyMenu' onClick={onShowMyMenu} />
+          <ShowMyMenuContainer>
+            <Text large_medium>
+              <FaUserCircle id='MyMenu' onClick={onShowMyMenu} />
               </Text>
+              <span>{nickname}</span> {/* 아이콘 바로 뒤에 닉네임을 위치시킵니다. */}
               {showMyMenu ? (
                 <ShowMyMenu>
                   <span onClick={handleChatButtonClick}>캐럿톡</span>
@@ -156,7 +156,11 @@ const FormContainer = styled.form`
   }
 `;
 const ShowMyMenuContainer = styled.div`
+  display: flex;
+  align-items: center;  /* 아이콘과 닉네임을 중앙에 정렬합니다. */
   position: relative;
+  gap: 1rem;  /* 아이콘과 닉네임 사이의 간격을 추가합니다. */
+  white-space:nowrap;
 `;
 
 const ShowMyMenu = styled.div`
