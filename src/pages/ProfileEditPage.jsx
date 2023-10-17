@@ -1,10 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
-import { useEffect } from "react";
-import { AiOutlineMail, AiOutlineLock, AiOutlineSmile, AiOutlineHome } from 'react-icons/ai';
+import { useNavigate } from 'react-router-dom';
+import { AiOutlineMail, AiOutlineLock, AiOutlineSmile, AiOutlineHome, AiOutlineMobile } from 'react-icons/ai';
 import DaumPost from './DaumPost';
 import Axios from '../utils/api/axios';
 import QUERY from '../constants/query';
+import ROUTER from '../constants/router';
 import useGetQuery from '../hooks/useGetQuery';
 
 
@@ -13,11 +14,12 @@ export default function ProfileEditPage() {
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');  // 비밀번호 확인용
   const [nickname, setNickname] = useState('');
+  const [phone, setPhone] = useState('');
   const [address, setAddress] = useState('');
   const [detailAddress, setDetailAddress] = useState('');
   const [profileImage, setProfileImage] = useState(null);  // 프로필 이미지
 
-
+  const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
 
   const [userDetails, setUserDetails] = useState({});
@@ -33,6 +35,7 @@ export default function ProfileEditPage() {
         setEmail(userDetails.email); 
         setPassword(userDetails.password);
         setNickname(userDetails.nickname); 
+        setPhone(userDetails.phone);
         setAddress(userDetails.address); 
         setDetailAddress(userDetails.detailAddress);
         setProfileImage(userDetails.photo);
@@ -43,14 +46,8 @@ export default function ProfileEditPage() {
         setLoading(false);
       }
     }
-
     getUserDetails();
   }, []);
-
-
-
-
-
 
   const updateProfileImage = (e) => {
     const file = e.target.files[0];
@@ -63,7 +60,6 @@ export default function ProfileEditPage() {
     }
   };
   
-
   const updatePassword = (e) => {
     setPassword(e.target.value);
   };
@@ -76,24 +72,56 @@ export default function ProfileEditPage() {
     setNickname(e.target.value);
   };
 
+  const updatePhone = (e) => {
+    setPhone(e.target.value);
+  };
+
   const updateAddress = (e) => {
     setAddress(e.target.value);
   };
 
-  const handleSave = () => {
+  const handleSave = async () => {
     
     if (password !== confirmPassword) {
       alert("비밀번호와 비밀번호 확인이 일치하지 않습니다.");
       return;
     }
-  
-    // 수정된 정보를 서버에 전송하고 저장하는 로직을 구현해야 합니다.
-    // 이 부분은 서버와의 통신 또는 데이터 저장 로직을 추가해야 합니다.
-    
+    // 수정된 정보만을 저장
+    const updatedProfile = {
+      password,
+      nickname,
+      phone,
+      address,
+      detailAddress,
+      profileImage,
+    };
 
-
+    // api 전송
+    try {
+      await updateProfile(updatedProfile);
+    } catch (error) {
+      console.error('프로필 업데이트 중 오류 발생', error);
+      alert('프로필 업데이트 중 오류가 발생했습니다.');
+    }
   };
+  
+  async function updateProfile(updatedProfile) {
+    try {
+      const response = await axios.post('/api/profiles', updatedProfile);
+  
+      if (response.status === 200) {
+        alert('프로필이 성공적으로 업데이트되었습니다.');
+        // 이전 페이지 리다이렉션
+        navigate(ROUTER.PATH.BACK);
+      } else {
+        alert('프로필 업데이트에 실패했습니다.');
+      }
+    } catch (error) {
+      throw error; 
+    }
+  }
 
+  // 주소 찾기
   const handleAddressSearch = (selectedAddress) => {
     setAddress(selectedAddress);
   };
@@ -150,6 +178,17 @@ export default function ProfileEditPage() {
           placeholder={userDetails.nickname} 
           value={nickname} 
           onChange={updateNickname}
+           />
+        </InputGroup>
+
+        전화번호
+        <InputGroup>
+          <IconStyle as={AiOutlineMobile}/>
+          <PaddedInputField 
+          type="text" 
+          placeholder={userDetails.phone} 
+          value={phone} 
+          onChange={updatePhone}
            />
         </InputGroup>
 
