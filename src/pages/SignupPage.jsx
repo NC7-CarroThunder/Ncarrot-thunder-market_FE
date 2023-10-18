@@ -14,11 +14,22 @@ export default function SignupPage() {
   const [phone, setPhone] = useState('');
   const [address, setAddress] = useState('');
   const [detailAddress, setDetailAddress] = useState('');
+  const [nicknameCheck, setNicknameCheck] = useState(false);
+  const [emailCheck, setEmailCheck] = useState(false);
 
   const axios = new Axios(QUERY.AXIOS_PATH.SEVER);
   const navigate = useNavigate();
 
   const onSubmit = async e => {
+
+    if (!emailCheck)  {
+      alert("이메일 중복 체크 확인 바랍니다!");
+      return;
+    }
+    if (!nicknameCheck)  {
+      alert("닉네임 중복 체크 확인 바랍니다!");
+      return;
+    }
     e.preventDefault();
 
     axios
@@ -33,6 +44,60 @@ export default function SignupPage() {
       .then(() => navigate(ROUTER.PATH.LOGIN));
   };
 
+
+   // 이메일 중복확인 API
+   const handleEmailCheck = async () => {
+    try {
+      const sendMail = email;
+      const response = await axios.post('/api/users/emailcheck', { email: sendMail });
+  
+      if (response.status === 200) {
+        if (response.data.result) {
+          alert('사용가능한 이메일 입니다!');
+          setEmailCheck(true);
+        } else {
+          alert('이미 사용 중인 이메일입니다.');
+          setEmailCheck(false);
+        }
+      } else {
+        alert('이메일 전송에 실패했습니다. 다시 시도해 주세요');
+        setEmailCheck(false);
+      }
+    } catch (error) {
+      console.error('이메일 전송 요청 중 오류 발생:', error);
+      setEmailCheck(false);
+      alert('이메일 전송에 실패했습니다.');
+    }
+  };
+
+
+  // 닉네임 중복 체크 API
+  const handleNicknameCheck = async () => {
+    try {
+      const nicknameToCheck = nickname;
+      const response = await axios.post('/api/users/nicknamecheck', { nickname: nicknameToCheck });
+  
+      if (response.status === 200) {
+        if (response.data.result) {
+          alert('사용 가능한 닉네임입니다.');
+
+          setNicknameCheck(true);
+
+        } else {
+          alert('이미 사용 중인 닉네임입니다.');
+          setNicknameCheck(false);
+        }
+      } else {
+        alert('닉네임 중복 체크에 실패했습니다.');
+        setNicknameCheck(false);
+      }
+    } catch (error) {
+      console.error('닉네임 중복 체크 요청 중 오류 발생:', error);
+      alert('닉네임 중복 체크에 실패했습니다.');
+      setNicknameCheck(false);
+    }
+  };
+
   return (
     <LoginContainer>
       <Form onSubmit={onSubmit}>
@@ -44,6 +109,7 @@ export default function SignupPage() {
           value={email}
           onChange={e => setEmail(e.target.value)}
         />
+        <button onClick={handleEmailCheck}>이메일 중복 체크</button>
         <Label htmlFor='password'>비밀번호</Label>
         <Input
           type='password'
@@ -58,6 +124,7 @@ export default function SignupPage() {
           value={nickname}
           onChange={e => setNickname(e.target.value)}
         />
+         <button onClick={handleNicknameCheck}>닉네임 중복 체크</button>
         <Label htmlFor="phone">휴대폰 번호</Label>
         <Input
           type="text"
@@ -75,7 +142,7 @@ export default function SignupPage() {
           id="areaAddress"
           value={address}
           readOnly
-          onChange={e => setAddress(e.target.value )}
+          onChange={e => setAddress(e.target.value)}
         />
 
         <Label htmlFor="detailAddress">상세 주소</Label>
