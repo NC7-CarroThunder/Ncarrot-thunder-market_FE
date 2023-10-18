@@ -9,15 +9,15 @@ import Storage from '../utils/localStorage';
 
 const axios = new Axios(QUERY.AXIOS_PATH.SEVER);
 
-export default function PurchasePage(SellerId) {
+export default function PurchasePage() {
   const { postId } = useParams();
   const [post, setPost] = useState({});
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
   const currentPoint = Storage.getPoint();
+  const roomId = Storage.getRoomId();
   
   
-  console.log('로그',SellerId)
   useEffect(() => {
     async function fetchPostDetails() {
       try {
@@ -122,7 +122,7 @@ export default function PurchasePage(SellerId) {
           <>
           <Card>
             <PostContainer>
-            <Link to={ROUTER.PATH.POSTDETAIL}>
+            <Link to={`/post/${post.postId}`}>
                     <CardImg
                       src={`http://xflopvzfwqjk19996213.cdn.ntruss.com/article/${post.attachedFilesPaths[0].filePath}?type=f&w=250&h=250`}
                       alt={'게시글 이미지'}
@@ -144,7 +144,7 @@ export default function PurchasePage(SellerId) {
             </ContentContainer>
                   </Card>
             <ChatRoomContainer>
-              <ChatRoom roomId={postId} />
+            <ChatRoom roomId={roomId} />
             </ChatRoomContainer>
             
           </>

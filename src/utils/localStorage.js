@@ -63,6 +63,19 @@ const Storage = {
     return window.localStorage.getItem('photo');
   },
 
+  setRoomId(roomId) {
+    removeLocalStorage('roomId');
+    setlocalStorage('roomId', roomId);
+  },
+
+  removeRoomId() {
+    removeLocalStorage('roomId');
+  },
+
+  getRoomId() {
+    return window.localStorage.getItem('roomId');
+  },
+
 };
 
 function setlocalStorage(key, value) {
