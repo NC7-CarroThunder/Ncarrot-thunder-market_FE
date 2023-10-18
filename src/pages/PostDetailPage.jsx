@@ -1,20 +1,20 @@
-import React, {useEffect, useState} from 'react';
+import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import axios from 'axios';
-import {useNavigate, useParams} from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import Storage from '../utils/localStorage';
 import ROUTER from '../constants/router';
 import ImageSlider from '../components/ImageSlider';
 import QUERY from '../constants/query';
 import Axios from '../utils/api/axios';
-import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
-import {faHeart as solidHeart} from '@fortawesome/free-solid-svg-icons';
-import {faHeart as regularHeart} from '@fortawesome/free-regular-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faHeart as solidHeart } from '@fortawesome/free-solid-svg-icons';
+import { faHeart as regularHeart } from '@fortawesome/free-regular-svg-icons';
 
 const axiosForLoginUser = new Axios(QUERY.AXIOS_PATH.SEVER);
 
 export default function PostDetailPage() {
-  const {postId} = useParams();
+  const { postId } = useParams();
   const navigate = useNavigate();
   const [post, setPost] = useState({});
   const [loading, setLoading] = useState(true);
@@ -24,13 +24,13 @@ export default function PostDetailPage() {
     async function fetchPostDetails() {
       try {
         const response = await axios.get(
-            `${QUERY.AXIOS_PATH.SEVER}/api/posts/${postId}`);
+          `${QUERY.AXIOS_PATH.SEVER}/api/posts/${postId}`);
         console.log(response.data.result);
         setPost(response.data.result);
         setLoading(false);
 
         const wishlistStatusResponse = await axiosInstance.get(
-            `${QUERY.AXIOS_PATH.SEVER}/api/wishlist/status/${postId}`
+          `${QUERY.AXIOS_PATH.SEVER}/api/wishlist/status/${postId}`
         );
         setIsLiked(wishlistStatusResponse.data.isLiked);
       } catch (error) {
@@ -47,13 +47,13 @@ export default function PostDetailPage() {
       const currentUserId = Storage.getUserId();
       console.log("게시글 작성자 ID:", post.userid);
       const response = await axios.get(
-          `http://localhost:8888/api/chatting/createOrGetChatRoom`, {
-            params: {
-              sellerId: post.userid,
-              currentUserId: currentUserId,
-              postId: post.postId
-            }
-          });
+        `http://localhost:8888/api/chatting/createOrGetChatRoom`, {
+        params: {
+          sellerId: post.userid,
+          currentUserId: currentUserId,
+          postId: post.postId
+        }
+      });
 
       const roomId = response.data.roomId;
       if (roomId) {
@@ -73,7 +73,7 @@ export default function PostDetailPage() {
   const handleWishlistButtonClick = async () => {
     try {
       const apiUrl = QUERY.AXIOS_PATH.TOGGLE_WISHLIST;
-      const response = await axiosInstance.post(apiUrl, {articleId: postId});
+      const response = await axiosInstance.post(apiUrl, { articleId: postId });
 
       if (response.data.success) {
         setIsLiked(!isLiked);
@@ -94,41 +94,41 @@ export default function PostDetailPage() {
   };
 
   return (
-      <MainWrapper>
-        <DetailWrapper>
-          {loading ? (
-              <p>로딩 중...</p>
-          ) : (
-              <>
-                <ImageContainer>
-                  <ImageSlider images={post.attachedFilesPaths}/>
-                </ImageContainer>
-                <PostInfoContainer>
-                  <h1>{post.title}</h1>
-                  <CardText><strong>{formatPrice(
-                      post.price)}원</strong></CardText>
-                  <ContentContainer>
-                    <CardDescription>{post.content}</CardDescription>
-                  </ContentContainer>
-                  <CardText>거래지역 {post.address}</CardText>
-                  <CardText>카테고리 {post.itemCategory}</CardText>
-                  {Number(post.userid) !== Number(currentUserId) && (
-                      <ButtonWrapper>
-                        <LikeButton onClick={handleWishlistButtonClick}
-                                    isLiked={isLiked}>
-                          <HeartIcon isLiked={isLiked}
-                                     icon={isLiked ? solidHeart
-                                         : regularHeart}/>
-                        </LikeButton>
-                        <ChatButton
-                            onClick={handleChatButtonClick}>캐럿톡</ChatButton>
-                      </ButtonWrapper>
-                  )}
-                </PostInfoContainer>
-              </>
-          )}
-        </DetailWrapper>
-      </MainWrapper>
+    <MainWrapper>
+      <DetailWrapper>
+        {loading ? (
+          <p>로딩 중...</p>
+        ) : (
+          <>
+            <ImageContainer>
+              <ImageSlider images={post.attachedFilesPaths} />
+            </ImageContainer>
+            <PostInfoContainer>
+              <h1>{post.title}</h1>
+              <CardText><strong>{formatPrice(
+                post.price)}원</strong></CardText>
+              <ContentContainer>
+                <CardDescription>{post.content}</CardDescription>
+              </ContentContainer>
+              <CardText>거래지역 {post.address}</CardText>
+              <CardText>카테고리 {post.itemCategory}</CardText>
+              {Number(post.userid) !== Number(currentUserId) && (
+                <ButtonWrapper>
+                  <LikeButton onClick={handleWishlistButtonClick}
+                    isLiked={isLiked}>
+                    <HeartIcon isLiked={isLiked}
+                      icon={isLiked ? solidHeart
+                        : regularHeart} />
+                  </LikeButton>
+                  <ChatButton
+                    onClick={handleChatButtonClick}>캐럿톡</ChatButton>
+                </ButtonWrapper>
+              )}
+            </PostInfoContainer>
+          </>
+        )}
+      </DetailWrapper>
+    </MainWrapper>
   );
 }
 

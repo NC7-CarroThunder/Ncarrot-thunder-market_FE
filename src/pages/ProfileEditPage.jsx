@@ -31,11 +31,11 @@ export default function ProfileEditPage() {
         console.log(response.data.result);
         setUserDetails(response.data.result);
 
-        setEmail(userDetails.email); 
+        setEmail(userDetails.email);
         setPassword(userDetails.password);
-        setNickname(userDetails.nickname); 
+        setNickname(userDetails.nickname);
         setPhone(userDetails.phone);
-        setAddress(userDetails.address); 
+        setAddress(userDetails.address);
         setDetailAddress(userDetails.detailAddress);
         setProfileImage(userDetails.photo);
         setLoading(false);
@@ -58,7 +58,7 @@ export default function ProfileEditPage() {
       reader.readAsDataURL(file);
     }
   };
-  
+
   const updatePassword = (e) => {
     setPassword(e.target.value);
   };
@@ -84,8 +84,7 @@ export default function ProfileEditPage() {
   };
 
   const handleSave = async () => {
-    
-    if (password !== confirmPassword) {
+    if (password !== confirmPassword && (password != undefined) && (confirmPassword != undefined)) {
       alert("비밀번호와 비밀번호 확인이 일치하지 않습니다.");
       return;
     }
@@ -107,11 +106,11 @@ export default function ProfileEditPage() {
       alert('프로필 업데이트 중 오류가 발생했습니다.');
     }
   };
-  
+
   async function updateProfile(updatedProfile) {
     try {
       const response = await axios.put(`/api/profiles`, updatedProfile);
-  
+
       if (response.status === 200) {
         alert('프로필이 성공적으로 업데이트되었습니다.');
         // 이전 페이지 리다이렉션
@@ -120,7 +119,7 @@ export default function ProfileEditPage() {
         alert('프로필 업데이트에 실패했습니다.');
       }
     } catch (error) {
-      throw error; 
+      throw error;
     }
   }
 
@@ -133,91 +132,91 @@ export default function ProfileEditPage() {
     <EditProfileContainer>
       <ProfileTitle>마이프로필</ProfileTitle>
       <ProfileImageContainer>
-      <ProfileImage image={profileImage} />
-        <HiddenFileInput 
-          type="file" 
-          accept="image/*" 
-          onChange={updateProfileImage} 
-          id="profileImageInput" 
+        <ProfileImage image={profileImage} />
+        <HiddenFileInput
+          type="file"
+          accept="image/*"
+          onChange={updateProfileImage}
+          id="profileImageInput"
         />
       </ProfileImageContainer>
       <UploadButton onClick={() => document.getElementById("profileImageInput").click()}>
         사진변경
       </UploadButton>
-      
+
       <InputContainer>
         이메일
         <InputGroup>
-          <IconStyle as={AiOutlineMail}/>
-          <PaddedInputField 
-          type="email" 
-          value={userDetails.email} 
-          disabled
-           />
+          <IconStyle as={AiOutlineMail} />
+          <PaddedInputField
+            type="email"
+            value={userDetails.email}
+            disabled
+          />
         </InputGroup>
         비밀번호 변경
         <InputGroup>
-          <IconStyle as={AiOutlineLock}/>
-          <PaddedInputField 
-          type="password"
-          placeholder="새 비밀번호" 
-          value={password} 
-          onChange={updatePassword}
-           />
+          <IconStyle as={AiOutlineLock} />
+          <PaddedInputField
+            type="password"
+            placeholder="새 비밀번호"
+            value={password}
+            onChange={updatePassword}
+          />
         </InputGroup>
         <InputGroup>
-          <IconStyle as={AiOutlineLock}/>
-          <PaddedInputField 
+          <IconStyle as={AiOutlineLock} />
+          <PaddedInputField
             type="password"
-            placeholder="새 비밀번호 확인" 
+            placeholder="새 비밀번호 확인"
             value={confirmPassword}
             onChange={updateConfirmPassword}
           />
         </InputGroup>
         닉네임
         <InputGroup>
-          <IconStyle as={AiOutlineSmile}/>
-          <PaddedInputField 
-            type="text" 
-            placeholder={userDetails.nickname} 
-            value={nickname} 
+          <IconStyle as={AiOutlineSmile} />
+          <PaddedInputField
+            type="text"
+            placeholder={userDetails.nickname}
+            value={nickname}
             onChange={updateNickname}
           />
         </InputGroup>
 
         전화번호
         <InputGroup>
-          <IconStyle as={AiOutlineMobile}/>
-          <PaddedInputField 
-            type="text" 
-            placeholder={userDetails.phone} 
-            value={phone} 
+          <IconStyle as={AiOutlineMobile} />
+          <PaddedInputField
+            type="text"
+            placeholder={userDetails.phone}
+            value={phone}
             onChange={updatePhone}
           />
         </InputGroup>
 
         주소
         <AddressContainer>
-        <AddressIconStyle as={AiOutlineHome} />
-          <AddressInput 
-            type="text" 
+          <AddressIconStyle as={AiOutlineHome} />
+          <AddressInput
+            type="text"
             placeholder={userDetails.address}
-            value={address} 
+            value={address}
             onChange={setAddress}
             disabled
           />
-        <DaumPost setAddress={handleAddressSearch} />
+          <DaumPost setAddress={handleAddressSearch} />
         </AddressContainer>
         <AddressContainer>
-        <AddressIconStyle as={AiOutlineHome} />
-        <AddressInput 
-          type="text" 
-          placeholder={userDetails.detailAddress} 
-          value={detailAddress} 
-          onChange={updateDetailAddress}
-        />
-      </AddressContainer>
-        </InputContainer>
+          <AddressIconStyle as={AiOutlineHome} />
+          <AddressInput
+            type="text"
+            placeholder={userDetails.detailAddress}
+            value={detailAddress}
+            onChange={updateDetailAddress}
+          />
+        </AddressContainer>
+      </InputContainer>
       <SaveButton onClick={handleSave}>변경하기</SaveButton>
     </EditProfileContainer>
   );
@@ -294,7 +293,7 @@ const SaveButton = styled.button`
   cursor: pointer;
   margin-top: 20px;
   margin-left: 550px;
-`; 
+`;
 
 const HiddenFileInput = styled.input`
   display: none;
