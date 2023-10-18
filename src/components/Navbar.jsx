@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import Button from '../elements/Button';
 import Input from '../elements/Input';
@@ -16,6 +16,7 @@ export default function Navbar({ showMyMenu, onShowMyMenu, onLogOut }) {
   const navigate = useNavigate();
   const nickname = Storage.getNickName();
   const query = useQueryClient();
+  const [imageClick, setImegeClick] = useState(false);
 
   const handleSubmit = e => {
     e.preventDefault();
@@ -41,6 +42,16 @@ export default function Navbar({ showMyMenu, onShowMyMenu, onLogOut }) {
   const handleChatButtonClick = () => {
     navigate(ROUTER.PATH.CHATTING);  // 이 부분은 새로운 경로를 ROUTER.PATH에 추가하거나 기존 경로를 사용하면 됩니다.
   };
+
+  const clickImage = () => {
+    setImegeClick((state) => !state)
+  }
+
+  useEffect(() => {
+    onShowMyMenu((state) => (!state));
+
+  }, [imageClick]);
+
 
   return (
     <NavbarWrapper>
@@ -68,7 +79,16 @@ export default function Navbar({ showMyMenu, onShowMyMenu, onLogOut }) {
           {nickname ? (
             <ShowMyMenuContainer>
               <Text large_medium>
-                {(Storage.getPhoto() == undefined) ? (<FaUserCircle id='MyMenu' onClick={onShowMyMenu} />) : (<img src={`http://xflopvzfwqjk19996213.cdn.ntruss.com/user/${Storage.getPhoto()}`} id='MyMenu' onClick={onShowMyMenu} />)}
+                {(Storage.getPhoto() == undefined) ? (
+                  <FaUserCircle id='MyMenu' onClick={clickImage} />
+                ) : (
+                  <img
+                    src={`https://kr.object.ncloudstorage.com/carrot-thunder/user/${Storage.getPhoto()}`}
+                    style={{ width: '100%', height: '100%', objectFit: 'cover', cursor: 'pointer' }}
+                    onClick={clickImage}
+                  />
+
+                )}
               </Text>
               <span>{nickname}</span> {/* 아이콘 바로 뒤에 닉네임을 위치시킵니다. */}
               {showMyMenu ? (

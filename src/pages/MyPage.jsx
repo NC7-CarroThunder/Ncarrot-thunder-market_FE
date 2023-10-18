@@ -50,7 +50,11 @@ export default function MyPage() {
 
   const Profile = ({ onProfileEditClick }) => (
     <ProfileContainer>
-      <ProfileImage src="/profile.jpg" alt="프로필 이미지" />
+      {(Storage.getPhoto() == undefined) ? (
+        <ProfileImage src="/profile.jpg" alt="프로필 이미지" />
+      ) : (
+        <ProfileImage src={`https://kr.object.ncloudstorage.com/carrot-thunder/user/${Storage.getPhoto()}`} alt="프로필 이미지" />
+      )}
       <div>
         <NickName>{getNickname()}</NickName>
       </div>

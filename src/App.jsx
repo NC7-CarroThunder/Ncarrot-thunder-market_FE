@@ -3,7 +3,7 @@ import theme from './styles/theme';
 import GlobalStyle from './styles/globalStyle';
 import { Outlet } from 'react-router-dom';
 import Navbar from './components/Navbar';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { removeCookie } from './utils/cookie';
 import QUERY from './constants/query';
 import Storage from './utils/localStorage';
@@ -12,9 +12,9 @@ import dotenvExpand from 'dotenv-expand';
 function App() {
   const [showMyMenu, setShowMyMenu] = useState(false);
 
-  const handleShowMyMenu = () => {
-    setShowMyMenu(state => !state);
-  };
+  // const handleShowMyMenu = () => {
+  //   setShowMyMenu();
+  // };
 
   const handleLogOut = () => {
     Storage.removeUserName();
@@ -36,7 +36,7 @@ function App() {
         <GlobalStyle />
         <Navbar
           showMyMenu={showMyMenu}
-          onShowMyMenu={handleShowMyMenu}
+          onShowMyMenu={setShowMyMenu}
           onLogOut={handleLogOut}
         />
         <Outlet />
