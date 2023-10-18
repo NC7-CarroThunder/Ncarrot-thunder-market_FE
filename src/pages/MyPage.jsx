@@ -182,7 +182,6 @@ export default function MyPage() {
         <TabButton onClick={() => setTab('myposts')} active={tab === 'myposts'}>내 게시글</TabButton>
           <TabButton onClick={() => setTab('ongoing')} active={tab === 'ongoing'}>거래중</TabButton>
           <TabButton onClick={() => setTab('wishlist')} active={tab === 'wishlist'}>찜</TabButton>
-          <TabButton onClick={() => setTab('reviews')} active={tab === 'reviews'}>거래후기</TabButton>
           <TabButton onClick={() => setTab('following')} active={tab === 'following'}>팔로잉</TabButton>
           <TabButton onClick={() => setTab('followers')} active={tab === 'followers'}>팔로워</TabButton>
         </TabContainer>
@@ -213,13 +212,13 @@ export default function MyPage() {
               </ListCard>
             </Link>
           ))}
-  {tab === 'myposts' && myPosts.map(item => (
-  <Link to={`/post/${item.postid}`} key={item.postid}>
-    <ListCard>
-    <ListImage src={`http://xflopvzfwqjk19996213.cdn.ntruss.com/article/${item.attachedFilesPaths[0].filePath}?type=f&w=250&h=250`} alt={`이미지 ${item.postid}`} />
-      <div>{item.title}</div>
-      <div>{item.price}원</div>
-    </ListCard>
+          {tab === 'myposts' && myPosts.map(item => (
+          <Link to={`/post/${item.postid}`} key={item.postid}>
+            <ListCard>
+              <ListImage src={`http://xflopvzfwqjk19996213.cdn.ntruss.com/article/${item.attachedFilesPaths[0].filePath}?type=f&w=250&h=250`} alt={`이미지 ${item.postid}`} />
+              <div>{item.title}</div>
+              <div>{item.price}원</div>
+              </ListCard>
   </Link>
 ))}
           {tab === 'ongoing' && ongoing.map(item => (
@@ -345,8 +344,9 @@ const ProfileAndAdditionalInfoContainer = styled.div`
 
 
 const marginRightStyle = {
-  marginRight: '10px', // 원하는 마진 값으로 변경 가능
+  marginRight: '10px', 
 };
+
 /// 모달 관련 css 설정
 
 const modalOverlayStyle = {
@@ -362,8 +362,8 @@ const modalOverlayStyle = {
 };
 
 const modalStyle = {
-  width: '500px',     // 너비 추가
-  height: '300px',    // 높이 추가
+  width: '500px',
+  height: '300px',
   background: 'white',
   padding: '20px',
   borderRadius: '8px',
@@ -423,7 +423,7 @@ const TabContainer = styled.div`
 `;
 
 const TabButton = styled.button`
-  width: 170px;
+  width: 210px;
   padding: 10px;
   cursor: pointer;
   background-color: ${({ active }) => (active ? '#ddd' : 'transparent')};
@@ -433,18 +433,17 @@ const TabButton = styled.button`
 const ListContainer = styled.div`
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 10px;
   margin-left: 230px;
+  grid-gap: 20px;
 `;
 
 const UserCard = styled.div`
-  width: 100px; 
+  width: 140px; 
   height: 140px; 
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-
 `;
 
 const UserImage = styled.img`
@@ -471,11 +470,13 @@ const ListCard = styled.div`
   flex-direction: column;
   align-items: center;
   justify-content: center;
+  border: 1px solid #ddd; 
 `;
 
 const ListImage = styled.img`
   width: 150px;
   height: 150px;
   margin-bottom: 10px; 
+  border-radius: 10px;
 `;
 
