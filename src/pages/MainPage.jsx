@@ -131,7 +131,6 @@ export default function MainPage() {
   return (
     <MainWrapper>
       <CategoryTitle>{getCategoryTitle()}</CategoryTitle>
-      <CategoryButtonRow>
         <div>
           <CategoryButton onClick={showAllPosts}>전체 게시글</CategoryButton>
           <CategoryButton onClick={() => setSelectedCategory('DIGITAL')}>디지털 기기</CategoryButton>
@@ -140,7 +139,6 @@ export default function MainPage() {
           <CategoryButton onClick={() => setSelectedCategory('APPLIANCES')}>생활가전</CategoryButton>
           <CategoryButton onClick={() => setSelectedCategory('KITCHENWARE')}>생활/주방</CategoryButton>
         </div>
-      </CategoryButtonRow>
       <CategoryButtonRow>
         <div>
           <CategoryButton onClick={() => setSelectedCategory('SPORTS_LEISURE')}>스포츠/레저</CategoryButton>
@@ -168,7 +166,7 @@ export default function MainPage() {
                     <CardBody>
                       <CardTitle>{post.title}</CardTitle>
                       <CardText><strong>{formatPrice(post.price)}원</strong></CardText>
-                      <DealingTypeBadge>
+                      <DealingTypeBadge dealingType={post.dealingType}>
                         {post.dealingType === 'FOR_PAY' ? '안전결제' : (
                           post.dealingType === 'WITHPERSONAL' ? '직접결제' : (
                             post.dealingType === 'FOR_FREE' ? '나눔' : ''
@@ -209,13 +207,14 @@ const CategoryTitle = styled.h1`
   color: #333;
   font-family: 'Noto Sans KR', sans-serif;
   font-size: 24px;
+  margin-bottom: 20px;
 `;
 
 const CategoryButtonRow = styled.div`
   display: flex;
   justify-content: center;
-  margin-top: 30px;
-  margin-bottom: 10px;
+  margin-top: 15px;
+  margin-bottom: 15px;
 `;
 
 const CategoryButton = styled.button`
@@ -281,7 +280,7 @@ const Col = styled.div`
 `;
 
 const DealingTypeBadge = styled.div`
-  background-color: #999;
+  background-color: ${({ dealingType }) => (dealingType === 'FOR_PAY' ? '#00cc00' : '#999')};
   color: #fff;
   font-size: 14px;
   padding: 5px 10px;
