@@ -67,9 +67,9 @@ export default function Navbar({ showMyMenu, onShowMyMenu, onLogOut }) {
             onChange={e => setKeyWord(e.target.value)}
           />
           {nickname ? (
-          <ShowMyMenuContainer>
-            <Text large_medium>
-              <FaUserCircle id='MyMenu' onClick={onShowMyMenu} />
+            <ShowMyMenuContainer>
+              <Text large_medium>
+                {(Storage.getPhoto() == undefined) ? (<FaUserCircle id='MyMenu' onClick={onShowMyMenu} />) : (<img src={`http://xflopvzfwqjk19996213.cdn.ntruss.com/user/${Storage.getPhoto()}`} id='MyMenu' onClick={onShowMyMenu} />)}
               </Text>
               <span>{nickname}</span> {/* 아이콘 바로 뒤에 닉네임을 위치시킵니다. */}
               {showMyMenu ? (

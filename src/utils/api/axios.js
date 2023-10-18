@@ -23,9 +23,14 @@ export default class Axios {
           const [, parseToken] = token.split(' ');
           setCookie(QUERY.COOKIE.COOKIE_NAME, parseToken);
 
-          const nickname = jwt_decode(parseToken);
-          Storage.setNickName(nickname.nickname);
-          Storage.setUserId(nickname.userId);
+          const tokenContent = jwt_decode(parseToken);
+          Storage.setNickName(tokenContent.nickname);
+          Storage.setUserId(tokenContent.userId);
+          Storage.setPoint(tokenContent.point);
+          console.log(tokenContent.photo)
+          if (tokenContent.photo != undefined && tokenContent.photo != null) {
+            Storage.setPhoto(tokenContent.photo);
+          }
         }
 
         return response;

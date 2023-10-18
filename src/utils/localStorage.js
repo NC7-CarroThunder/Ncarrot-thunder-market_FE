@@ -23,6 +23,46 @@ const Storage = {
   getUserId() {
     return window.localStorage.getItem('userId');
   },
+
+  setPoint(point) {
+    removeLocalStorage('point');
+    setlocalStorage('point', point);
+  },
+
+  removePoint() {
+    removeLocalStorage('point');
+  },
+
+  getPoint() {
+    return window.localStorage.getItem('point');
+  },
+
+  setAmount(mount) {
+    removeLocalStorage('mount');
+    setlocalStorage('mount', mount);
+  },
+
+  removeAmount() {
+    removeLocalStorage('mount');
+  },
+
+  getAmount() {
+    return window.localStorage.getItem('mount');
+  },
+
+  setPhoto(photo) {
+    removeLocalStorage('photo');
+    setlocalStorage('photo', photo);
+  },
+
+  removePhoto() {
+    removeLocalStorage('photo');
+  },
+
+  getPhoto() {
+    return window.localStorage.getItem('photo');
+  },
+
 };
 
 function setlocalStorage(key, value) {

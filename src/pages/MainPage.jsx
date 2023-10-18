@@ -97,11 +97,40 @@ export default function MainPage() {
     setSelectedCategory('TOTAL');
   };
 
+  const getCategoryTitle = () => {
+    switch (selectedCategory) {
+      case 'DIGITAL':
+        return '디지털 기기';
+      case 'FURNITURE_INTERIOR':
+        return '가구/인테리어';
+      case 'CLOTHING':
+        return '의류';
+      case 'APPLIANCES':
+        return '생활가전';
+      case 'KITCHENWARE':
+        return '생활/주방';
+      case 'SPORTS_LEISURE':
+        return '스포츠/레저';
+      case 'CAR_TOOLS':
+        return '자동차/공구';
+      case 'BOOK':
+        return '도서';
+      case 'BEAUTY_COSMETIC':
+        return '뷰티/미용';
+      case 'PET':
+        return '반려동물용품';
+      case 'ETC':
+        return '기타';
+      default:
+        return '전체 카테고리';
+    }
+  };
+
   // 게시글 등록시 카테고리선택이 구현이 되면 setSelectedCategory에 카테고리 명을 적으면 됩니다
 
   return (
     <MainWrapper>
-      <CategoryTitle>전체 카테고리</CategoryTitle>
+      <CategoryTitle>{getCategoryTitle()}</CategoryTitle>
       <CategoryButtonRow>
         <div>
           <CategoryButton onClick={showAllPosts}>전체 게시글</CategoryButton>
