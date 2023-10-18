@@ -17,6 +17,7 @@ function ChatRoom({roomId}) {
   const messagesEndRef = useRef(null);
   const [isTranslationOptionsVisible, setTranslationOptionsVisible] = useState(
       false);
+  const [isEmojiPickerVisible, setEmojiPickerVisible] = useState(false);
 
   useEffect(() => {
     setMessages([]);
@@ -69,6 +70,12 @@ function ChatRoom({roomId}) {
       }
     };
   }, [roomId, targetLang]);
+
+  useEffect(() => {
+    if (messagesEndRef.current) {
+      messagesEndRef.current.scrollIntoView({behavior: 'smooth'});
+    }
+  }, [messages]);
 
   const sendMessage = () => {
     if (roomId && inputValue.trim() !== '' && stompClient.current
@@ -140,6 +147,27 @@ function ChatRoom({roomId}) {
     {value: 'it', label: '이탈리아어 Italiano'},
   ];
 
+  const sendEmojiMessage = (emojiCode) => {
+    const chatMessage = {
+      roomId: roomId,
+      content: emojiCode,
+      senderId: parseInt(Storage.getUserId()),
+      targetLang: targetLang,
+    };
+    stompClient.current.publish(
+        {destination: '/app/send', body: JSON.stringify(chatMessage)});
+    setEmojiPickerVisible(false);
+  };
+
+  const renderMessageContent = (messageContent) => {
+    if (messageContent.startsWith(":emoji") && messageContent.endsWith(":")) {
+      const emojiNumber = messageContent.split(":")[1].replace("emoji", "");
+      return <img src={`/img/emoji${emojiNumber}.png`}
+                  alt={`emoji${emojiNumber}`}/>;
+    }
+    return messageContent;
+  };
+
   return (
       <>
         <button onClick={handleToggleTranslationOptions}>언어 선택</button>
@@ -168,12 +196,28 @@ function ChatRoom({roomId}) {
               <MessageBubble key={index} sender={Storage.getUserId() === String(
                   message.senderId)}>
                 <span className="senderNickname">{message.senderNickname}</span>
-                {message.content}
+                {renderMessageContent(message.content)}
               </MessageBubble>
           ))}
           <div ref={messagesEndRef}></div>
         </MessagesContainer>
         <InputContainer>
+          <EmojiPickerButton onClick={() => setEmojiPickerVisible(
+              !isEmojiPickerVisible)}>+</EmojiPickerButton>
+          {isEmojiPickerVisible && (
+              <EmojiPicker>
+                <Emoji onClick={() => sendEmojiMessage(":emoji1:")}><img
+                    src="/img/emoji1.png" alt="emoji1"/></Emoji>
+                <Emoji onClick={() => sendEmojiMessage(":emoji2:")}><img
+                    src="/img/emoji2.png" alt="emoji2"/></Emoji>
+                <Emoji onClick={() => sendEmojiMessage(":emoji3:")}><img
+                    src="/img/emoji3.png" alt="emoji3"/></Emoji>
+                <Emoji onClick={() => sendEmojiMessage(":emoji4:")}><img
+                    src="/img/emoji4.png" alt="emoji4"/></Emoji>
+                <Emoji onClick={() => sendEmojiMessage(":emoji5:")}><img
+                    src="/img/emoji5.png" alt="emoji5"/></Emoji>
+              </EmojiPicker>
+          )}
           <TextInput value={inputValue}
                      onChange={(e) => setInputValue(e.target.value)}
                      onKeyDown={handleKeyDown} placeholder="메시지를 입력해주세요..."/>
@@ -243,6 +287,7 @@ const InputContainer = styled.div`
   display: flex;
   padding: 10px;
   border-top: 1px solid #7c7979;
+  position: relative; // 이 부분을 추가합니다.
 `;
 
 const TextInput = styled.input`
@@ -302,3 +347,32 @@ const TranslationOptions = styled.div`
     cursor: pointer;
   }
 }`;
+
+const EmojiPickerButton = styled.button`
+  background-color: #ececec;
+  border: none;
+  padding: 10px;
+  cursor: pointer;
+`;
+
+const EmojiPicker = styled.div`
+  position: absolute;
+  bottom: 100%;
+  left: 0;
+  display: flex;
+  background-color: #fff;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  padding: 10px;
+  margin-bottom: 15px;
+  width: 500px;
+`;
+const Emoji = styled.div`
+  cursor: pointer;
+  margin: 0 5px;
+
+  img {
+    width: 90px;
+    height: 90px;
+  }
+`;

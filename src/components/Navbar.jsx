@@ -42,7 +42,6 @@ export default function Navbar({ showMyMenu, onShowMyMenu, onLogOut }) {
     navigate(ROUTER.PATH.CHATTING);  // 이 부분은 새로운 경로를 ROUTER.PATH에 추가하거나 기존 경로를 사용하면 됩니다.
   };
 
-
   return (
     <NavbarWrapper>
       <NavbarContainer>
