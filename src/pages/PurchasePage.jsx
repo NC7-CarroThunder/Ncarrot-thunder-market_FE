@@ -41,27 +41,38 @@ export default function PurchasePage() {
           <p>Loading...</p>
         ) : (
           <>
-            <ImageContainer>
-              
-              {/* <CustomImageSlider> */}
-                <MyImageSlider images={post.attachedFilesPaths} />
-              {/* </CustomImageSlider> */}
-            </ImageContainer>
-            <ContentContainer>
-            <h1>{post.title}</h1>
-              <CardText>
-                <strong>{formatPrice(post.price)}원</strong>
-              </CardText>
-              {/* 가운데에 내용을 추가합니다. */}
+          <Card>
+                    <CardImg
+                      src={`http://xflopvzfwqjk19996213.cdn.ntruss.com/article/${post.attachedFilesPaths[0].filePath}?type=f&w=250&h=250`}
+                      alt={'게시글 이미지'}
+                      className="card-img-top"
+                    />
+                    <CardBody>
+                      <CardTitle>{post.title}</CardTitle>
+                      <CardText><strong>{formatPrice(post.price)}원</strong></CardText>
+                    </CardBody>
+                    <ContentContainer>
               <CardDescription>{post.content}</CardDescription>
               내 포인트 : 40000
               <CreditButton>충전하기</CreditButton>
               <BuyButton>구매버튼</BuyButton>
             </ContentContainer>
+                  </Card>
+            {/* <ImageContainer>
+            
+            <h1>{post.title}</h1>
+            <CardText>
+                <strong>{formatPrice(post.price)}원</strong>
+              </CardText>
+                <MyImageSlider images={post.attachedFilesPaths} />
+               
+            </ImageContainer> */}
+            
             <ChatRoomContainer>
               {/* 오른쪽에 채팅방을 추가합니다. */}
               <ChatRoom roomId={postId} />
             </ChatRoomContainer>
+            
           </>
         )}
       </DetailWrapper>
@@ -69,8 +80,38 @@ export default function PurchasePage() {
   );
 }
 
+const Card = styled.div`
+  border: 1px solid #ddd;
+  margin-bottom: 20px;
+  width: 30vw; 
+  border-radius: 5%;
+  margin-right: 20px;
+`;
+
+const CardImg = styled.img`
+  width: 10vw;
+  border-radius: 5%
+`;
+
+const CardBody = styled.div`
+  padding: 10px;
+`;
+
+const CardTitle = styled.div`
+  font-size: 16px;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  width: 100%;
+`;
+
+
+const CardText = styled.p`
+  font-size: 16px;
+  margin-bottom: 5px;
+`;
+
 const MainWrapper = styled.main`
-  display: flex;
   width: 100%;
   height: 90%;
   overflow-y: auto;
@@ -82,9 +123,8 @@ const MainWrapper = styled.main`
 
 const DetailWrapper = styled.div`
   display: flex;
-  max-width: 1440px;
-  height: 100%;
-  width: 100%;
+  width: 90vw;
+  height: 90%;
   margin: 30px auto;
   background-color: #fff;
   padding: 20px;
@@ -92,16 +132,7 @@ const DetailWrapper = styled.div`
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 `;
 
-const ImageContainer = styled.div`
-  flex: 1;
-  padding: 20px;
-  position: relative;
-`;
-// const MyImageSlider = styled.img`
-//   max-width: 200px; /* 최대 가로 크기 200px */
-//   max-height: 200px; /* 최대 세로 크기 200px */
-//   object-fit: contain;
-// `;
+
 
 const ContentContainer = styled.div`
   flex: 1;
@@ -111,11 +142,6 @@ const ContentContainer = styled.div`
   align-items: center;
 `;
 
-
-const CardText = styled.p`
-  font-size: 18px;
-  margin-bottom: 5px;
-`;
 
 const CardDescription = styled.p`
   font-size: 16px;
@@ -171,3 +197,14 @@ const CreditButton = styled.button`
     background-color: #ffad6d;
   }
 `;
+
+// const ImageContainer = styled.div`
+//   flex: 1;
+//   padding: 20px;
+//   position: relative;
+// `;
+// const MyImageSlider = styled.img`
+//   max-width: 200px; /* 최대 가로 크기 200px */
+//   max-height: 200px; /* 최대 세로 크기 200px */
+//   object-fit: contain;
+// `;
