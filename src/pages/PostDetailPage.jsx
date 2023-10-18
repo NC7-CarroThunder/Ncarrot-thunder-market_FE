@@ -10,7 +10,7 @@ import Axios from '../utils/api/axios';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faHeart as solidHeart } from '@fortawesome/free-solid-svg-icons';
 import { faHeart as regularHeart } from '@fortawesome/free-regular-svg-icons';
-import MapComponent from '../components/MapComponent';
+
 
 const axiosForLoginUser = new Axios(QUERY.AXIOS_PATH.SEVER);
 
@@ -26,7 +26,6 @@ export default function PostDetailPage() {
       try {
         const response = await axios.get(
           `${QUERY.AXIOS_PATH.SEVER}/api/posts/${postId}`);
-
         console.log(response.data.result);
         setPost(response.data.result);
         setLoading(false);
@@ -107,6 +106,7 @@ export default function PostDetailPage() {
   const currentUserId = Storage.getUserId();
   console.log('현재 사용자 ID:', currentUserId);
   console.log('게시글 작성자 ID:', post.userid);
+  console.log('게시글 작성자 ID:', post.postId);
 
   const formatPrice = (price) => {
     return price.toLocaleString('en-US');
@@ -114,6 +114,7 @@ export default function PostDetailPage() {
 
   const handleSafePaymentButtonClick = () => {
     // 구매 페이지로 이동
+    // navigate(`/purchase/${postId}`);
     navigate(`/purchase/${postId}`);
   };
 
@@ -135,8 +136,6 @@ export default function PostDetailPage() {
               <ContentContainer>
                 <CardDescription>{post.content}</CardDescription>
               </ContentContainer>
-              {/* 주소가 존재하면 map 생성 */}
-              {post.address && <MapComponent address={post.address} />} 
               <CardText>거래지역 : {post.address}</CardText>
               <CardText>카테고리 : {post.itemCategory}</CardText>
               <CardText>판매자 :  {post.nickName}</CardText>
@@ -234,7 +233,7 @@ const PostInfoContainer = styled.div`
 
 const ContentContainer = styled.div`
   width: 400px;
-  max-height: 300px;
+  height: 500px;
   overflow: auto;
 
 `;

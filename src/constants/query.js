@@ -20,6 +20,9 @@ const AXIOS_PATH = {
   POSTDELETE: '/api/posts/:postId',
   WISHLIST: '/api/wishlist',
   MYPOSTS: '/api/mypost',
+  PURCHASE: '/api/payments/purchase',
+  CANCEL: '/api/payments/cancel',
+  CONFIRMEDPURCHASE: '/api/payments/ConfirmedPurchase'
 };
 
 const STALETIME = {
