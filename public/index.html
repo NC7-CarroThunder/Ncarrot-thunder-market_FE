@@ -43,5 +43,11 @@
 <script type="text/javascript" src="https://code.jquery.com/jquery-1.12.4.min.js"></script>
 <!-- iamport.payment.js -->
 <script type="text/javascript" src="https://cdn.iamport.kr/js/iamport.payment-1.1.8.js"></script>
+<script>
+  window.REACT_NCP_API_KEY = process.env.REACT_APP_NCP_API_KEY;
+</script>
+<script type="text/javascript" const REACT_NCP_API_KEY = process.env.REACT_NCP_API_KEY></script>
+<script type="text/javascript" src="https://openapi.map.naver.com/openapi/v3/maps.js?ncpClientId=REACT_NCP_API_KEY"></script>
+<script type="text/javascript" src="https://oapi.map.naver.com/openapi/v3/maps.js?ncpClientId=REACT_NCP_API_KEY&submodules=geocoder"></script>
 
 </html>
