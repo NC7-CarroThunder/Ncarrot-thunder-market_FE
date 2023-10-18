@@ -17,18 +17,21 @@ const ChattingPage = () => {
           <MyChatRooms onRoomSelect={handleRoomSelect}/>
         </MyChatRoomsContainer>
         <ChatRoomContainer>
-          {selectedRoomId ? <ChatRoom roomId={selectedRoomId}/> :
+          {selectedRoomId ? (
+              <ChatRoom roomId={selectedRoomId}/>
+          ) : (
               <>
                 <PlaceholderContainer>
                   <PlaceholderImage src="/img/chatroom.png"
                                     alt="Chatroom Placeholder"/>
                 </PlaceholderContainer>
                 <InputContainer>
-                  <TextInput placeholder="메세지를 입력해주세요..." disabled/>
+                  <EmojiPickerButton>+</EmojiPickerButton>
+                  <TextInput placeholder="메시지를 입력해주세요..." disabled/>
                   <SendButton disabled>보내기</SendButton>
                 </InputContainer>
               </>
-          }
+          )}
         </ChatRoomContainer>
       </ChattingPageContainer>
   );
@@ -105,6 +108,13 @@ const SendButton = styled.button`
   &:hover {
     background-color: #497da0;
   }
+`;
+
+const EmojiPickerButton = styled.button`
+  background-color: #ececec;
+  border: none;
+  padding: 10px;
+  cursor: pointer;
 `;
 
 export default ChattingPage;

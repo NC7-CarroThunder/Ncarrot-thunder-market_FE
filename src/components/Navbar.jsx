@@ -52,6 +52,7 @@ export default function Navbar({ showMyMenu, onShowMyMenu, onLogOut }) {
 
   }, [imageClick]);
 
+
   return (
     <NavbarWrapper>
       <NavbarContainer>
