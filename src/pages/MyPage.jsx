@@ -3,6 +3,7 @@ import styled from 'styled-components';
 import { useNavigate } from 'react-router-dom';
 import ROUTER from '../constants/router';
 import { useState } from 'react';
+import { BiArrowBack } from 'react-icons/bi';
 import Storage from '../utils/localStorage';
 
 export default function MyPage() {
@@ -94,8 +95,6 @@ export default function MyPage() {
   );
 
 
-
-
   const AdditionalInfo = () => (
     <AdditionalInfoContainer>
       <p>{getPoint()}</p>
@@ -116,33 +115,39 @@ export default function MyPage() {
         <Separator />
   
         {isModalOpen && (
-          <div style={modalOverlayStyle}>
-            <div style={modalStyle}>
-              <span style={closeBtnStyle} onClick={closeModal}>&times;</span>
-              <h2 style={{textAlign: 'center'}}>충전</h2>
-              <form>
-              <Separator />
-                <label>
-                  충전 금액:
-                  <input
+        <div style={modalOverlayStyle}>
+          <div style={modalStyle}>
+            <span style={closeBtnStyle} onClick={closeModal}>&times;</span>
+            <div style={backButtonStyle} onClick={closeModal}>
+              <BiArrowBack />
+              </div>
+              <h2 style={{ textAlign: 'center' }}>충전</h2>
+              <form style={formStyle}>
+                <Separator />
+                <div style={inputButtonContainerStyle}>
+                  <label style={marginRightStyle}>
+                    충전 금액 : <span style={{ marginRight: '5px' }}></span>
+                    <input
                     type="number"
                     placeholder="충전 금액을 입력하세요"
                     value={amount}
                     onChange={(e) => setAmount(e.target.value)}
                     style={inputStyle}
-                  />
-                </label>
-                <button
-                  type="button"
-                  onClick={handlePayment}
-                  style={buttonStyle}
-                >
-                  충전
-                </button>
+                    />
+                  </label>
+                  <button
+                    type="button"
+                    onClick={handlePayment}
+                    style={buttonStyle}
+                  >
+                    충전
+                  </button>
+                </div>
               </form>
             </div>
           </div>
         )}
+
   
         <TabContainer>
           <TabButton onClick={() => setTab('posts')} active={tab === 'posts'}>내 게시글</TabButton>
@@ -308,6 +313,9 @@ const ProfileAndAdditionalInfoContainer = styled.div`
 `;
 
 
+const marginRightStyle = {
+  marginRight: '10px', // 원하는 마진 값으로 변경 가능
+};
 /// 모달 관련 css 설정
 
 const modalOverlayStyle = {
@@ -344,6 +352,7 @@ const inputStyle = {
   marginTop: '5px',
   border: '1px solid #ccc',
   borderRadius: '4px',
+  alignItems: 'center',
 };
 
 const buttonStyle = {
@@ -354,6 +363,30 @@ const buttonStyle = {
   borderRadius: '4px',
   cursor: 'pointer',
 };
+
+const formStyle = {
+  display: 'flex',
+  flexDirection: 'column',
+  alignItems: 'center',
+  justifyContent: 'center',
+};
+
+const inputButtonContainerStyle = {
+  display: 'flex',
+  justifyContent: 'space-between',
+  alignItems: 'center',
+};
+const backButtonStyle = {
+  cursor: 'pointer',
+  display: 'flex',
+  alignItems: 'center',
+  marginBottom: '10px',
+};
+
+const backButtonIconStyle = {
+  marginRight: '5px',
+};
+
 // 여기까지
 
 const TabContainer = styled.div`
