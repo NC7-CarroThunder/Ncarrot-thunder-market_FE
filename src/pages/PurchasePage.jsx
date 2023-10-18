@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate, Link } from 'react-router-dom';
 import Axios from '../utils/api/axios';
 import QUERY from '../constants/query';
+import ROUTER from '../constants/router';
 import styled from 'styled-components';
-import MyImageSlider from '../components/ImageSlider';
 import ChatRoom from './ChatRoom'; 
+import Storage from '../utils/localStorage';
 
 const axios = new Axios(QUERY.AXIOS_PATH.SEVER);
 
@@ -12,7 +13,11 @@ export default function PurchasePage() {
   const { postId } = useParams();
   const [post, setPost] = useState({});
   const [loading, setLoading] = useState(true);
-
+  const navigate = useNavigate();
+  const currentPoint = Storage.getPoint();
+  const roomId = Storage.getRoomId();
+  
+  
   useEffect(() => {
     async function fetchPostDetails() {
       try {
@@ -29,10 +34,84 @@ export default function PurchasePage() {
     fetchPostDetails();
   }, [postId]);
 
+  async function purchase(id) {
+    console.log(post)
+    const postId = (post.postId);
+    console.log(postId)
+    const response = await axios.put(QUERY.AXIOS_PATH.PURCHASE,{
+      postId
+    });
+    console.log(response)
+    if (response.status == 200) {
+      Storage.setPoint(response.data)
+    } else {
+     alert("구매실패")
+     return 
+    }
+  }
+
+  async function cancel() {
+    const postId = (post.postId);
+    const response = await axios.put(QUERY.AXIOS_PATH.CANCEL,{
+      postId
+    });
+    if (response.status == 200) {
+      Storage.setPoint(response.data)
+    } else {
+     alert("취소실패")
+     return 
+    }
+  }
+
+
+  async function confirmedPurchase() {
+    const postId = (post.postId);
+    const response = await axios.put(QUERY.AXIOS_PATH.CONFIRMEDPURCHASE,{
+      postId
+    });
+    if (response.status == 200) {
+      
+    } else {
+     alert("취소실패")
+     return 
+    }
+  }
+
+
+
   const formatPrice = (price) => {
     return price.toLocaleString('en-US');
   };
+  
+  const CreditButtonClick = () => {
+    navigate(ROUTER.PATH.MYPAGE);
+  };
 
+
+  const PurchaseBuyClick = () => {
+    const price = post.price;
+    const myBalance = parseInt(currentPoint, 10); // 현재 포인트를 정수로 변환
+    if (myBalance >= price) {
+      // console.log('id',id)
+      purchase(post.id);
+      alert('구매 완료.');
+      navigate(ROUTER.PATH.MAIN);
+    } else {
+      alert('포인트가 부족합니다.');
+    }
+  };
+
+  const CancelBuyClick = () => {
+      cancel();
+      alert('구매 취소');
+      navigate(ROUTER.PATH.MAIN);
+  };
+
+  const ComfirmedPurchaseBuyClick = () => {
+      confirmedPurchase();
+      alert('구매 확정');
+      navigate(ROUTER.PATH.MAIN);
+  };
 
   return (
     <MainWrapper>
@@ -42,35 +121,30 @@ export default function PurchasePage() {
         ) : (
           <>
           <Card>
+            <PostContainer>
+            <Link to={`/post/${post.postId}`}>
                     <CardImg
                       src={`http://xflopvzfwqjk19996213.cdn.ntruss.com/article/${post.attachedFilesPaths[0].filePath}?type=f&w=250&h=250`}
                       alt={'게시글 이미지'}
                       className="card-img-top"
                     />
+                    </Link>
                     <CardBody>
                       <CardTitle>{post.title}</CardTitle>
                       <CardText><strong>{formatPrice(post.price)}원</strong></CardText>
                     </CardBody>
+                    </PostContainer>
                     <ContentContainer>
               <CardDescription>{post.content}</CardDescription>
-              내 포인트 : 40000
-              <CreditButton>충전하기</CreditButton>
-              <BuyButton>구매버튼</BuyButton>
+              내 포인트: {currentPoint}
+              <CreditButton onClick={CreditButtonClick}>충전하기</CreditButton>
+                {(post.itemStatus == "ONGOING" && post.buyerId == Storage.getUserId()) ? (<BuyButton onClick={ComfirmedPurchaseBuyClick}>구매확정</BuyButton>) : (<></>)}
+                {(post.itemStatus == "ONGOING" && post.buyerId == Storage.getUserId()) ? (<BuyButton onClick={CancelBuyClick}>구매취소</BuyButton>) : (<></>)}
+                {(post.itemStatus == "SELLING") ? (<BuyButton onClick={PurchaseBuyClick}>구매버튼</BuyButton>) : (<></>)}
             </ContentContainer>
                   </Card>
-            {/* <ImageContainer>
-            
-            <h1>{post.title}</h1>
-            <CardText>
-                <strong>{formatPrice(post.price)}원</strong>
-              </CardText>
-                <MyImageSlider images={post.attachedFilesPaths} />
-               
-            </ImageContainer> */}
-            
             <ChatRoomContainer>
-              {/* 오른쪽에 채팅방을 추가합니다. */}
-              <ChatRoom roomId={postId} />
+            <ChatRoom roomId={roomId} />
             </ChatRoomContainer>
             
           </>
@@ -79,6 +153,31 @@ export default function PurchasePage() {
     </MainWrapper>
   );
 }
+
+const MainWrapper = styled.main`
+  width: 100%;
+  height: 90%;
+  overflow-y: auto;
+  overflow-x: hidden;
+  background-color: #f7f7f7;
+  align-items: center;
+  margin: 0 auto;
+`;
+
+const DetailWrapper = styled.div`
+  display: flex;
+  width: 90vw;
+  height: 90%;
+  margin: 30px auto;
+  background-color: #fff;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+`;
+
+const PostContainer = styled.div`
+    display: flex;
+`
 
 const Card = styled.div`
   border: 1px solid #ddd;
@@ -89,6 +188,7 @@ const Card = styled.div`
 `;
 
 const CardImg = styled.img`
+  margin: 20px;
   width: 10vw;
   border-radius: 5%
 `;
@@ -111,26 +211,7 @@ const CardText = styled.p`
   margin-bottom: 5px;
 `;
 
-const MainWrapper = styled.main`
-  width: 100%;
-  height: 90%;
-  overflow-y: auto;
-  overflow-x: hidden;
-  background-color: #f7f7f7;
-  align-items: center;
-  margin: 0 auto;
-`;
 
-const DetailWrapper = styled.div`
-  display: flex;
-  width: 90vw;
-  height: 90%;
-  margin: 30px auto;
-  background-color: #fff;
-  padding: 20px;
-  border-radius: 10px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-`;
 
 
 
@@ -197,14 +278,3 @@ const CreditButton = styled.button`
     background-color: #ffad6d;
   }
 `;
-
-// const ImageContainer = styled.div`
-//   flex: 1;
-//   padding: 20px;
-//   position: relative;
-// `;
-// const MyImageSlider = styled.img`
-//   max-width: 200px; /* 최대 가로 크기 200px */
-//   max-height: 200px; /* 최대 세로 크기 200px */
-//   object-fit: contain;
-// `;
