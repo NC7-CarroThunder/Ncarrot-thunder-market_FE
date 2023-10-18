@@ -70,6 +70,8 @@ export default function PostDetailPage() {
     }
   };
 
+  
+
   const axiosInstance = new Axios(QUERY.AXIOS_PATH.SEVER);
 
   const handleWishlistButtonClick = async () => {
@@ -112,11 +114,36 @@ export default function PostDetailPage() {
     return price.toLocaleString('en-US');
   };
 
-  const handleSafePaymentButtonClick = () => {
+  const handleSafePaymentButtonClick = async () => {
+    try {
+      const currentUserId = Storage.getUserId();
+      console.log('게시글 작성자 ID:', post.userid);
+      const response = await axios.get(
+        `http://localhost:8888/api/chatting/createOrGetChatRoom`,
+        {
+          params: {
+            sellerId: post.userid,
+            currentUserId: currentUserId,
+            postId: post.postId,
+          },
+        }
+      );
+      setTimeout(async () => {
+        const roomId = response.data.roomId;
+        if (roomId) {
+          console.log('채팅방생성', roomId)
+          Storage.setRoomId(roomId)
+          navigate(`/purchase/${postId}`);
+        } else {
+          console.error('채팅방 생성에 실패했습니다.');
+        }
+      },);
+    } catch (error) {
+      console.error('Error creating or accessing the chat room:', error);
+    }
+    };
     // 구매 페이지로 이동
     // navigate(`/purchase/${postId}`);
-    navigate(`/purchase/${postId}`);
-  };
 
   return (
     <MainWrapper>
