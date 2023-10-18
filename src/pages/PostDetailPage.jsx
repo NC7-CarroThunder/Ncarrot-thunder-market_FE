@@ -112,6 +112,11 @@ export default function PostDetailPage() {
     return price.toLocaleString('en-US');
   };
 
+  const handleSafePaymentButtonClick = () => {
+    // 구매 페이지로 이동
+    navigate(`/purchase/${postId}`);
+  };
+
   return (
     <MainWrapper>
       <DetailWrapper>
@@ -146,7 +151,7 @@ export default function PostDetailPage() {
                       </LikeButton>
                       <ChatButton
                         onClick={handleChatButtonClick}>캐럿톡</ChatButton>
-                      <SafePaymentButton>안전결제하기</SafePaymentButton>
+                      <SafePaymentButton onClick={handleSafePaymentButtonClick}>안전결제하기</SafePaymentButton>
                     </>
                   )}
                   {post.dealingType === 'WITHPERSONAL' && (

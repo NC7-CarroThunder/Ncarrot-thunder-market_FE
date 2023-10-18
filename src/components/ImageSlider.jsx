@@ -75,8 +75,8 @@ const ImageSlider = ({ images }) => {
 };
 
 const SliderContainer = styled.div`
-  width: 450px;
-  height: 450px;
+  width: 25vw;
+  height: 45vh;
   overflow: hidden;
   position: relative;
 `;
@@ -87,8 +87,8 @@ const SliderContent = styled.div`
 `;
 
 const SliderImage = styled.img`
-  width: 450px;
-  height: 450px;
+  width: 25vw;
+  height: 45vh;
   object-fit: cover;
   flex: none;
   cursor: pointer;
