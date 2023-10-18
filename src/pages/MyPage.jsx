@@ -1,17 +1,56 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import ROUTER from '../constants/router';
-import { useState } from 'react';
 import { BiArrowBack } from 'react-icons/bi';
 import Storage from '../utils/localStorage';
+import Axios from '../utils/api/axios';
+import QUERY from '../constants/query';
+
 
 export default function MyPage() {
   const [isModalOpen, setModalOpen] = useState(false);
   const [amount, setAmount] = useState('');
   const navigate = useNavigate();
   const [tab, setTab] = React.useState('posts');
+  const [wishlists, setWishlists] = useState([]);
+  const [myPosts, setMyPosts] = useState([]);
+  const [isWishlistLoaded, setIsWishlistLoaded] = useState(false);
 
+  const axiosInstance = new Axios(QUERY.AXIOS_PATH.SEVER);
+
+  useEffect(() => {
+    async function fetchWishlists() {
+      try {
+        const response = await axiosInstance.get(`${QUERY.AXIOS_PATH.WISHLIST}`);
+        setWishlists(response.data);
+        setIsWishlistLoaded(true);
+      } catch (error) {
+        console.error('위시리스트 정보 가져오기 오류:', error);
+      }
+    }
+
+    if (tab === 'myposts') {
+      fetchMyPosts();
+    } else if (tab === 'wishlist' && !isWishlistLoaded) {
+      fetchWishlists();
+    }
+  }, [tab, isWishlistLoaded]);
+
+  async function fetchMyPosts() {
+    try {
+      const response = await axiosInstance.get(QUERY.AXIOS_PATH.MYPOSTS);
+      const responseData = response.data.result;  // API 응답에서 result 배열을 가져옵니다.
+      if (Array.isArray(responseData)) {
+        setMyPosts(responseData);
+      } else {
+        console.warn('API did not return an array for myPosts');
+        setMyPosts([]);  // 기본값으로 빈 배열 설정
+      }
+    } catch (error) {
+      console.error('내 게시글 정보 가져오기 오류:', error);
+    }
+  }
 
   //결제관련 
   const openModal = () => {
@@ -47,11 +86,6 @@ export default function MyPage() {
     return `당근번개 페이 잔액:${Storage.getPoint()}원`
   }
 
-  const posts = [
-    { title: '게시글1', price: '5,000원', image: '1.jpg' },
-    { title: '게시글2', price: '15,000원', image: '9.jpg' },
-    { title: '게시글3', price: '25,000원', image: '3.jpg' },
-  ];
   
   const ongoing = [
     { title: '거래중1', price: '12,000원', image: '2.jpg' },
@@ -59,11 +93,6 @@ export default function MyPage() {
     { title: '거래중3', price: '32,000원', image: '4.jpg' },
   ];
   
-  const wishlists = [
-    { title: '아이템1', price: '10,000원', image: '4.jpg' },
-    { title: '아이템2', price: '20,000원', image: '1.jpg' },
-    { title: '아이템3', price: '30,000원', image: '2.jpg' },
-  ];
 
   const followers = [
     { name: '사용자1', image: 'dog.jpg' },
@@ -79,7 +108,7 @@ export default function MyPage() {
 
   const Profile = ({ onProfileEditClick }) => (
     <ProfileContainer>
-      {(Storage.getPhoto() == undefined) ? (
+      {(Storage.getPhoto() === undefined) ? (
         <ProfileImage src="/profile.jpg" alt="프로필 이미지" />
       ) : (
         <ProfileImage src={`https://kr.object.ncloudstorage.com/carrot-thunder/user/${Storage.getPhoto()}`} alt="프로필 이미지" />
@@ -150,7 +179,7 @@ export default function MyPage() {
 
   
         <TabContainer>
-          <TabButton onClick={() => setTab('posts')} active={tab === 'posts'}>내 게시글</TabButton>
+        <TabButton onClick={() => setTab('myposts')} active={tab === 'myposts'}>내 게시글</TabButton>
           <TabButton onClick={() => setTab('ongoing')} active={tab === 'ongoing'}>거래중</TabButton>
           <TabButton onClick={() => setTab('wishlist')} active={tab === 'wishlist'}>찜</TabButton>
           <TabButton onClick={() => setTab('reviews')} active={tab === 'reviews'}>거래후기</TabButton>
@@ -159,52 +188,54 @@ export default function MyPage() {
         </TabContainer>
   
         <ListContainer>
-          {tab === 'following' 
-            ? followings.map(user => (
-                <UserCard key={user.name}>
-                  <UserImage background={user.image} />
-                  {user.name}
-                  <FollowButton>팔로잉</FollowButton>
-                </UserCard>
-              ))
-            : tab === 'followers' 
-            ? followers.map(user => (
-                <UserCard key={user.name}>
-                  <UserImage background={user.image} />
-                  {user.name}
-                  <FollowButton>팔로우</FollowButton>
-                </UserCard>
-              ))
-              : tab === 'wishlist'
-              ? wishlists.map(item => (
-                  <ListCard key={item.title}>
-                    <ListImage background={item.image} />
-                    <div>{item.title}</div>
-                    <div>{item.price}</div>
-                  </ListCard>
-                ))
-              : tab === 'posts'
-              ? posts.map(item => (
-                  <ListCard key={item.title}>
-                    <ListImage background={item.image} />
-                    <div>{item.title}</div>
-                    <div>{item.price}</div>
-                  </ListCard>
-                ))
-              : tab === 'ongoing'
-              ? ongoing.map(item => (
-                  <ListCard key={item.title}>
-                    <ListImage background={item.image} />
-                    <div>{item.title}</div>
-                    <div>{item.price}</div>
-                  </ListCard>
-                ))
-                : null
-              }
-            </ListContainer>
+          {tab === 'following' && followings.map(user => (
+            <UserCard key={user.id}>
+              <UserImage src={user.background ? `${process.env.PUBLIC_URL}/${user.background}` : ''} alt="유저 이미지" />
+              {user.name}
+              <FollowButton>팔로잉</FollowButton>
+            </UserCard>
+          ))}
+          {tab === 'followers' && followers.map(user => (
+            <UserCard key={user.id}>
+              <UserImage src={user.background ? `${process.env.PUBLIC_URL}/${user.background}` : ''} alt="유저 이미지" />
+              {user.name}
+              <FollowButton>팔로우</FollowButton>
+            </UserCard>
+          ))}
+          {tab === 'wishlist' && wishlists.map(wishlist => (
+            <Link to={`/post/${wishlist.id}`} key={wishlist.id}>
+              <ListCard>
+                {wishlist.attachedFiles.length > 0 && (
+                  <ListImage src={`http://xflopvzfwqjk19996213.cdn.ntruss.com/article/${wishlist.attachedFiles[0].filePath}?type=f&w=250&h=250`} alt={`이미지 ${wishlist.id}`} />
+                )}
+                <div>{wishlist.title}</div>
+                <div>{wishlist.price}</div>
+              </ListCard>
+            </Link>
+          ))}
+  {tab === 'myposts' && myPosts.map(item => (
+  <Link to={`/post/${item.postid}`} key={item.postid}>
+    <ListCard>
+    <ListImage src={`http://xflopvzfwqjk19996213.cdn.ntruss.com/article/${item.attachedFilesPaths[0].filePath}?type=f&w=250&h=250`} alt={`이미지 ${item.postid}`} />
+      <div>{item.title}</div>
+      <div>{item.price}원</div>
+    </ListCard>
+  </Link>
+))}
+          {tab === 'ongoing' && ongoing.map(item => (
+            <Link to={`/post/${item.id}`} key={item.id}>
+              <ListCard>
+                <ListImage src={item.background ? `${process.env.PUBLIC_URL}/${item.background}` : ''} alt="리스트 이미지" />
+                <div>{item.title}</div>
+                <div>{item.price}</div>
+              </ListCard>
+            </Link>
+          ))}
+        </ListContainer>
       </ContentContainer>
     </MyPageContainer>
   );
+
           }  
 
 const MyPageContainer = styled.div`
@@ -383,11 +414,6 @@ const backButtonStyle = {
   marginBottom: '10px',
 };
 
-const backButtonIconStyle = {
-  marginRight: '5px',
-};
-
-// 여기까지
 
 const TabContainer = styled.div`
   display: flex;
@@ -421,13 +447,10 @@ const UserCard = styled.div`
 
 `;
 
-const UserImage = styled.div`
+const UserImage = styled.img`
   width: 100px;
   height: 100px;
   border-radius: 50%;
-  background-color: #eee;
-  background-image: url(${props => props.background ? `${process.env.PUBLIC_URL}/${props.background}` : ''});
-  background-size: cover;
   margin-bottom: 10px; 
 `;
 
@@ -450,11 +473,9 @@ const ListCard = styled.div`
   justify-content: center;
 `;
 
-const ListImage = styled.div`
+const ListImage = styled.img`
   width: 150px;
   height: 150px;
-  background-color: #eee;
-  background-image: url(${props => props.background ? `${process.env.PUBLIC_URL}/${props.background}` : ''});
-  background-size: cover;
   margin-bottom: 10px; 
 `;
+
