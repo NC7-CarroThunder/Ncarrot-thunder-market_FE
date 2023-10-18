@@ -62,12 +62,12 @@ export default function Navbar({ showMyMenu, onShowMyMenu, onLogOut }) {
         <LogoContainer>
           <Link to={ROUTER.PATH.MAIN}>
             <Logo onClick={handleLogoClick}>
-              <img src='/img/logo.png' alt='' />
+              <img src='/img/chatroom.png' alt='' />
             </Logo>
           </Link>
           <Link to={ROUTER.PATH.HOT_ARTICLES}>
             <Text large_regular onClick={handleTransaction}>
-              중고거래
+              CarrorThunder
             </Text>
           </Link>
         </LogoContainer>
@@ -165,8 +165,8 @@ const LogoContainer = styled.nav`
 
 const Logo = styled.div`
   img {
-    width: 8rem;
-    height: 2.5rem;
+    width: 5rem;
+    height: 4rem;
   }
 `;
 
@@ -174,7 +174,7 @@ const FormContainer = styled.form`
   display: flex;
   justify-content: center;
   align-items: center;
-  max-width: 20rem;
+  max-width: 30rem;
   width: 100%;
   gap: 1rem;
 
