@@ -1,6 +1,6 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import styled from 'styled-components';
-import { Client } from '@stomp/stompjs';
+import {Client} from '@stomp/stompjs';
 import SockJS from 'sockjs-client';
 import Storage from '../utils/localStorage';
 import Axios from '../utils/api/axios';
@@ -9,17 +9,19 @@ import ROUTER from '../constants/router';
 
 const axios = new Axios(QUERY.AXIOS_PATH.SEVER);
 
-function ChatRoom({ roomId }) {
+function ChatRoom({roomId}) {
   const [messages, setMessages] = useState([]);
   const [inputValue, setInputValue] = useState('');
   const [targetLang, setTargetLang] = useState('ko');
   const stompClient = useRef(null);
   const messagesEndRef = useRef(null);
-  const [isTranslationOptionsVisible, setTranslationOptionsVisible] = useState(false);
+  const [isTranslationOptionsVisible, setTranslationOptionsVisible] = useState(
+      false);
 
   useEffect(() => {
     setMessages([]);
-    const socket = new SockJS('http://localhost:8888/api/chatting-websocket', [], { withCredentials: true });
+    const socket = new SockJS('http://localhost:8888/api/chatting-websocket',
+        [], {withCredentials: true});
     const userId = Storage.getUserId();
 
     stompClient.current = new Client({
@@ -38,24 +40,25 @@ function ChatRoom({ roomId }) {
       console.error('Additional details: ' + frame.body);
       stompClient.current.subscribe(`/topic/messages/${roomId}`, (message) => {
         const parsedMessage = JSON.parse(message.body);
-        translateMessage(parsedMessage.content, targetLang).then((translatedMessage) => {
-          setMessages((prevMessages) => [
-            ...prevMessages,
-            { ...parsedMessage, content: translatedMessage },
-          ]);
-        });
+        translateMessage(parsedMessage.content, targetLang).then(
+            (translatedMessage) => {
+              setMessages((prevMessages) => [
+                ...prevMessages,
+                {...parsedMessage, content: translatedMessage},
+              ]);
+            });
       });
       axios.get(`/api/chatting/message/${roomId}`)
-        .then((response) => response.data)
-        .then((data) => {
-          setMessages(data);
-        })
-        .catch((error) => {
-          if (error.response && error.response.status === 401) {
-            navigator(ROUTER.PATH.LOGIN);
-          }
-          console.error('Error fetching old messages:', error);
-        });
+      .then((response) => response.data)
+      .then((data) => {
+        setMessages(data);
+      })
+      .catch((error) => {
+        if (error.response && error.response.status === 401) {
+          navigator(ROUTER.PATH.LOGIN);
+        }
+        console.error('Error fetching old messages:', error);
+      });
     };
 
     stompClient.current.activate();
@@ -68,14 +71,16 @@ function ChatRoom({ roomId }) {
   }, [roomId, targetLang]);
 
   const sendMessage = () => {
-    if (roomId && inputValue.trim() !== '' && stompClient.current && stompClient.current.connected) {
+    if (roomId && inputValue.trim() !== '' && stompClient.current
+        && stompClient.current.connected) {
       const chatMessage = {
         roomId: roomId,
         content: inputValue,
         senderId: parseInt(Storage.getUserId()),
         targetLang: targetLang,
       };
-      stompClient.current.publish({ destination: '/app/send', body: JSON.stringify(chatMessage) });
+      stompClient.current.publish(
+          {destination: '/app/send', body: JSON.stringify(chatMessage)});
       setInputValue('');
     }
   };
@@ -89,13 +94,14 @@ function ChatRoom({ roomId }) {
 
   const translateMessage = async (message, targetLang) => {
     try {
-      const response = await fetch('http://localhost:8888/api/chatting/translate', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ message, targetLang }),
-      });
+      const response = await fetch(
+          'http://localhost:8888/api/chatting/translate', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({message, targetLang}),
+          });
 
       if (response.ok) {
         const data = await response.json();
@@ -119,57 +125,61 @@ function ChatRoom({ roomId }) {
   };
 
   const languageOptions = [
-    { value: 'ko', label: '한국어' },
-    { value: 'en', label: '영어 English' },
-    { value: 'ja', label: '일본어 日本語' },
-    { value: 'zh-CN', label: '중국어 간체 中文(简体)' },
-    { value: 'zh-TW', label: '중국어 번체 中文(繁體)' },
-    { value: 'vi', label: '베트남어 Tiếng Việt' },
-    { value: 'th', label: '태국어 ไทย' },
-    { value: 'id', label: '인도네시아어 Bahasa Indonesia' },
-    { value: 'fr', label: '프랑스어 Français' },
-    { value: 'es', label: '스페인어 Español' },
-    { value: 'ru', label: '러시아어 Русский' },
-    { value: 'de', label: '독일어 Deutsch' },
-    { value: 'it', label: '이탈리아어 Italiano' },
+    {value: 'ko', label: '한국어'},
+    {value: 'en', label: '영어 English'},
+    {value: 'ja', label: '일본어 日本語'},
+    {value: 'zh-CN', label: '중국어 간체 中文(简体)'},
+    {value: 'zh-TW', label: '중국어 번체 中文(繁體)'},
+    {value: 'vi', label: '베트남어 Tiếng Việt'},
+    {value: 'th', label: '태국어 ไทย'},
+    {value: 'id', label: '인도네시아어 Bahasa Indonesia'},
+    {value: 'fr', label: '프랑스어 Français'},
+    {value: 'es', label: '스페인어 Español'},
+    {value: 'ru', label: '러시아어 Русский'},
+    {value: 'de', label: '독일어 Deutsch'},
+    {value: 'it', label: '이탈리아어 Italiano'},
   ];
 
   return (
-    <>
-      <button onClick={handleToggleTranslationOptions}>언어 선택</button>
-      <TranslationOptions isVisible={isTranslationOptionsVisible}>
-        <div className="accordion-bar" onClick={handleToggleTranslationOptions}>
-          <div>닫기</div>
-        </div>
-        <div className="language-list">
-          {languageOptions.map((option) => (
-            <label key={option.value}>
-              <input
-                type="radio"
-                name="language"
-                value={option.value}
-                checked={targetLang === option.value}
-                onChange={handleTargetLangChange}
-              />
-              {option.label}
-            </label>
+      <>
+        <button onClick={handleToggleTranslationOptions}>언어 선택</button>
+        <TranslationOptions isVisible={isTranslationOptionsVisible}>
+          <div className="accordion-bar"
+               onClick={handleToggleTranslationOptions}>
+            <div>닫기</div>
+          </div>
+          <div className="language-list">
+            {languageOptions.map((option) => (
+                <label key={option.value}>
+                  <input
+                      type="radio"
+                      name="language"
+                      value={option.value}
+                      checked={targetLang === option.value}
+                      onChange={handleTargetLangChange}
+                  />
+                  {option.label}
+                </label>
+            ))}
+          </div>
+        </TranslationOptions>
+        <MessagesContainer>
+          {messages.map((message, index) => (
+              <MessageBubble key={index} sender={Storage.getUserId() === String(
+                  message.senderId)}>
+                <span className="senderNickname">{message.senderNickname}</span>
+                {message.content}
+              </MessageBubble>
           ))}
-        </div>
-      </TranslationOptions>
-      <MessagesContainer>
-        {messages.map((message, index) => (
-          <MessageBubble key={index} sender={Storage.getUserId() === String(message.senderId)}>
-            <span className="senderNickname">{message.senderNickname}</span>
-            {message.content}
-          </MessageBubble>
-        ))}
-        <div ref={messagesEndRef}></div>
-      </MessagesContainer>
-      <InputContainer>
-        <TextInput value={inputValue} onChange={(e) => setInputValue(e.target.value)} onKeyDown={handleKeyDown} placeholder="메시지를 입력해주세요..." />
-        <SendButton onClick={sendMessage}>보내기</SendButton>
-      </InputContainer>
-    </>
+          <div ref={messagesEndRef}></div>
+        </MessagesContainer>
+        <InputContainer>
+          <TextInput value={inputValue}
+                     onChange={(e) => setInputValue(e.target.value)}
+                     onKeyDown={handleKeyDown} placeholder="메시지를 입력해주세요..."/>
+          <SendButton onClick={sendMessage}>보내기</SendButton>
+        </InputContainer>
+      </>
   );
 }
 
@@ -214,7 +224,8 @@ const MessageBubble = styled.div.withConfig({
   padding: 10px 15px;
   margin-bottom: 10px;
   background-color: ${props => props.sender ? '#73aace' : '#7c7979'};
-  border-radius: ${props => props.sender ? '10px 10px 10px 0' : '10px 10px 0 10px'};
+  border-radius: ${props => props.sender ? '10px 10px 10px 0'
+          : '10px 10px 0 10px'};
   align-self: ${props => props.sender ? 'flex-end' : 'flex-start'};
   color: #ffffff;
   display: inline-block;

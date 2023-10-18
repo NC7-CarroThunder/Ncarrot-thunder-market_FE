@@ -1,5 +1,7 @@
+
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+
 import Axios from '../utils/api/axios';
 import QUERY from '../constants/query';
 import styled from 'styled-components';
@@ -7,6 +9,7 @@ import Storage from '../utils/localStorage';
 import ROUTER from '../constants/router';
 
 const axios = new Axios(QUERY.AXIOS_PATH.SEVER);
+
 
 
 const MyChatRooms = ({ onRoomSelect }) => {
@@ -24,9 +27,11 @@ const MyChatRooms = ({ onRoomSelect }) => {
           }
           console.error('Error fetching old messages:', error);
         });
+
         setChatRooms(response.data.chatRooms);
 
-        const validChatRooms = response.data.chatRooms.filter(room => room.postId !== 0);
+        const validChatRooms = response.data.chatRooms.filter(
+          room => room.postId !== 0);
 
         const imagePromises = validChatRooms.map(room =>
           axios.get(`/api/chatting/getFirstAttachment?postId=${room.postId}`).catch((error) => {
@@ -35,6 +40,7 @@ const MyChatRooms = ({ onRoomSelect }) => {
             }
             console.error('Error fetching ', error);
           }));
+
 
         const imageResponses = await Promise.all(imagePromises);
         const tempImages = {};
@@ -80,7 +86,9 @@ const MyChatRooms = ({ onRoomSelect }) => {
             <ChatRoomContent>
               <ChatRoomName>{getCounterpartNickname(room)}</ChatRoomName>
               <MessageTitle>제목: {room.postTitle}</MessageTitle>
-              <LastMessage>최근대화: {room.lastMessage?.length > 13 ? room.lastMessage.slice(0, 13) + '...' : room.lastMessage}</LastMessage>
+              <LastMessage>최근대화: {room.lastMessage?.length > 13
+                ? room.lastMessage.slice(0, 13) + '...'
+                : room.lastMessage}</LastMessage>
               <DateText>{formatTime(room.lastUpdated)}</DateText>
             </ChatRoomContent>
             <ChatButton onClick={() => handleChatButtonClick(room.roomId)}>
@@ -152,7 +160,7 @@ const ChatRoomContent = styled.div`
 const ChatRoomName = styled.div`
   font-size: 18px;
   font-weight: bold;
-  margin-bottom: 5px;  // 간격 줄임
+  margin-bottom: 5px; // 간격 줄임
 `;
 
 const ChatButton = styled.button`
@@ -171,8 +179,8 @@ const ChatButton = styled.button`
 
 const MessageTitle = styled.div`
   font-size: 16px;
-  font-weight: normal;  // 폰트 굵기를 일반으로 변경
-  margin-bottom: 5px;  // 간격 늘림
+  font-weight: normal; // 폰트 굵기를 일반으로 변경
+  margin-bottom: 5px; // 간격 늘림
 `;
 
 const LastMessage = styled.span`
