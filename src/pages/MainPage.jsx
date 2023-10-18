@@ -168,6 +168,13 @@ export default function MainPage() {
                     <CardBody>
                       <CardTitle>{post.title}</CardTitle>
                       <CardText><strong>{formatPrice(post.price)}원</strong></CardText>
+                      <DealingTypeBadge>
+                        {post.dealingType === 'FOR_PAY' ? '안전결제' : (
+                          post.dealingType === 'WITHPERSONAL' ? '직접결제' : (
+                            post.dealingType === 'FOR_FREE' ? '나눔' : ''
+                          )
+                        )}
+                      </DealingTypeBadge>
                     </CardBody>
                   </Card>
 
@@ -271,4 +278,13 @@ const Col = styled.div`
   max-width: calc(25% - 20px);
   width: 250px;
   margin: 10px;
+`;
+
+const DealingTypeBadge = styled.div`
+  background-color: #999;
+  color: #fff;
+  font-size: 14px;
+  padding: 5px 10px;
+  border-radius: 5px;
+  display: inline-block;
 `;
