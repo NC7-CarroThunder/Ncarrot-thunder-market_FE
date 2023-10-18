@@ -17,6 +17,7 @@ export default function ProfileEditPage() {
   const [address, setAddress] = useState('');
   const [detailAddress, setDetailAddress] = useState('');
   const [profileImage, setProfileImage] = useState(null);  // 프로필 이미지
+  const [uploadImage, setUploadImage] = useState(null);
 
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
@@ -54,6 +55,7 @@ export default function ProfileEditPage() {
       const reader = new FileReader();
       reader.onloadend = () => {
         setProfileImage(reader.result);
+        setUploadImage(file);
       };
       reader.readAsDataURL(file);
     }
@@ -89,27 +91,37 @@ export default function ProfileEditPage() {
       return;
     }
     // 수정된 정보만을 저장
+    const formData = new FormData();
+    let post = {};
+    let imageData = [];
+    let contentKey = 'profileRequestDto';
+
+
+
     const updatedProfile = {
       nickname,
-      profileImage,
       phone,
       address,
       detailAddress,
       password,
     };
-
-    // api 전송
+    formData.append(
+      contentKey,
+      new Blob([JSON.stringify(updatedProfile)], { type: 'application/json' })
+    );
+    formData.append('multipartFile', uploadImage);
+    console.log(uploadImage);
     try {
-      await updateProfile(updatedProfile);
+      await updateProfile(formData);
     } catch (error) {
       console.error('프로필 업데이트 중 오류 발생', error);
       alert('프로필 업데이트 중 오류가 발생했습니다.');
     }
   };
 
-  async function updateProfile(updatedProfile) {
+  async function updateProfile(formData) {
     try {
-      const response = await axios.put(`/api/profiles`, updatedProfile);
+      const response = await axios.put(`/api/profiles`, formData);
 
       if (response.status === 200) {
         alert('프로필이 성공적으로 업데이트되었습니다.');
