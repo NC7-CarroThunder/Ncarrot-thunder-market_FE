@@ -1,6 +1,5 @@
-
-import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, {useEffect, useState} from 'react';
+import {useNavigate} from 'react-router-dom';
 
 import Axios from '../utils/api/axios';
 import QUERY from '../constants/query';
@@ -10,9 +9,7 @@ import ROUTER from '../constants/router';
 
 const axios = new Axios(QUERY.AXIOS_PATH.SEVER);
 
-
-
-const MyChatRooms = ({ onRoomSelect }) => {
+const MyChatRooms = ({onRoomSelect}) => {
   const navigator = useNavigate();
   const [chatRooms, setChatRooms] = useState([]);
   const [images, setImages] = useState({});
@@ -21,7 +18,8 @@ const MyChatRooms = ({ onRoomSelect }) => {
   useEffect(() => {
     const fetchChatRooms = async () => {
       try {
-        const response = await axios.get(`/api/chatting/myChatRooms?userId=${userId}`).catch((error) => {
+        const response = await axios.get(
+            `/api/chatting/myChatRooms?userId=${userId}`).catch((error) => {
           if (error.response.status == 401) {
             navigator(ROUTER.PATH.LOGIN)
           }
@@ -31,16 +29,17 @@ const MyChatRooms = ({ onRoomSelect }) => {
         setChatRooms(response.data.chatRooms);
 
         const validChatRooms = response.data.chatRooms.filter(
-          room => room.postId !== 0);
+            room => room.postId !== 0);
 
         const imagePromises = validChatRooms.map(room =>
-          axios.get(`/api/chatting/getFirstAttachment?postId=${room.postId}`).catch((error) => {
-            if (error.response.status == 401) {
-              navigator(ROUTER.PATH.LOGIN)
-            }
-            console.error('Error fetching ', error);
-          }));
-
+            axios.get(
+                `/api/chatting/getFirstAttachment?postId=${room.postId}`).catch(
+                (error) => {
+                  if (error.response.status == 401) {
+                    navigator(ROUTER.PATH.LOGIN)
+                  }
+                  console.error('Error fetching ', error);
+                }));
 
         const imageResponses = await Promise.all(imagePromises);
         const tempImages = {};
@@ -77,27 +76,27 @@ const MyChatRooms = ({ onRoomSelect }) => {
   };
 
   return (
-    <ChatRoomsContainer>
-      <h3>전체대화</h3>
-      <ul>
-        {chatRooms.map((room) => (
-          <ChatRoomItem key={room.roomId}>
-            <ChatRoomImage src={images[room.postId]} alt="게시글 이미지" />
-            <ChatRoomContent>
-              <ChatRoomName>{getCounterpartNickname(room)}</ChatRoomName>
-              <MessageTitle>제목: {room.postTitle}</MessageTitle>
-              <LastMessage>최근대화: {room.lastMessage?.length > 13
-                ? room.lastMessage.slice(0, 13) + '...'
-                : room.lastMessage}</LastMessage>
-              <DateText>{formatTime(room.lastUpdated)}</DateText>
-            </ChatRoomContent>
-            <ChatButton onClick={() => handleChatButtonClick(room.roomId)}>
-              대화<br />시작
-            </ChatButton>
-          </ChatRoomItem>
-        ))}
-      </ul>
-    </ChatRoomsContainer>
+      <ChatRoomsContainer>
+        <h3>전체대화</h3>
+        <ul>
+          {chatRooms.map((room) => (
+              <ChatRoomItem key={room.roomId}>
+                <ChatRoomImage src={images[room.postId]} alt="게시글 이미지"/>
+                <ChatRoomContent>
+                  <ChatRoomName>{getCounterpartNickname(room)}</ChatRoomName>
+                  <MessageTitle>제목: {room.postTitle}</MessageTitle>
+                  <LastMessage>최근대화: {room.lastMessage?.length > 13
+                      ? room.lastMessage.slice(0, 13) + '...'
+                      : room.lastMessage}</LastMessage>
+                  <DateText>{formatTime(room.lastUpdated)}</DateText>
+                </ChatRoomContent>
+                <ChatButton onClick={() => handleChatButtonClick(room.roomId)}>
+                  대화<br/>시작
+                </ChatButton>
+              </ChatRoomItem>
+          ))}
+        </ul>
+      </ChatRoomsContainer>
   );
 };
 
