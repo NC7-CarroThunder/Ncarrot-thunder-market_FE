@@ -16,7 +16,7 @@ export default function Navbar({ showMyMenu, onShowMyMenu, onLogOut }) {
   const navigate = useNavigate();
   const nickname = Storage.getNickName();
   const query = useQueryClient();
-  const [imageClick, setImegeClick] = useState(false);
+  const [imageClick, setImegeClick] = useState(null);
 
   const handleSubmit = e => {
     e.preventDefault();
@@ -48,7 +48,10 @@ export default function Navbar({ showMyMenu, onShowMyMenu, onLogOut }) {
   }
 
   useEffect(() => {
-    onShowMyMenu((state) => (!state));
+    if (imageClick != null) {
+      onShowMyMenu((state) => (!state));
+    }
+
 
   }, [imageClick]);
 
@@ -84,7 +87,13 @@ export default function Navbar({ showMyMenu, onShowMyMenu, onLogOut }) {
                 ) : (
                   <img
                     src={`https://kr.object.ncloudstorage.com/carrot-thunder/user/${Storage.getPhoto()}`}
-                    style={{ width: '100%', height: '100%', objectFit: 'cover', cursor: 'pointer' }}
+                    style={{
+                      width: '1.2cm',
+                      height: '1.2cm',
+                      overflow: 'hidden',
+                      borderRadius: '50%',
+                      cursor: 'pointer'
+                    }}
                     onClick={clickImage}
                   />
 

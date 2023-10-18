@@ -24,6 +24,11 @@ const Payment = () => {
   }, []);
 
   const requestPay = () => {
+    if (parseInt(chargePoint) < 1000) {
+      alert("1000원 이상부터 충전 가능합니다");
+      navigator(ROUTER.PATH.BACK);
+      return;
+    }
     console.log("결제서비스 하기전에, 해당 유저가 로그인 했는지 확인하는 과정");
     const res = [];
     const response = axiosForLoginUser.get(`/api/profiles`)
@@ -57,7 +62,12 @@ const Payment = () => {
         //TODO  : 결제완료후, 해당 결제 정보사항 DB에 저장하고, 현재 사용자 포인트 정보 업데이트 해야함
         const userId = Storage.getUserId();
         console.log("userId : " + userId);
-        console.log(chargePoint);
+        console.log(rsp);
+        if (!rsp.success) {
+          alert('결제 실패');
+          navigator(ROUTER.PATH.MYPAGE);
+          return;
+        }
         const { data } = await axios.post('http://localhost:8888/api/payments'
           , { userId, chargePoint });
         console.log(data);
