@@ -10,6 +10,7 @@ import Axios from '../utils/api/axios';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faHeart as solidHeart } from '@fortawesome/free-solid-svg-icons';
 import { faHeart as regularHeart } from '@fortawesome/free-regular-svg-icons';
+import MapComponent from '../components/MapComponent';
 
 
 const axiosForLoginUser = new Axios(QUERY.AXIOS_PATH.SEVER);
@@ -70,7 +71,7 @@ export default function PostDetailPage() {
     }
   };
 
-  
+
 
   const axiosInstance = new Axios(QUERY.AXIOS_PATH.SEVER);
 
@@ -141,9 +142,9 @@ export default function PostDetailPage() {
     } catch (error) {
       console.error('Error creating or accessing the chat room:', error);
     }
-    };
-    // 구매 페이지로 이동
-    // navigate(`/purchase/${postId}`);
+  };
+  // 구매 페이지로 이동
+  // navigate(`/purchase/${postId}`);
 
   return (
     <MainWrapper>
@@ -163,6 +164,7 @@ export default function PostDetailPage() {
               <ContentContainer>
                 <CardDescription>{post.content}</CardDescription>
               </ContentContainer>
+              {post.address && <MapComponent address={post.address} />}
               <CardText>거래지역 : {post.address}</CardText>
               <CardText>카테고리 : {post.itemCategory}</CardText>
               <CardText>판매자 :  {post.nickName}</CardText>
@@ -260,7 +262,7 @@ const PostInfoContainer = styled.div`
 
 const ContentContainer = styled.div`
   width: 400px;
-  height: 500px;
+  max-height: 300px;
   overflow: auto;
 
 `;
