@@ -18,6 +18,7 @@ export default function ProfileEditPage() {
   const [detailAddress, setDetailAddress] = useState('');
   const [profileImage, setProfileImage] = useState(null);  // 프로필 이미지
   const [uploadImage, setUploadImage] = useState(null);
+  const [nicknameCheck, setNicknameCheck] = useState(false);
 
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
@@ -25,6 +26,7 @@ export default function ProfileEditPage() {
   const [userDetails, setUserDetails] = useState({});
   const axios = new Axios(QUERY.AXIOS_PATH.SEVER);
 
+  // 프로필 정보 가져오기 API
   useEffect(() => {
     async function getUserDetails() {
       try {
@@ -96,7 +98,10 @@ export default function ProfileEditPage() {
     let imageData = [];
     let contentKey = 'profileRequestDto';
 
-
+    if (!nicknameCheck)  {
+      alert("닉네임 중복 체크 확인 바랍니다!");
+      return;
+    }
 
     const updatedProfile = {
       nickname,
@@ -119,16 +124,24 @@ export default function ProfileEditPage() {
     }
   };
 
+  // 프로필 수정 API
   async function updateProfile(formData) {
     try {
       const response = await axios.put(`/api/profiles`, formData);
+      
+
 
       if (response.status === 200) {
-        alert('프로필이 성공적으로 업데이트되었습니다.');
-        // 이전 페이지 리다이렉션
-        navigate(ROUTER.PATH.BACK);
+        if(response.status.result) {
+          alert('프로필이 성공적으로 업데이트되었습니다.');
+          // 이전 페이지 리다이렉션
+          navigate(ROUTER.PATH.BACK);
+        } else {
+          alert('프로필 업데이트에 실패했습니다.');
+        } 
       } else {
-        alert('프로필 업데이트에 실패했습니다.');
+          // 서버 응답이 200이 아닌 경우, 오류 처리
+          alert('프로필 업데이트에 실패했습니다.');
       }
     } catch (error) {
       throw error;
@@ -138,6 +151,33 @@ export default function ProfileEditPage() {
   // 주소 찾기
   const handleAddressSearch = (selectedAddress) => {
     setAddress(selectedAddress);
+  };
+
+  // 닉네임 중복 체크 API
+  const handleNicknameCheck = async () => {
+    try {
+      const nicknameToCheck = nickname;
+      const response = await axios.post('/api/users/nicknamecheck', { nickname: nicknameToCheck });
+  
+      if (response.status === 200) {
+        if (response.data.result) {
+          alert('사용 가능한 닉네임입니다.');
+
+          setNicknameCheck(true);
+
+        } else {
+          alert('이미 사용 중인 닉네임입니다.');
+          setNicknameCheck(false);
+        }
+      } else {
+        alert('닉네임 중복 체크에 실패했습니다.');
+        setNicknameCheck(false);
+      }
+    } catch (error) {
+      console.error('닉네임 중복 체크 요청 중 오류 발생:', error);
+      alert('닉네임 중복 체크에 실패했습니다.');
+      setNicknameCheck(false);
+    }
   };
 
   return (
@@ -166,25 +206,7 @@ export default function ProfileEditPage() {
             disabled
           />
         </InputGroup>
-        비밀번호 변경
-        <InputGroup>
-          <IconStyle as={AiOutlineLock} />
-          <PaddedInputField
-            type="password"
-            placeholder="새 비밀번호"
-            value={password}
-            onChange={updatePassword}
-          />
-        </InputGroup>
-        <InputGroup>
-          <IconStyle as={AiOutlineLock} />
-          <PaddedInputField
-            type="password"
-            placeholder="새 비밀번호 확인"
-            value={confirmPassword}
-            onChange={updateConfirmPassword}
-          />
-        </InputGroup>
+        
         닉네임
         <InputGroup>
           <IconStyle as={AiOutlineSmile} />
@@ -194,6 +216,7 @@ export default function ProfileEditPage() {
             value={nickname}
             onChange={updateNickname}
           />
+          <button onClick={handleNicknameCheck}>중복 체크</button>
         </InputGroup>
 
         전화번호
@@ -228,6 +251,25 @@ export default function ProfileEditPage() {
             onChange={updateDetailAddress}
           />
         </AddressContainer>
+        비밀번호 변경
+        <InputGroup>
+          <IconStyle as={AiOutlineLock} />
+          <PaddedInputField
+            type="password"
+            placeholder="새 비밀번호"
+            value={password}
+            onChange={updatePassword}
+          />
+        </InputGroup>
+        <InputGroup>
+          <IconStyle as={AiOutlineLock} />
+          <PaddedInputField
+            type="password"
+            placeholder="새 비밀번호 확인"
+            value={confirmPassword}
+            onChange={updateConfirmPassword}
+          />
+        </InputGroup>
       </InputContainer>
       <SaveButton onClick={handleSave}>변경하기</SaveButton>
     </EditProfileContainer>

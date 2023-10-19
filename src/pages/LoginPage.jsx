@@ -49,8 +49,12 @@ export default function LoginPage() {
   const kakaoURL = `https://kauth.kakao.com/oauth/authorize?client_id=${apiKey}&redirect_uri=${redirect_url}&response_type=code`;
 
 
-  const handleLogin = () => {
+  const handleKakaoLogin = () => {
     window.location.href = kakaoURL
+  }
+
+  const handleLogin = () => {
+    navigate(ROUTER.PATH.SIGNUP);
   }
 
   return (
@@ -76,11 +80,11 @@ export default function LoginPage() {
         />
         <Button type='submit'>로그인</Button>
         <Link to={""}>
-          <KakaoBtn onClick={handleLogin}>
+          <KakaoBtn onClick={handleKakaoLogin}>
             <img src="/path/to/Kakao_login.png" alt=""/>
           </KakaoBtn>
         </Link>
-        <Button type='button'>회원 가입</Button>
+        <Button type='button' onClick={handleLogin}>회원 가입</Button>
       </Form>
     </LoginContainer>
 );
