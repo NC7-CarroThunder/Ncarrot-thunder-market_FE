@@ -26,18 +26,19 @@ export default function AddPostPage({ children, detail }) {
   const [address, setAddress] = useState('');
   const [image, setImage] = useState([]);
   const [preview, setPreview] = useState([]);
-  const [category, setCategory] = useState([]);
   const [formData, setFormData] = useState([]);
-  const categoryRef = useRef();
+  const dealingType = useRef();
+  const category = useRef();
 
   useEffect(() => {
     if (detail) {
       setTitle(detail.title);
       setContent(detail.content);
       setPrice(detail.price);
-      categoryRef.current.value = detail.location;
+      dealingType.current.value = detail.location;
       setImage(detail.imageUrlList);
       setPreview(detail.imageUrlList);
+      category.current.value = detail.location;
     }
   }, []);
 
@@ -50,7 +51,7 @@ export default function AddPostPage({ children, detail }) {
         title,
         content,
         price,
-        categoryRef.current.value
+        dealingType.current.value
       )
     )
       return;
@@ -68,7 +69,7 @@ export default function AddPostPage({ children, detail }) {
         title,
         content,
         price: parsePrice,
-        itemCategory: categoryRef.current.value,
+        itemCategory: dealingType.current.value,
         remainingImagesUrlList: parsePreviewData,
         address,
       };
@@ -79,8 +80,8 @@ export default function AddPostPage({ children, detail }) {
         title,
         content,
         price: parsePrice,
-        dealingType: categoryRef.current.value,
-        itemCategory: "ETC",
+        dealingType: dealingType.current.value,
+        itemCategory: category.current.value,
         address,
       };
 
@@ -162,11 +163,24 @@ export default function AddPostPage({ children, detail }) {
           </FormTitle>
           <FormButton type='submit'>완료 </FormButton>
         </FormHeader>
-        <InputCategory ref={categoryRef} as='select'>
+        <InputCategory ref={category} as='select'>
+          <option value='DIGITAL'>디지털 기기</option>
+          <option value='FURNITURE_INTERIOR'>가구/인테리어</option>
+          <option value='CLOTHING'>의류</option>
+          <option value='APPLIANCES'>생활가전</option>
+          <option value='KITCHENWARE'>생활/주방</option>
+          <option value='SPORTS_LEISURE'>스포츠/레저</option>
+          <option value='CAR_TOOLS'>자동차/공구</option>
+          <option value='BOOK'>도서</option>
+          <option value='BEAUTY_COSMETIC'>뷰티/미용</option>
+          <option value='PET'>반려동물용품</option>
+          <option value='ETC'>기타</option>
+        </InputCategory>
+        <InputDealingType ref={dealingType} as='select'>
           <option value='WITHPERSONAL'>직접거래</option>
           <option value='FOR_PAY'>안전결제</option>
           <option value='FOR_FREE'>나눔</option>
-        </InputCategory>
+        </InputDealingType>
         <LableBorder preview={preview.length !== 0 ? true : false}>
           {preview.length !== 0 &&
             preview.map((url, index) => (
@@ -365,6 +379,16 @@ const TextArea = styled.textarea`
   }
 `;
 
+const InputDealingType = styled.input`
+  width: 100%;
+  height: 3rem;
+  margin-bottom: 10px;
+  border: 1px solid #f5f5f5;
+  background-color: #f5f5f5;
+  padding: 8px;
+  font-size: 1rem;
+  border-radius: 5px;
+`;
 const InputCategory = styled.input`
   width: 100%;
   height: 3rem;
@@ -375,3 +399,4 @@ const InputCategory = styled.input`
   font-size: 1rem;
   border-radius: 5px;
 `;
+
