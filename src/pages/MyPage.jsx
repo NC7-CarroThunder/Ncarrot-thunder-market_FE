@@ -6,6 +6,7 @@ import { BiArrowBack } from 'react-icons/bi';
 import Storage from '../utils/localStorage';
 import Axios from '../utils/api/axios';
 import QUERY from '../constants/query';
+import { FaUserCircle } from 'react-icons/fa';
 
 
 export default function MyPage() {
@@ -86,20 +87,20 @@ export default function MyPage() {
     return `당근번개 페이 잔액:${Storage.getPoint()}원`
   }
 
-  
+
   const ongoing = [
     { title: '거래중1', price: '12,000원', image: '2.jpg' },
     { title: '거래중2', price: '22,000원', image: '3.jpg' },
     { title: '거래중3', price: '32,000원', image: '4.jpg' },
   ];
-  
+
 
   const followers = [
     { name: '사용자1', image: 'dog.jpg' },
     { name: '사용자2', image: 'rabbit.jpg' },
     { name: '사용자3', image: '9.jpg' }
   ];
-  
+
   const followings = [
     { name: '사용자4', image: '1.jpg' },
     { name: '사용자5', image: '2.jpg' },
@@ -108,17 +109,24 @@ export default function MyPage() {
 
   const Profile = ({ onProfileEditClick }) => (
     <ProfileContainer>
-      {(Storage.getPhoto() === undefined) ? (
-        <ProfileImage src="/profile.jpg" alt="프로필 이미지" />
+      {(Storage.getPhoto() == undefined) ? (
+        <FaUserCircle
+          style={{
+            width: '150px',
+            height: '150px',
+            borderRadius: '50%',
+            objectFit: 'cover',
+          }}
+        />
       ) : (
         <ProfileImage src={`https://kr.object.ncloudstorage.com/carrot-thunder/user/${Storage.getPhoto()}`} alt="프로필 이미지" />
       )}
       <ProfileInfoContainer>
-      <div>
-        <NickName>{getNickname()}</NickName>
-      </div>
-      <ProfileButton onClick={onProfileEditClick}>프로필 편집</ProfileButton>
-      <ChatButton onClick={handleChatButtonClick}>캐럿톡</ChatButton>
+        <div>
+          <NickName>{getNickname()}</NickName>
+        </div>
+        <ProfileButton onClick={onProfileEditClick}>프로필 편집</ProfileButton>
+        <ChatButton onClick={handleChatButtonClick}>캐럿톡</ChatButton>
       </ProfileInfoContainer>
     </ProfileContainer>
   );
@@ -142,13 +150,13 @@ export default function MyPage() {
           <AdditionalInfo />
         </ProfileAndAdditionalInfoContainer>
         <Separator />
-  
+
         {isModalOpen && (
-        <div style={modalOverlayStyle}>
-          <div style={modalStyle}>
-            <span style={closeBtnStyle} onClick={closeModal}>&times;</span>
-            <div style={backButtonStyle} onClick={closeModal}>
-              <BiArrowBack />
+          <div style={modalOverlayStyle}>
+            <div style={modalStyle}>
+              <span style={closeBtnStyle} onClick={closeModal}>&times;</span>
+              <div style={backButtonStyle} onClick={closeModal}>
+                <BiArrowBack />
               </div>
               <h2 style={{ textAlign: 'center' }}>충전</h2>
               <form style={formStyle}>
@@ -157,11 +165,11 @@ export default function MyPage() {
                   <label style={marginRightStyle}>
                     충전 금액 : <span style={{ marginRight: '5px' }}></span>
                     <input
-                    type="number"
-                    placeholder="충전 금액을 입력하세요"
-                    value={amount}
-                    onChange={(e) => setAmount(e.target.value)}
-                    style={inputStyle}
+                      type="number"
+                      placeholder="충전 금액을 입력하세요"
+                      value={amount}
+                      onChange={(e) => setAmount(e.target.value)}
+                      style={inputStyle}
                     />
                   </label>
                   <button
@@ -177,15 +185,15 @@ export default function MyPage() {
           </div>
         )}
 
-  
+
         <TabContainer>
-        <TabButton onClick={() => setTab('myposts')} active={tab === 'myposts'}>내 게시글</TabButton>
+          <TabButton onClick={() => setTab('myposts')} active={tab === 'myposts'}>내 게시글</TabButton>
           <TabButton onClick={() => setTab('ongoing')} active={tab === 'ongoing'}>거래중</TabButton>
           <TabButton onClick={() => setTab('wishlist')} active={tab === 'wishlist'}>찜</TabButton>
           <TabButton onClick={() => setTab('following')} active={tab === 'following'}>팔로잉</TabButton>
           <TabButton onClick={() => setTab('followers')} active={tab === 'followers'}>팔로워</TabButton>
         </TabContainer>
-  
+
         <ListContainer>
           {tab === 'following' && followings.map(user => (
             <UserCard key={user.id}>
@@ -213,14 +221,14 @@ export default function MyPage() {
             </Link>
           ))}
           {tab === 'myposts' && myPosts.map(item => (
-          <Link to={`/post/${item.postid}`} key={item.postid}>
-            <ListCard>
-              <ListImage src={`http://xflopvzfwqjk19996213.cdn.ntruss.com/article/${item.attachedFilesPaths[0].filePath}?type=f&w=250&h=250`} alt={`이미지 ${item.postid}`} />
-              <div>{item.title}</div>
-              <div>{item.price}원</div>
+            <Link to={`/post/${item.postid}`} key={item.postid}>
+              <ListCard>
+                <ListImage src={`http://xflopvzfwqjk19996213.cdn.ntruss.com/article/${item.attachedFilesPaths[0].filePath}?type=f&w=250&h=250`} alt={`이미지 ${item.postid}`} />
+                <div>{item.title}</div>
+                <div>{item.price}원</div>
               </ListCard>
-  </Link>
-))}
+            </Link>
+          ))}
           {tab === 'ongoing' && ongoing.map(item => (
             <Link to={`/post/${item.id}`} key={item.id}>
               <ListCard>
@@ -235,7 +243,7 @@ export default function MyPage() {
     </MyPageContainer>
   );
 
-          }  
+}
 
 const MyPageContainer = styled.div`
   width: 100%;
@@ -344,7 +352,7 @@ const ProfileAndAdditionalInfoContainer = styled.div`
 
 
 const marginRightStyle = {
-  marginRight: '10px', 
+  marginRight: '10px',
 };
 
 /// 모달 관련 css 설정

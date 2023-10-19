@@ -6,6 +6,8 @@ import DaumPost from './DaumPost';
 import Axios from '../utils/api/axios';
 import QUERY from '../constants/query';
 import ROUTER from '../constants/router';
+import Storage from '../utils/localStorage';
+import { FaUserCircle } from 'react-icons/fa';
 
 
 export default function ProfileEditPage() {
@@ -97,11 +99,14 @@ export default function ProfileEditPage() {
     let post = {};
     let imageData = [];
     let contentKey = 'profileRequestDto';
-
-    if (!nicknameCheck)  {
-      alert("닉네임 중복 체크 확인 바랍니다!");
-      return;
+    console.log(nickname);
+    if (nickname != userDetails.nickname && nickname != undefined) {
+      if (!nicknameCheck) {
+        alert("닉네임 중복 체크 확인 바랍니다!");
+        return;
+      }
     }
+
 
     const updatedProfile = {
       nickname,
@@ -128,20 +133,18 @@ export default function ProfileEditPage() {
   async function updateProfile(formData) {
     try {
       const response = await axios.put(`/api/profiles`, formData);
-      
+
 
 
       if (response.status === 200) {
-        if(response.status.result) {
-          alert('프로필이 성공적으로 업데이트되었습니다.');
-          // 이전 페이지 리다이렉션
-          navigate(ROUTER.PATH.BACK);
-        } else {
-          alert('프로필 업데이트에 실패했습니다.');
-        } 
+        console.log(response);
+        alert('프로필이 성공적으로 업데이트되었습니다.');
+        // 이전 페이지 리다이렉션
+        navigate(ROUTER.PATH.BACK);
       } else {
-          // 서버 응답이 200이 아닌 경우, 오류 처리
-          alert('프로필 업데이트에 실패했습니다.');
+        // 서버 응답이 200이 아닌 경우, 오류 처리
+        console.log("하하하");
+        alert('프로필 업데이트에 실패했습니다.');
       }
     } catch (error) {
       throw error;
@@ -158,7 +161,7 @@ export default function ProfileEditPage() {
     try {
       const nicknameToCheck = nickname;
       const response = await axios.post('/api/users/nicknamecheck', { nickname: nicknameToCheck });
-  
+
       if (response.status === 200) {
         if (response.data.result) {
           alert('사용 가능한 닉네임입니다.');
@@ -184,7 +187,19 @@ export default function ProfileEditPage() {
     <EditProfileContainer>
       <ProfileTitle>마이프로필</ProfileTitle>
       <ProfileImageContainer>
-        <ProfileImage image={profileImage} />
+        {(profileImage == undefined) ? (
+          <FaUserCircle
+            style={{
+              width: '150px',
+              height: '150px',
+              borderRadius: '50%',
+              objectFit: 'cover',
+            }}
+          />
+        ) : (
+          <ProfileImage image={profileImage} />
+        )}
+
         <HiddenFileInput
           type="file"
           accept="image/*"
@@ -206,7 +221,7 @@ export default function ProfileEditPage() {
             disabled
           />
         </InputGroup>
-        
+
         닉네임
         <InputGroup>
           <IconStyle as={AiOutlineSmile} />
@@ -305,7 +320,6 @@ const ProfileImage = styled.div`
   width: 100%;
   height: 100%;
   border-radius: 50%;
-  background: ${props => props.image ? `url(${props.image})` : "url('/profile.jpg')"} center/cover;
 `;
 
 const UploadButton = styled.button`
