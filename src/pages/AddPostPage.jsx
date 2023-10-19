@@ -96,9 +96,15 @@ export default function AddPostPage({ children, detail }) {
         formData.append('multipartFiles', multipartFiles)
       );
 
-    axios.post(QUERY.AXIOS_PATH.ADDPOST, formData).then(() => {
-      navigate(ROUTER.PATH.MAIN);
-    });
+    axios.post(QUERY.AXIOS_PATH.ADDPOST, formData)
+      .then(() => {
+        navigate(ROUTER.PATH.MAIN);
+      })
+      .catch((error) => {
+        if (error.response.status == 401) {
+          navigate(ROUTER.PATH.MAIN);
+        }
+      });
 
   };
 

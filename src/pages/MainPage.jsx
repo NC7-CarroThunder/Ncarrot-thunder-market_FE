@@ -1,8 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
-import axios from 'axios';
+import Axios from '../utils/api/axios';
 import { Link } from 'react-router-dom';
 import QUERY from '../constants/query';
+
+const axios = new Axios(QUERY.AXIOS_PATH.SEVER);
+
+
 
 export default function MainPage() {
   const [target, setTarget] = useState(null);
@@ -18,7 +22,7 @@ export default function MainPage() {
     if (!isStop) {
       try {
         //console.log("서버 요청하기전 데이터값  " + pageNo + "   " + selectedCategory)
-        const response = await axios.get(`${QUERY.AXIOS_PATH.SEVER}${QUERY.AXIOS_PATH.POSTLIST}?pageNo=${page}&category=${selectedCategory == null ? "TOTAL" : selectedCategory}`);
+        const response = await axios.get(`${QUERY.AXIOS_PATH.POSTLIST}?pageNo=${page}&category=${selectedCategory == null ? "TOTAL" : selectedCategory}`);
         posts.concat(response.data.result);
         // console.log("데이터확인중 ----------------------------");
         // console.log(response.data.result);
