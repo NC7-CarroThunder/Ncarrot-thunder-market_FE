@@ -49,7 +49,7 @@ export default function SignupPage() {
    const handleEmailCheck = async () => {
     try {
       const sendMail = email;
-      const response = await axios.post('/api/users/emailcheck', { email: sendMail });
+      const response = await axios.post('/api/users/useremailcheck', { email: sendMail });
   
       if (response.status === 200) {
         if (response.data.result) {
