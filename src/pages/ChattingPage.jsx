@@ -86,19 +86,19 @@ const PlaceholderImage = styled.img`
 const InputContainer = styled.div`
   display: flex;
   padding: 10px;
-  border-top: 1px solid #7c7979;
+  border-top: 1px solid #c0c0c0;
 `;
 
 const TextInput = styled.input`
   flex: 1;
   padding: 10px;
-  border: 1px solid #7c7979;
+  border: 1px solid #c0c0c0;
   border-radius: 5px;
   margin-right: 10px;
 `;
 
 const SendButton = styled.button`
-  background-color: #73aace;
+  background-color: #c0c0c0;
   color: #ffffff;
   padding: 10px 20px;
   border: none;
@@ -106,15 +106,16 @@ const SendButton = styled.button`
   cursor: pointer;
 
   &:hover {
-    background-color: #497da0;
+    background-color: #ff922b;
   }
 `;
 
 const EmojiPickerButton = styled.button`
-  background-color: #ececec;
+  background-color: #f8f9fa;
   border: none;
   padding: 10px;
   cursor: pointer;
+  margin-right: 10px;
 `;
 
 export default ChattingPage;

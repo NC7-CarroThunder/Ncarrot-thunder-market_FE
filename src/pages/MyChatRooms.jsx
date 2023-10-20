@@ -80,7 +80,7 @@ const MyChatRooms = ({onRoomSelect}) => {
         <h3>전체대화</h3>
         <ul>
           {chatRooms.map((room) => (
-              <ChatRoomItem key={room.roomId}>
+              <ChatRoomItem key={room.roomId} onClick={() => handleChatButtonClick(room.roomId)}>
                 <ChatRoomImage src={images[room.postId]} alt="게시글 이미지"/>
                 <ChatRoomContent>
                   <ChatRoomName>{getCounterpartNickname(room)}</ChatRoomName>
@@ -90,9 +90,9 @@ const MyChatRooms = ({onRoomSelect}) => {
                       : room.lastMessage}</LastMessage>
                   <DateText>{formatTime(room.lastUpdated)}</DateText>
                 </ChatRoomContent>
-                <ChatButton onClick={() => handleChatButtonClick(room.roomId)}>
+                {/* <ChatButton onClick={() => handleChatButtonClick(room.roomId)}>
                   대화<br/>시작
-                </ChatButton>
+                </ChatButton> */}
               </ChatRoomItem>
           ))}
         </ul>
@@ -106,7 +106,7 @@ const ChatRoomsContainer = styled.div`
   height: 70vh;
   width: 100%;
   background-color: #f8f9fa;
-  border: 1px solid #c0c0c0;
+  border: 1px solid white;
   overflow-y: auto;
   border-radius: 5px;
 
@@ -115,10 +115,11 @@ const ChatRoomsContainer = styled.div`
   h3 {
     font-size: 24px;
     font-weight: bold;
+    margin-top: 20px;
     color: #333;
     margin-bottom: 20px;
     text-align: left;
-    margin-left: 20px;
+    margin-left: 15px;
   }
 
   ::-webkit-scrollbar {
@@ -142,7 +143,7 @@ const ChatRoomsContainer = styled.div`
 const ChatRoomItem = styled.li`
   display: flex;
   align-items: center;
-  margin-bottom: 20px;
+  margin: 0 10px 20px 10px;
   background-color: white;
   border: 1px solid #c0c0c0;
   padding: 15px;
