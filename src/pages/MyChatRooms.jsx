@@ -143,7 +143,6 @@ const ChatRoomsContainer = styled.div`
 const ChatRoomItem = styled.li`
   display: flex;
   align-items: center;
-  // margin-bottom: 20px;
   margin: 0 10px 20px 10px;
   background-color: white;
   border: 1px solid #c0c0c0;
