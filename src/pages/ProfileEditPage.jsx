@@ -188,14 +188,21 @@ export default function ProfileEditPage() {
       <ProfileTitle>마이프로필</ProfileTitle>
       <ProfileImageContainer>
         {(profileImage == undefined) ? (
-          <FaUserCircle
-            style={{
-              width: '150px',
-              height: '150px',
-              borderRadius: '50%',
-              objectFit: 'cover',
-            }}
-          />
+          (Storage.getPhoto() == undefined) ? (
+            <FaUserCircle
+              style={{
+                width: '150px',
+                height: '150px',
+                borderRadius: '50%',
+              }}
+            />) : (<img
+              src={`https://kr.object.ncloudstorage.com/carrot-thunder/user/${Storage.getPhoto()}`}
+              style={{
+                width: '150px',
+                height: '150px',
+                borderRadius: '50%',
+              }}
+            />)
         ) : (
           <ProfileImage image={profileImage} />
         )}
@@ -320,6 +327,7 @@ const ProfileImage = styled.div`
   width: 100%;
   height: 100%;
   border-radius: 50%;
+  background: ${props => `url(${props.image})`} center/cover;
 `;
 
 const UploadButton = styled.button`
