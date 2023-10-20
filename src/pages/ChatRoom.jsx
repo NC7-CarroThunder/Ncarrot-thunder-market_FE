@@ -141,19 +141,23 @@ function ChatRoom({ roomId }) {
     setEmojiPickerVisible(false);
   };
 
-  const renderMessageContent = (messageContent, transContent) => {
+  const renderMessageContent = (messageContent) => {
     if (messageContent.startsWith(":emoji") && messageContent.endsWith(":")) {
       const emojiNumber = messageContent.split(":")[1].replace("emoji", "");
       return <img src={`/img/emoji${emojiNumber}.png`}
         alt={`emoji${emojiNumber}`} />;
     }
-    return (
-      <div>
-        {messageContent}
-        {transContent && <div>({transContent})</div>}
-      </div>
-    );
+    return messageContent;
   };
+
+
+  // const renderMessageContent = (messageContent) => {
+  //   if (messageContent.startsWith(":emoji") && messageContent.endsWith(":")) {
+  //     const emojiNumber = messageContent.split(":")[1].replace("emoji", "");
+  //     return <img src={`/img/emoji${emojiNumber}.png`}
+  //       alt={`emoji${emojiNumber}`} />;
+  //   }
+  //   return messageContent;
 
   const clickMessage = (index, e) => {
     console.log("index : " + index);
