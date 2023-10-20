@@ -103,7 +103,7 @@ function ChatRoom({ roomId }) {
       sendMessage();
     }
   };
- 
+
 
   const handleTargetLangChange = (e) => {
     setTargetLang(e.target.value);
@@ -150,6 +150,15 @@ function ChatRoom({ roomId }) {
     return messageContent;
   };
 
+
+  // const renderMessageContent = (messageContent) => {
+  //   if (messageContent.startsWith(":emoji") && messageContent.endsWith(":")) {
+  //     const emojiNumber = messageContent.split(":")[1].replace("emoji", "");
+  //     return <img src={`/img/emoji${emojiNumber}.png`}
+  //       alt={`emoji${emojiNumber}`} />;
+  //   }
+  //   return messageContent;
+
   const clickMessage = (index, e) => {
     console.log("index : " + index);
     console.log("메세지", messages)
@@ -170,16 +179,15 @@ function ChatRoom({ roomId }) {
 
   const handleUpdateMessage = (messageId) => {
     console.log("메세지 확인", messageId)
-    const updatedMessage = { content: '삭제된 메시지입니다' }; // 업데이트할 데이터
+    const updatedMessage = { content: '삭제된 메시지입니다' };
     axios
-      .put(`/api/chatting/message/delete/${messageId}`, updatedMessage) // 서버로 요청 보내기
+      .put(`${QUERY.AXIOS_PATH.DELETECHAT}/${messageId}`, updatedMessage)
       .then(() => {
-        // 메시지 업데이트 후 화면에서 업데이트
         setMessages((prevMessages) => {
           const updatedMessages = prevMessages.map((message) => {
             if (message.messageId === messageId) {
-              // 삭제된 메시지로 변경
               message.content = '삭제된 메시지입니다';
+              message.transContent = '';
             }
             return message;
           });
@@ -223,18 +231,25 @@ function ChatRoom({ roomId }) {
             sender={Storage.getUserId() === String(message.senderId)}
           >
             <span className="senderNickname">{message.senderNickname}</span>
-            {renderMessageContent(message.content)}
-            {message.transContent && (
-          <span><br/>({message.transContent})</span>
-        )}
+            {message.content === '삭제된 메세지입니다' ? (
+              renderMessageContent(message.content)
+            ) : (
+              <>
+                {renderMessageContent(message.content)}
+                {message.transContent && (
+                  <span><br />({message.transContent})</span>
+                )}
+              </>
+            )}
+
           </MessageBubble>
         ))}
         <ShowMyMenu
           clickedMessageTop={clickedMessageTop}
           clickedMessageLeft={clickedMessageLeft}>
           {(isClickedMessage == true) ? (<span onClick={() => handleUpdateMessage(messages[messageIndex].messageId)}>
-      삭제하기
-    </span>) : (<></>)}
+            삭제하기
+          </span>) : (<></>)}
         </ShowMyMenu>
 
         <div ref={messagesEndRef}></div>

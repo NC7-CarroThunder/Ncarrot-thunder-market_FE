@@ -22,7 +22,8 @@ const AXIOS_PATH = {
   MYPOSTS: '/api/mypost',
   PURCHASE: '/api/payments/purchase',
   CANCEL: '/api/payments/cancel',
-  CONFIRMEDPURCHASE: '/api/payments/ConfirmedPurchase'
+  CONFIRMEDPURCHASE: '/api/payments/ConfirmedPurchase',
+  DELETECHAT: '/api/chatting/message/delete'
 };
 
 const STALETIME = {
