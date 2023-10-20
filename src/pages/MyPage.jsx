@@ -13,7 +13,7 @@ export default function MyPage() {
   const [isModalOpen, setModalOpen] = useState(false);
   const [amount, setAmount] = useState('');
   const navigate = useNavigate();
-  const [tab, setTab] = React.useState('posts');
+  const [tab, setTab] = React.useState('myposts');
   const [wishlists, setWishlists] = useState([]);
   const [myPosts, setMyPosts] = useState([]);
   const [isWishlistLoaded, setIsWishlistLoaded] = useState(false);
@@ -87,6 +87,10 @@ export default function MyPage() {
     return `당근번개 페이 잔액:${Storage.getPoint()}원`
   }
 
+  const formatPrice = (price) => {
+    return price.toLocaleString('en-US');
+  };
+
 
   const ongoing = [
     { title: '거래중1', price: '12,000원', image: '2.jpg' },
@@ -104,7 +108,7 @@ export default function MyPage() {
   const followings = [
     { name: '사용자4', image: '1.jpg' },
     { name: '사용자5', image: '2.jpg' },
-    { name: '사용자6', image: '3.jpg' }
+    { name: '사용자6', image: '3.jpg' },
   ];
 
   const Profile = ({ onProfileEditClick }) => (
@@ -215,8 +219,10 @@ export default function MyPage() {
                 {wishlist.attachedFiles.length > 0 && (
                   <ListImage src={`http://xflopvzfwqjk19996213.cdn.ntruss.com/article/${wishlist.attachedFiles[0].filePath}?type=f&w=250&h=250`} alt={`이미지 ${wishlist.id}`} />
                 )}
-                <div>{wishlist.title}</div>
-                <div>{wishlist.price}</div>
+                <ListBody>
+                <ListTitle>{wishlist.title}</ListTitle>
+                <ListText><strong>{formatPrice(wishlist.price)}원</strong></ListText>
+                </ListBody>
               </ListCard>
             </Link>
           ))}
@@ -224,8 +230,10 @@ export default function MyPage() {
             <Link to={`/post/${item.postid}`} key={item.postid}>
               <ListCard>
                 <ListImage src={`http://xflopvzfwqjk19996213.cdn.ntruss.com/article/${item.attachedFilesPaths[0].filePath}?type=f&w=250&h=250`} alt={`이미지 ${item.postid}`} />
-                <div>{item.title}</div>
-                <div>{item.price}원</div>
+                <ListBody>
+                <ListTitle>{item.title}</ListTitle>
+                <ListText><strong>{formatPrice(item.price)}원</strong></ListText>
+              </ListBody>
               </ListCard>
             </Link>
           ))}
@@ -415,6 +423,7 @@ const inputButtonContainerStyle = {
   justifyContent: 'space-between',
   alignItems: 'center',
 };
+
 const backButtonStyle = {
   cursor: 'pointer',
   display: 'flex',
@@ -440,9 +449,26 @@ const TabButton = styled.button`
 
 const ListContainer = styled.div`
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  margin-left: 230px;
-  grid-gap: 20px;
+  grid-template-columns: repeat(4, 220px);
+  margin-left: 310px;
+  grid-row-gap: 40px;
+`;
+
+const ListTitle = styled.div`
+  font-size: 16px;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  width: 100%;
+`;
+
+const ListText = styled.p`
+  font-size: 16px;
+  margin-bottom: 5px;
+`;
+
+const ListBody = styled.div`
+  padding: 10px;
 `;
 
 const UserCard = styled.div`
@@ -473,18 +499,15 @@ const FollowButton = styled.button`
 
 const ListCard = styled.div`
   width: 200px; 
-  height: 200px; 
   display: flex;
   flex-direction: column;
-  align-items: center;
-  justify-content: center;
   border: 1px solid #ddd; 
+  border-radius: 5%;
+  overflow: hidden;
 `;
 
 const ListImage = styled.img`
-  width: 150px;
-  height: 150px;
-  margin-bottom: 10px; 
-  border-radius: 10px;
+  width: 210px;
+  height: auto;
+  border-radius: 5%;
 `;
-

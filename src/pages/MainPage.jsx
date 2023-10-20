@@ -294,8 +294,13 @@ const Col = styled.div`
 `;
 
 const DealingTypeBadge = styled.div`
-  background-color: ${({ dealingType }) => (dealingType === 'FOR_PAY' ? '#00cc00' : '#999')};
-  color: #fff;
+background-color: ${({ dealingType }) => {
+  if (dealingType === 'FOR_PAY') return '#00cc00';
+  if (dealingType === 'WITHPERSONAL') return '#4A90E2';
+  if (dealingType === 'FOR_FREE') return '#ff922b';
+  return '#999';
+}};
+color: #fff;
   font-size: 14px;
   padding: 5px 10px;
   border-radius: 5px;
