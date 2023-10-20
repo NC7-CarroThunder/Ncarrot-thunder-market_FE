@@ -1,6 +1,6 @@
-import React, {useEffect, useRef, useState} from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
-import {Client} from '@stomp/stompjs';
+import { Client } from '@stomp/stompjs';
 import SockJS from 'sockjs-client';
 import Storage from '../utils/localStorage';
 import Axios from '../utils/api/axios';
@@ -9,20 +9,27 @@ import ROUTER from '../constants/router';
 
 const axios = new Axios(QUERY.AXIOS_PATH.SEVER);
 
-function ChatRoom({roomId}) {
+function ChatRoom({ roomId }) {
+  const [clickedMessageTop, setClickedMessageTop] = useState(0);
+  const [clickedMessageLeft, setClickedMessageLeft] = useState(0);
   const [messages, setMessages] = useState([]);
   const [inputValue, setInputValue] = useState('');
   const [targetLang, setTargetLang] = useState('ko');
   const stompClient = useRef(null);
   const messagesEndRef = useRef(null);
+
+  const [isClickedMessage, setIsClickedMessage] = useState(false);
+  const [messageIndex, setMessageIndex] = useState(0);
+
+
   const [isTranslationOptionsVisible, setTranslationOptionsVisible] = useState(
-      false);
+    false);
   const [isEmojiPickerVisible, setEmojiPickerVisible] = useState(false);
 
   useEffect(() => {
     setMessages([]);
     const socket = new SockJS('http://localhost:8888/api/chatting-websocket',
-        [], {withCredentials: true});
+      [], { withCredentials: true });
     const userId = Storage.getUserId();
 
     stompClient.current = new Client({
@@ -42,24 +49,24 @@ function ChatRoom({roomId}) {
       stompClient.current.subscribe(`/topic/messages/${roomId}`, (message) => {
         const parsedMessage = JSON.parse(message.body);
         translateMessage(parsedMessage.content, targetLang).then(
-            (translatedMessage) => {
-              setMessages((prevMessages) => [
-                ...prevMessages,
-                {...parsedMessage, content: translatedMessage},
-              ]);
-            });
+          (translatedMessage) => {
+            setMessages((prevMessages) => [
+              ...prevMessages,
+              { ...parsedMessage, content: translatedMessage },
+            ]);
+          });
       });
       axios.get(`/api/chatting/message/${roomId}`)
-      .then((response) => response.data)
-      .then((data) => {
-        setMessages(data);
-      })
-      .catch((error) => {
-        if (error.response && error.response.status === 401) {
-          navigator(ROUTER.PATH.LOGIN);
-        }
-        console.error('Error fetching old messages:', error);
-      });
+        .then((response) => response.data)
+        .then((data) => {
+          setMessages(data);
+        })
+        .catch((error) => {
+          if (error.response && error.response.status === 401) {
+            navigator(ROUTER.PATH.LOGIN);
+          }
+          console.error('Error fetching old messages:', error);
+        });
     };
 
     stompClient.current.activate();
@@ -73,13 +80,13 @@ function ChatRoom({roomId}) {
 
   useEffect(() => {
     if (messagesEndRef.current) {
-      messagesEndRef.current.scrollIntoView({behavior: 'smooth'});
+      messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
     }
   }, [messages]);
 
   const sendMessage = () => {
     if (roomId && inputValue.trim() !== '' && stompClient.current
-        && stompClient.current.connected) {
+      && stompClient.current.connected) {
       const chatMessage = {
         roomId: roomId,
         content: inputValue,
@@ -87,7 +94,7 @@ function ChatRoom({roomId}) {
         targetLang: targetLang,
       };
       stompClient.current.publish(
-          {destination: '/app/send', body: JSON.stringify(chatMessage)});
+        { destination: '/app/send', body: JSON.stringify(chatMessage) });
       setInputValue('');
     }
   };
@@ -102,13 +109,13 @@ function ChatRoom({roomId}) {
   const translateMessage = async (message, targetLang) => {
     try {
       const response = await fetch(
-          'http://localhost:8888/api/chatting/translate', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({message, targetLang}),
-          });
+        'http://localhost:8888/api/chatting/translate', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ message, targetLang }),
+      });
 
       if (response.ok) {
         const data = await response.json();
@@ -132,19 +139,19 @@ function ChatRoom({roomId}) {
   };
 
   const languageOptions = [
-    {value: 'ko', label: '한국어'},
-    {value: 'en', label: '영어 English'},
-    {value: 'ja', label: '일본어 日本語'},
-    {value: 'zh-CN', label: '중국어 간체 中文(简体)'},
-    {value: 'zh-TW', label: '중국어 번체 中文(繁體)'},
-    {value: 'vi', label: '베트남어 Tiếng Việt'},
-    {value: 'th', label: '태국어 ไทย'},
-    {value: 'id', label: '인도네시아어 Bahasa Indonesia'},
-    {value: 'fr', label: '프랑스어 Français'},
-    {value: 'es', label: '스페인어 Español'},
-    {value: 'ru', label: '러시아어 Русский'},
-    {value: 'de', label: '독일어 Deutsch'},
-    {value: 'it', label: '이탈리아어 Italiano'},
+    { value: 'ko', label: '한국어' },
+    { value: 'en', label: '영어 English' },
+    { value: 'ja', label: '일본어 日本語' },
+    { value: 'zh-CN', label: '중국어 간체 中文(简体)' },
+    { value: 'zh-TW', label: '중국어 번체 中文(繁體)' },
+    { value: 'vi', label: '베트남어 Tiếng Việt' },
+    { value: 'th', label: '태국어 ไทย' },
+    { value: 'id', label: '인도네시아어 Bahasa Indonesia' },
+    { value: 'fr', label: '프랑스어 Français' },
+    { value: 'es', label: '스페인어 Español' },
+    { value: 'ru', label: '러시아어 Русский' },
+    { value: 'de', label: '독일어 Deutsch' },
+    { value: 'it', label: '이탈리아어 Italiano' },
   ];
 
   const sendEmojiMessage = (emojiCode) => {
@@ -155,7 +162,7 @@ function ChatRoom({roomId}) {
       targetLang: targetLang,
     };
     stompClient.current.publish(
-        {destination: '/app/send', body: JSON.stringify(chatMessage)});
+      { destination: '/app/send', body: JSON.stringify(chatMessage) });
     setEmojiPickerVisible(false);
   };
 
@@ -163,67 +170,93 @@ function ChatRoom({roomId}) {
     if (messageContent.startsWith(":emoji") && messageContent.endsWith(":")) {
       const emojiNumber = messageContent.split(":")[1].replace("emoji", "");
       return <img src={`/img/emoji${emojiNumber}.png`}
-                  alt={`emoji${emojiNumber}`}/>;
+        alt={`emoji${emojiNumber}`} />;
     }
     return messageContent;
   };
 
+  const clickMessage = (index, e) => {
+    console.log("index : " + index);
+    //다른 인덱스값을 누르는 경우면 삭제하기 버튼이 유지되야하고,
+    //그게 아니라면, 토글되어야한다.
+    if (index == messageIndex) {
+      setIsClickedMessage((index) => !index);
+    } else {
+      setIsClickedMessage(true);
+      setMessageIndex(index);
+    }
+
+    // 클릭한 메시지의 위치를 계산
+    const clickedMessageTop = e.clientY;
+    setClickedMessageLeft(e.clientX);
+    setClickedMessageTop(clickedMessageTop);
+  }
+
   return (
-      <>
-        <button onClick={handleToggleTranslationOptions}>언어 선택</button>
-        <TranslationOptions isVisible={isTranslationOptionsVisible}>
-          <div className="accordion-bar"
-               onClick={handleToggleTranslationOptions}>
-            <div>닫기</div>
-          </div>
-          <div className="language-list">
-            {languageOptions.map((option) => (
-                <label key={option.value}>
-                  <input
-                      type="radio"
-                      name="language"
-                      value={option.value}
-                      checked={targetLang === option.value}
-                      onChange={handleTargetLangChange}
-                  />
-                  {option.label}
-                </label>
-            ))}
-          </div>
-        </TranslationOptions>
-        <MessagesContainer>
-          {messages.map((message, index) => (
-              <MessageBubble key={index} sender={Storage.getUserId() === String(
-                  message.senderId)}>
-                <span className="senderNickname">{message.senderNickname}</span>
-                {renderMessageContent(message.content)}
-              </MessageBubble>
+    <>
+      <button onClick={handleToggleTranslationOptions}>언어 선택</button>
+      <TranslationOptions isVisible={isTranslationOptionsVisible}>
+        <div className="accordion-bar"
+          onClick={handleToggleTranslationOptions}>
+          <div>닫기</div>
+        </div>
+        <div className="language-list">
+          {languageOptions.map((option) => (
+            <label key={option.value}>
+              <input
+                type="radio"
+                name="language"
+                value={option.value}
+                checked={targetLang === option.value}
+                onChange={handleTargetLangChange}
+              />
+              {option.label}
+            </label>
           ))}
-          <div ref={messagesEndRef}></div>
-        </MessagesContainer>
-        <InputContainer>
-          <EmojiPickerButton onClick={() => setEmojiPickerVisible(
-              !isEmojiPickerVisible)}>+</EmojiPickerButton>
-          {isEmojiPickerVisible && (
-              <EmojiPicker>
-                <Emoji onClick={() => sendEmojiMessage(":emoji1:")}><img
-                    src="/img/emoji1.png" alt="emoji1"/></Emoji>
-                <Emoji onClick={() => sendEmojiMessage(":emoji2:")}><img
-                    src="/img/emoji2.png" alt="emoji2"/></Emoji>
-                <Emoji onClick={() => sendEmojiMessage(":emoji3:")}><img
-                    src="/img/emoji3.png" alt="emoji3"/></Emoji>
-                <Emoji onClick={() => sendEmojiMessage(":emoji4:")}><img
-                    src="/img/emoji4.png" alt="emoji4"/></Emoji>
-                <Emoji onClick={() => sendEmojiMessage(":emoji5:")}><img
-                    src="/img/emoji5.png" alt="emoji5"/></Emoji>
-              </EmojiPicker>
-          )}
-          <TextInput value={inputValue}
-                     onChange={(e) => setInputValue(e.target.value)}
-                     onKeyDown={handleKeyDown} placeholder="메시지를 입력해주세요..."/>
-          <SendButton onClick={sendMessage}>보내기</SendButton>
-        </InputContainer>
-      </>
+        </div>
+      </TranslationOptions>
+      <MessagesContainer>
+        {messages.map((message, index) => (
+          <MessageBubble
+            onClick={(e) => clickMessage(index, e)} // 변경된 부분
+            key={index}
+            sender={Storage.getUserId() === String(message.senderId)}
+          >
+            <span className="senderNickname">{message.senderNickname}</span>
+            {renderMessageContent(message.content)}
+          </MessageBubble>
+        ))}
+        <ShowMyMenu
+          clickedMessageTop={clickedMessageTop}
+          clickedMessageLeft={clickedMessageLeft}>
+          {(isClickedMessage == true) ? (<span >삭제하기</span>) : (<></>)}
+        </ShowMyMenu>
+
+        <div ref={messagesEndRef}></div>
+      </MessagesContainer>
+      <InputContainer>
+        <EmojiPickerButton onClick={() => setEmojiPickerVisible(
+          !isEmojiPickerVisible)}>+</EmojiPickerButton>
+        {isEmojiPickerVisible && (
+          <EmojiPicker>
+            <Emoji onClick={() => sendEmojiMessage(":emoji1:")}><img
+              src="/img/emoji1.png" alt="emoji1" /></Emoji>
+            <Emoji onClick={() => sendEmojiMessage(":emoji2:")}><img
+              src="/img/emoji2.png" alt="emoji2" /></Emoji>
+            <Emoji onClick={() => sendEmojiMessage(":emoji3:")}><img
+              src="/img/emoji3.png" alt="emoji3" /></Emoji>
+            <Emoji onClick={() => sendEmojiMessage(":emoji4:")}><img
+              src="/img/emoji4.png" alt="emoji4" /></Emoji>
+            <Emoji onClick={() => sendEmojiMessage(":emoji5:")}><img
+              src="/img/emoji5.png" alt="emoji5" /></Emoji>
+          </EmojiPicker>
+        )}
+        <TextInput value={inputValue}
+          onChange={(e) => setInputValue(e.target.value)}
+          onKeyDown={handleKeyDown} placeholder="메시지를 입력해주세요..." />
+        <SendButton onClick={sendMessage}>보내기</SendButton>
+      </InputContainer>
+    </>
   );
 }
 
@@ -269,7 +302,7 @@ const MessageBubble = styled.div.withConfig({
   margin-bottom: 10px;
   background-color: ${props => props.sender ? '#73aace' : '#7c7979'};
   border-radius: ${props => props.sender ? '10px 10px 10px 0'
-          : '10px 10px 0 10px'};
+    : '10px 10px 0 10px'};
   align-self: ${props => props.sender ? 'flex-end' : 'flex-start'};
   color: #ffffff;
   display: inline-block;
@@ -376,3 +409,50 @@ const Emoji = styled.div`
     height: 90px;
   }
 `;
+
+const ShowMyMenu = styled.div`
+position: absolute;
+top: ${props => props.clickedMessageTop}px; // 변경된 부분
+left: ${props => props.clickedMessageLeft}px;
+display: flex;
+flex-direction: column;
+justify-content: center;
+align-items: center;
+border: 0.25px solid ${props => props.theme.color.messenger};
+border-radius: 0.5rem;
+background-color: ${props => props.theme.color.white};
+z-index: 1000;
+
+  span {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 8rem;
+    height: 1.5rem;
+    padding: 1rem;
+    border-bottom: 0.25px solid ${props => props.theme.color.messenger};
+    font-size: 100%;
+    cursor: pointer;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+
+    :hover {
+      background-color: ${props => props.theme.color.messenger};
+    }
+
+    &:first-child {
+      border-radius: 0.5rem 0.5rem 0 0;
+    }
+
+    &:last-child {
+      border: none;
+      border-radius: 0 0 0.5rem 0.5rem;
+    }
+  }
+
+  a {
+    font-size: 100%;
+  }
+`;
+
