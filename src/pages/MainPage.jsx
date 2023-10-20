@@ -3,6 +3,8 @@ import styled from 'styled-components';
 import Axios from '../utils/api/axios';
 import { Link } from 'react-router-dom';
 import QUERY from '../constants/query';
+import ROUTER from '../constants/router';
+import { useNavigate } from 'react-router-dom';
 
 const axios = new Axios(QUERY.AXIOS_PATH.SEVER);
 
@@ -11,6 +13,7 @@ const axios = new Axios(QUERY.AXIOS_PATH.SEVER);
 export default function MainPage() {
   const [target, setTarget] = useState(null);
   const [posts, setPosts] = useState([]);
+  const navigate = useNavigate();
   const [pageNo, setpageNo] = useState(0);
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [stop, setStop] = useState(false);
@@ -18,11 +21,15 @@ export default function MainPage() {
   const [isEmptyPost, setIsEmptyPost] = useState(false);
 
 
+
   async function fetchPosts(page, isStop) {
     if (!isStop) {
       try {
         //console.log("서버 요청하기전 데이터값  " + pageNo + "   " + selectedCategory)
         const response = await axios.get(`${QUERY.AXIOS_PATH.POSTLIST}?pageNo=${page}&category=${selectedCategory == null ? "TOTAL" : selectedCategory}`);
+        if (response.status == 401) {
+          navigate(ROUTER.PATH.MAIN)
+        }
         posts.concat(response.data.result);
         // console.log("데이터확인중 ----------------------------");
         // console.log(response.data.result);
@@ -135,14 +142,14 @@ export default function MainPage() {
   return (
     <MainWrapper>
       <CategoryTitle>{getCategoryTitle()}</CategoryTitle>
-        <div>
-          <CategoryButton onClick={showAllPosts}>전체 게시글</CategoryButton>
-          <CategoryButton onClick={() => setSelectedCategory('DIGITAL')}>디지털 기기</CategoryButton>
-          <CategoryButton onClick={() => setSelectedCategory('FURNITURE_INTERIOR')}>가구/인테리어</CategoryButton>
-          <CategoryButton onClick={() => setSelectedCategory('CLOTHING')}>의류</CategoryButton>
-          <CategoryButton onClick={() => setSelectedCategory('APPLIANCES')}>생활가전</CategoryButton>
-          <CategoryButton onClick={() => setSelectedCategory('KITCHENWARE')}>생활/주방</CategoryButton>
-        </div>
+      <div>
+        <CategoryButton onClick={showAllPosts}>전체 게시글</CategoryButton>
+        <CategoryButton onClick={() => setSelectedCategory('DIGITAL')}>디지털 기기</CategoryButton>
+        <CategoryButton onClick={() => setSelectedCategory('FURNITURE_INTERIOR')}>가구/인테리어</CategoryButton>
+        <CategoryButton onClick={() => setSelectedCategory('CLOTHING')}>의류</CategoryButton>
+        <CategoryButton onClick={() => setSelectedCategory('APPLIANCES')}>생활가전</CategoryButton>
+        <CategoryButton onClick={() => setSelectedCategory('KITCHENWARE')}>생활/주방</CategoryButton>
+      </div>
       <CategoryButtonRow>
         <div>
           <CategoryButton onClick={() => setSelectedCategory('SPORTS_LEISURE')}>스포츠/레저</CategoryButton>
