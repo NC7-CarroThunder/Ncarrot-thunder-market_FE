@@ -48,15 +48,13 @@ function ChatRoom({ roomId }) {
       console.error('Additional details: ' + frame.body);
       stompClient.current.subscribe(`/topic/messages/${roomId}`, (message) => {
         const parsedMessage = JSON.parse(message.body);
-        translateMessage(parsedMessage.content, targetLang).then(
-          (translatedMessage) => {
-            setMessages((prevMessages) => [
-              ...prevMessages,
-              { ...parsedMessage, content: translatedMessage },
-            ]);
-          });
+        setMessages((prevMessages) => [
+          ...prevMessages,
+          parsedMessage,
+        ]);
       });
-      axios.get(`/api/chatting/message/${roomId}`)
+      axios
+        .get(`/api/chatting/message/${roomId}`)
         .then((response) => response.data)
         .then((data) => {
           setMessages(data);
@@ -105,30 +103,7 @@ function ChatRoom({ roomId }) {
       sendMessage();
     }
   };
-
-  const translateMessage = async (message, targetLang) => {
-    try {
-      const response = await fetch(
-        'http://localhost:8888/api/chatting/translate', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ message, targetLang }),
-      });
-
-      if (response.ok) {
-        const data = await response.json();
-        return data.translatedText;
-      } else {
-        console.error('Failed to translate message.');
-        return message;
-      }
-    } catch (error) {
-      console.error('Error during translation:', error);
-      return message;
-    }
-  };
+ 
 
   const handleTargetLangChange = (e) => {
     setTargetLang(e.target.value);
@@ -177,6 +152,7 @@ function ChatRoom({ roomId }) {
 
   const clickMessage = (index, e) => {
     console.log("index : " + index);
+    console.log("메세지", messages)
     //다른 인덱스값을 누르는 경우면 삭제하기 버튼이 유지되야하고,
     //그게 아니라면, 토글되어야한다.
     if (index == messageIndex) {
@@ -191,6 +167,30 @@ function ChatRoom({ roomId }) {
     setClickedMessageLeft(e.clientX);
     setClickedMessageTop(clickedMessageTop);
   }
+
+  const handleUpdateMessage = (messageId) => {
+    console.log("메세지 확인", messageId)
+    const updatedMessage = { content: '삭제된 메시지입니다' }; // 업데이트할 데이터
+    axios
+      .put(`/api/chatting/message/delete/${messageId}`, updatedMessage) // 서버로 요청 보내기
+      .then(() => {
+        // 메시지 업데이트 후 화면에서 업데이트
+        setMessages((prevMessages) => {
+          const updatedMessages = prevMessages.map((message) => {
+            if (message.messageId === messageId) {
+              // 삭제된 메시지로 변경
+              message.content = '삭제된 메시지입니다';
+            }
+            return message;
+          });
+          return updatedMessages;
+        });
+      })
+      .catch((error) => {
+        console.error('Error updating message:', error);
+      });
+  };
+
 
   return (
     <>
@@ -224,12 +224,17 @@ function ChatRoom({ roomId }) {
           >
             <span className="senderNickname">{message.senderNickname}</span>
             {renderMessageContent(message.content)}
+            {message.transContent && (
+          <span><br/>({message.transContent})</span>
+        )}
           </MessageBubble>
         ))}
         <ShowMyMenu
           clickedMessageTop={clickedMessageTop}
           clickedMessageLeft={clickedMessageLeft}>
-          {(isClickedMessage == true) ? (<span >삭제하기</span>) : (<></>)}
+          {(isClickedMessage == true) ? (<span onClick={() => handleUpdateMessage(messages[messageIndex].messageId)}>
+      삭제하기
+    </span>) : (<></>)}
         </ShowMyMenu>
 
         <div ref={messagesEndRef}></div>
