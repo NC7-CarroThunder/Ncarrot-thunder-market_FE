@@ -319,8 +319,12 @@ const MessageBubble = styled.div.withConfig({
 const InputContainer = styled.div`
   display: flex;
   padding: 10px;
-  border-top: 1px solid #7c7979;
+  border-top: 1px solid white;
   position: relative; // 이 부분을 추가합니다.
+
+  :focus {
+    outline: 1px solid orange;  // 2px 테두리의 두께를 설정하며, 'orange'로 색상을 설정
+  }
 `;
 
 const TextInput = styled.input`
@@ -332,16 +336,12 @@ const TextInput = styled.input`
 `;
 
 const SendButton = styled.button`
-  background-color: #73aace;
+  background-color:  #ff922b;
   color: #ffffff;
   padding: 10px 20px;
   border: none;
   border-radius: 5px;
   cursor: pointer;
-
-  &:hover {
-    background-color: #497da0;
-  }
 `;
 
 const TranslationOptions = styled.div`
@@ -382,10 +382,11 @@ const TranslationOptions = styled.div`
 }`;
 
 const EmojiPickerButton = styled.button`
-  background-color: #ececec;
+  background-color: #f8f9fa;
   border: none;
   padding: 10px;
   cursor: pointer;
+  margin-right: 10px;
 `;
 
 const EmojiPicker = styled.div`
@@ -400,6 +401,7 @@ const EmojiPicker = styled.div`
   margin-bottom: 15px;
   width: 500px;
 `;
+
 const Emoji = styled.div`
   cursor: pointer;
   margin: 0 5px;
