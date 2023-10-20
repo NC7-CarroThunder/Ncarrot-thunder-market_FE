@@ -25,11 +25,9 @@ export default function MainPage() {
   async function fetchPosts(page, isStop) {
     if (!isStop) {
       try {
-        //console.log("서버 요청하기전 데이터값  " + pageNo + "   " + selectedCategory)
+        console.log("서버 요청하기전 데이터값  " + pageNo + "   " + selectedCategory)
         const response = await axios.get(`${QUERY.AXIOS_PATH.POSTLIST}?pageNo=${page}&category=${selectedCategory == null ? "TOTAL" : selectedCategory}`);
-        if (response.status == 401) {
-          navigate(ROUTER.PATH.MAIN)
-        }
+
         posts.concat(response.data.result);
         // console.log("데이터확인중 ----------------------------");
         // console.log(response.data.result);
@@ -45,6 +43,11 @@ export default function MainPage() {
         }
 
       } catch (error) {
+        console.error(error);
+        if (error.response.status == 401) {
+          navigate(ROUTER.PATH.MAIN);
+          return;
+        }
         console.error('Error fetching posts:', error);
       }
     }
