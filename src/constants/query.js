@@ -23,7 +23,11 @@ const AXIOS_PATH = {
   PURCHASE: '/api/payments/purchase',
   CANCEL: '/api/payments/cancel',
   CONFIRMEDPURCHASE: '/api/payments/ConfirmedPurchase',
-  DELETECHAT: '/api/chatting/message/delete'
+  DELETECHAT: '/api/chatting/message/delete',
+  NOTIFICATIONS: '/api/notifications',
+  COUNT_UNREAD: '/api/countUnread',
+  MARK_AS_READ: '/api/markAsRead',
+  DELETE_ALL: '/api/deleteAll',
 };
 
 const STALETIME = {
