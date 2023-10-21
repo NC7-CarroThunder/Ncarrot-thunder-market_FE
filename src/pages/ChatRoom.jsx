@@ -28,7 +28,7 @@ function ChatRoom({ roomId }) {
 
   useEffect(() => {
     setMessages([]);
-    const socket = new SockJS('http://localhost:8888/api/chatting-websocket',
+    const socket = new SockJS('http://localhost:8888/api/websocket',
       [], { withCredentials: true });
     const userId = Storage.getUserId();
 
