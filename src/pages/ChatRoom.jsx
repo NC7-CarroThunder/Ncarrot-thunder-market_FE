@@ -26,9 +26,16 @@ function ChatRoom({ roomId }) {
     false);
   const [isEmojiPickerVisible, setEmojiPickerVisible] = useState(false);
 
+
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const openModal = () => setIsModalOpen(true);
+  const closeModal = () => setIsModalOpen(false);
+  const [selectedLanguage, setSelectedLanguage] = useState('');
+
+
   useEffect(() => {
     setMessages([]);
-    const socket = new SockJS('http://localhost:8888/api/chatting-websocket',
+    const socket = new SockJS('http://localhost:8888/api/websocket',
       [], { withCredentials: true });
     const userId = Storage.getUserId();
 
@@ -105,14 +112,6 @@ function ChatRoom({ roomId }) {
   };
 
 
-  const handleTargetLangChange = (e) => {
-    setTargetLang(e.target.value);
-  };
-
-  const handleToggleTranslationOptions = () => {
-    setTranslationOptionsVisible(!isTranslationOptionsVisible);
-  };
-
   const languageOptions = [
     { value: 'ko', label: '한국어' },
     { value: 'en', label: '영어 English' },
@@ -164,7 +163,7 @@ function ChatRoom({ roomId }) {
     console.log("메세지", messages)
     //다른 인덱스값을 누르는 경우면 삭제하기 버튼이 유지되야하고,
     //그게 아니라면, 토글되어야한다.
-    if (index == messageIndex) {
+    if (index === messageIndex) {
       setIsClickedMessage((index) => !index);
     } else {
       setIsClickedMessage(true);
@@ -202,27 +201,31 @@ function ChatRoom({ roomId }) {
 
   return (
     <>
-      <button onClick={handleToggleTranslationOptions}>언어 선택</button>
-      <TranslationOptions isVisible={isTranslationOptionsVisible}>
-        <div className="accordion-bar"
-          onClick={handleToggleTranslationOptions}>
-          <div>닫기</div>
-        </div>
-        <div className="language-list">
-          {languageOptions.map((option) => (
-            <label key={option.value}>
-              <input
-                type="radio"
-                name="language"
-                value={option.value}
-                checked={targetLang === option.value}
-                onChange={handleTargetLangChange}
-              />
-              {option.label}
-            </label>
-          ))}
-        </div>
-      </TranslationOptions>
+      <OpenButton onClick={openModal}>언어 선택</OpenButton>
+      {isModalOpen && (
+        <>
+          <ModalOverlay onClick={closeModal}></ModalOverlay> {/* 배경 클릭시 모달 닫기 */}
+          <TranslationOptions>
+          <Title>언어 선택</Title>
+            {languageOptions.map((option) => (
+              <label key={option.value}>
+                <input
+                  type="radio"
+                  name="language"
+                  value={option.value}
+                  checked={targetLang === option.value}
+                  onChange={(e) => {
+                    setTargetLang(e.target.value);
+                    setSelectedLanguage(option.label);
+                  }}
+                />
+                {option.label}
+              </label>
+            ))}
+            <Button onClick={() => setIsModalOpen(false)}>확인</Button>
+          </TranslationOptions>
+        </>
+      )}
       <MessagesContainer>
         {messages.map((message, index) => (
           <MessageBubble
@@ -247,7 +250,7 @@ function ChatRoom({ roomId }) {
         <ShowMyMenu
           clickedMessageTop={clickedMessageTop}
           clickedMessageLeft={clickedMessageLeft}>
-          {(isClickedMessage == true) ? (<span onClick={() => handleUpdateMessage(messages[messageIndex].messageId)}>
+          {(isClickedMessage === true) ? (<span onClick={() => handleUpdateMessage(messages[messageIndex].messageId)}>
             삭제하기
           </span>) : (<></>)}
         </ShowMyMenu>
@@ -320,7 +323,7 @@ const MessageBubble = styled.div.withConfig({
   max-width: 60%;
   padding: 10px 15px;
   margin-bottom: 10px;
-  background-color: ${props => props.sender ? '#73aace' : '#7c7979'};
+  background-color: ${props => props.sender ? ' #ff922b;' : '#7c7979'};
   border-radius: ${props => props.sender ? '10px 10px 10px 0'
     : '10px 10px 0 10px'};
   align-self: ${props => props.sender ? 'flex-end' : 'flex-start'};
@@ -350,7 +353,7 @@ const InputContainer = styled.div`
 const TextInput = styled.input`
   flex: 1;
   padding: 10px;
-  border: 1px solid #7c7979;
+  border: 1px solid white;
   border-radius: 5px;
   margin-right: 10px;
 `;
@@ -364,31 +367,27 @@ const SendButton = styled.button`
   cursor: pointer;
 `;
 
-const TranslationOptions = styled.div`
+const ModalOverlay = styled.div`
   position: fixed;
   top: 0;
-  right: ${props => (props.isVisible ? '0' : '-300px')};
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.4); // 반투명한 검정색 배경
+  backdrop-filter: blur(4px); // 블러 처리
+  z-index: 1;
+`;
+
+const TranslationOptions = styled.div`
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
   width: 300px;
-  height: 100%;
   background-color: #fff;
-  box-shadow: -5px 0 5px rgba(0, 0, 0, 0.2);
-  transition: right 0.3s ease-in-out;
-  z-index: 2;
-  margin-top: 70px;
-
-  .accordion-bar {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 10px 20px;
-    border-bottom: 1px solid #ccc;
-    cursor: pointer;
-  }
-
-  .language-list {
-    overflow-y: auto;
-    max-height: calc(100% - 40px);
-  }
+  box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.2);
+  z-index: 4;
+  padding: 20px;
 
   label {
     display: block;
@@ -478,3 +477,29 @@ z-index: 1000;
   }
 `;
 
+const Title = styled.div`
+  text-align: center;
+  font-weight: bold;
+  margin-bottom: 20px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid #c0c0c0;
+`;
+
+const OpenButton = styled.button`
+  background-color:  #ff922b;
+  color: #ffffff;
+  padding: 5px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+`;
+
+const Button = styled.button`
+  background-color:  #ff922b;
+  color: #ffffff;
+  padding: 8px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  float: right; 
+`;

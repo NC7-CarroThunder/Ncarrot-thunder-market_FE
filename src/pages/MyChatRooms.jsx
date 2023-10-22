@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from 'react';
-import {useNavigate} from 'react-router-dom';
+import {Link, useNavigate} from 'react-router-dom';
 
 import Axios from '../utils/api/axios';
 import QUERY from '../constants/query';
@@ -80,19 +80,20 @@ const MyChatRooms = ({onRoomSelect}) => {
         <h3>전체대화</h3>
         <ul>
           {chatRooms.map((room) => (
-              <ChatRoomItem key={room.roomId} onClick={() => handleChatButtonClick(room.roomId)}>
-                <ChatRoomImage src={images[room.postId]} alt="게시글 이미지"/>
+              <ChatRoomItem key={room.roomId}
+                            onClick={() => handleChatButtonClick(room.roomId)}>
+                <Link to={`/post/${room.postId}`}>
+                  <ChatRoomImage src={images[room.postId]} alt="게시글 이미지"/>
+                </Link>
                 <ChatRoomContent>
-                  <ChatRoomName>{getCounterpartNickname(room)}</ChatRoomName>
-                  <MessageTitle>제목: {room.postTitle}</MessageTitle>
+                  <ChatRoomName>{room.postTitle}</ChatRoomName>
+                  <MessageTitle>대화상대: {getCounterpartNickname(
+                      room)}</MessageTitle>
                   <LastMessage>최근대화: {room.lastMessage?.length > 13
                       ? room.lastMessage.slice(0, 13) + '...'
                       : room.lastMessage}</LastMessage>
                   <DateText>{formatTime(room.lastUpdated)}</DateText>
                 </ChatRoomContent>
-                {/* <ChatButton onClick={() => handleChatButtonClick(room.roomId)}>
-                  대화<br/>시작
-                </ChatButton> */}
               </ChatRoomItem>
           ))}
         </ul>
@@ -143,7 +144,7 @@ const ChatRoomsContainer = styled.div`
 const ChatRoomItem = styled.li`
   display: flex;
   align-items: center;
-  margin: 0 10px 20px 10px;
+  margin: 0 10px 10px 10px;
   background-color: white;
   border: 1px solid #c0c0c0;
   padding: 15px;
@@ -160,27 +161,27 @@ const ChatRoomContent = styled.div`
 const ChatRoomName = styled.div`
   font-size: 18px;
   font-weight: bold;
-  margin-bottom: 5px; // 간격 줄임
+  margin-bottom: 5px;
 `;
 
-const ChatButton = styled.button`
-  padding: 5px 10px;
-  background-color: #ff922b;
-  color: white;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  width: 60px;
-  height: 60px;
-  text-align: center;
-  font-size: 14px;
-  line-height: 1.2;
-`;
+// const ChatButton = styled.button`
+//   padding: 5px 10px;
+//   background-color: #ff922b;
+//   color: white;
+//   border: none;
+//   border-radius: 5px;
+//   cursor: pointer;
+//   width: 60px;
+//   height: 60px;
+//   text-align: center;
+//   font-size: 14px;
+//   line-height: 1.2;
+// `;
 
 const MessageTitle = styled.div`
-  font-size: 16px;
-  font-weight: normal; // 폰트 굵기를 일반으로 변경
-  margin-bottom: 5px; // 간격 늘림
+  font-size: 15px;
+  font-weight: normal;
+  margin-bottom: 5px;
 `;
 
 const LastMessage = styled.span`
