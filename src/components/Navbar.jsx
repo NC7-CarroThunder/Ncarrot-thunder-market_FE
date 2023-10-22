@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import styled from 'styled-components';
 import Button from '../elements/Button';
 import Input from '../elements/Input';
@@ -21,11 +21,12 @@ export default function Navbar({showMyMenu, onShowMyMenu, onLogOut}) {
   const query = useQueryClient();
   const [imageClick, setImageClick] = useState(null);
   const [notifications, setNotifications] = useState([]);
-  const [showNotifications, setShowNotifications] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const [unreadCount, setUnreadCount] = useState(0);
   const AxiosInstance = new Axios(QUERY.AXIOS_PATH.SEVER);
   const userId = Storage.getUserId();
+  const [showSlideBar, setShowSlideBar] = useState(false);
+  const [slideBarMessage, setSlideBarMessage] = useState("");
 
   useEffect(() => {
     const fetchUnreadCount = async () => {
@@ -93,8 +94,14 @@ export default function Navbar({showMyMenu, onShowMyMenu, onLogOut}) {
     stompClient.onConnect = () => {
       stompClient.subscribe(`/topic/notifications/${userId}`, (message) => {
         const notification = JSON.parse(message.body);
-        setNotifications((prev) => [...prev, notification]);
-        setUnreadCount(prev => prev + 1);
+        setNotifications((prev) => [notification, ...prev]);
+
+        setUnreadCount((prevCount) => prevCount + 1);
+
+        if (notification.content.includes("개설")) {
+          setSlideBarMessage(notification.content);
+          setShowSlideBar(true);
+        }
       });
     };
 
@@ -105,7 +112,7 @@ export default function Navbar({showMyMenu, onShowMyMenu, onLogOut}) {
         stompClient.deactivate();
       }
     };
-  }, []);
+  }, [userId]);
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -167,7 +174,7 @@ export default function Navbar({showMyMenu, onShowMyMenu, onLogOut}) {
                 value={keyWord}
                 onChange={(e) => setKeyWord(e.target.value)}
             />
-            {nickname && ( // 여기에 조건을 추가
+            {nickname && (
                 <NotificationIcon onClick={handleNotificationClick}>
                   <FaBell size={30}/>
                   <NotificationBadge>{unreadCount}</NotificationBadge>
@@ -200,8 +207,7 @@ export default function Navbar({showMyMenu, onShowMyMenu, onLogOut}) {
                     <Link to={ROUTER.PATH.MYPAGE}> 마이페이지 </Link>
                   </span>
                         <span>
-                    {' '}
-                          <Link to={ROUTER.PATH.ADDPOST}>게시글 작성 </Link>
+                    <Link to={ROUTER.PATH.ADDPOST}>게시글 작성 </Link>
                   </span>
                         <span onClick={handleLogout}>로그아웃</span>
                       </ShowMyMenu>
@@ -226,6 +232,11 @@ export default function Navbar({showMyMenu, onShowMyMenu, onLogOut}) {
                 onDeleteAll={deleteAllNotifications}
             />
         )}
+        <NotificationSlideBar
+            show={showSlideBar}
+            message={slideBarMessage}
+            onClose={() => setShowSlideBar(false)}
+        />
       </NavbarWrapper>
   );
 }
@@ -236,19 +247,80 @@ function NotificationModal({
   onMarkAllAsRead,
   onDeleteAll
 }) {
+  const modalRef = useRef(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (modalRef.current && !modalRef.current.contains(event.target)) {
+        onClose();
+      }
+    };
+
+    window.addEventListener("mousedown", handleClickOutside);
+
+    return () => {
+      window.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [onClose]);
+
   return (
       <ModalOverlay>
-        <ModalContent>
-          <CloseButton onClick={onClose}>닫기</CloseButton>
-          <ul>
+        <ModalContent ref={modalRef}>
+          <CloseButton onClick={onClose}>X</CloseButton>
+          <ModalButtonContainer>
+            <ModalButton onClick={onMarkAllAsRead}>전체 읽기</ModalButton>
+            <ModalButton onClick={onDeleteAll}>전체 삭제</ModalButton>
+          </ModalButtonContainer>
+          <NotificationList>
             {notifications.map((notification) => (
-                <li key={notification.id}>{notification.content}</li>
+                <NotificationComponent key={notification.id}
+                                       notification={notification}/>
             ))}
-          </ul>
-          <Button onClick={onMarkAllAsRead}>전체 읽기</Button>
-          <Button onClick={onDeleteAll}>전체 삭제</Button>
+          </NotificationList>
         </ModalContent>
       </ModalOverlay>
+  );
+}
+
+function NotificationComponent({notification}) {
+  const navigate = useNavigate();
+
+  const handleNotificationClick = () => {
+    console.log("Notification clicked with content:", notification.content);
+    if (notification.content.includes("메시지") || notification.content.includes(
+        "개설")) {
+      navigate(ROUTER.PATH.CHATTING);
+    }
+  };
+
+  return (
+      <NotificationItem isRead={notification.isRead === "y"}
+                        onClick={handleNotificationClick}>
+        {notification.content}
+      </NotificationItem>
+  );
+}
+
+function NotificationSlideBar({show, message, onClose}) {
+  useEffect(() => {
+    if (show) {
+      const timeoutId = setTimeout(() => {
+        onClose();
+      }, 3500);
+
+      return () => {
+        clearTimeout(timeoutId);
+      };
+    }
+  }, [show, onClose]);
+
+  return (
+      <SlideBarWrapper show={show}>
+        <SlideBarContent>
+          <SlideBarCloseButton onClick={onClose}>X</SlideBarCloseButton>
+          {message}
+        </SlideBarContent>
+      </SlideBarWrapper>
   );
 }
 
@@ -267,20 +339,43 @@ const ModalOverlay = styled.div`
 `;
 
 const ModalContent = styled.div`
+  position: absolute;
+  top: 60px; // 알림 아이콘 바로 아래로 조절
+  right: 250px; // 알림 아이콘 바로 우측으로 조절 (이 값을 조정해가며 위치를 맞춰보세요)
+  width: 310px; // 원하는 너비로 조절
+  max-height: 400px; // 모달창 내용이 너무 많아질 경우 스크롤 생성
+  overflow-y: auto; // 세로 스크롤 생성
   background-color: white;
   padding: 20px;
   border-radius: 5px;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
-  max-height: 80%;
-  overflow-y: auto;
+  z-index: 1000;
 `;
 
-const CloseButton = styled.button`
+const ModalButtonContainer = styled.div`
+  display: flex;
+  justify-content: space-between;
+  margin-top: 20px;
+`;
+
+const ModalButton = styled.button`
+  background-color: #ff922b;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  padding: 10px 20px;
+  font-size: 16px;
+  cursor: pointer;
+
+  &:hover {
+    background-color: #ff7518;
+  }
+`;
+
+const SlideBarCloseButton = styled.button`
   background-color: transparent;
   border: none;
-  position: absolute;
-  top: 10px;
-  right: 10px;
+  font-size: 16px;
   cursor: pointer;
 `;
 
@@ -393,12 +488,8 @@ const ShowMyMenu = styled.div`
 `;
 
 const NotificationIcon = styled.div`
-  display: flex;
-  align-items: center;
   position: relative;
   cursor: pointer;
-  width: 40px; // 크기 조절
-  height: 40px; // 크기 조절
 `;
 
 const NotificationBadge = styled.div`
@@ -416,4 +507,55 @@ const NotificationBadge = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
+`;
+
+const NotificationList = styled.ul`
+  list-style: none;
+  padding: 0;
+  margin: 0;
+`;
+
+const NotificationItem = styled.li`
+  padding: 12px 0;
+  border-bottom: 1px solid #eee;
+  color: ${({isRead}) => (isRead ? "#aaa"
+          : "black")}; // 읽은 항목은 연한 색, 읽지 않은 항목은 진한색
+  font-weight: ${({isRead}) => (isRead ? "normal" : "bold")}; // 읽지 않은 항목은 볼드체
+
+  &:last-child {
+    border-bottom: none;
+  }
+`;
+
+const SlideBarWrapper = styled.div`
+  position: fixed;
+  top: 10%;
+  right: 0;
+  width: 300px;
+  height: 60px;
+  transform: ${({show}) => (show ? 'translateX(0)' : 'translateX(100%)')};
+  transition: transform 0.3s ease-in-out;
+  z-index: 1001;
+`;
+
+const SlideBarContent = styled.div`
+  background-color: #ff922b;
+  color: white;
+  border: 1px solid white;
+  border-radius: 5px;
+  padding: 10px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+`;
+
+const CloseButton = styled.button`
+  background-color: transparent;
+  border: none;
+  font-size: 16px;
+  cursor: pointer;
+  position: absolute;
+  top: 10px;
+  right: 10px;
 `;
