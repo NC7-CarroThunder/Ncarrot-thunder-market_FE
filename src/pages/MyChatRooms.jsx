@@ -143,7 +143,7 @@ const ChatRoomsContainer = styled.div`
 const ChatRoomItem = styled.li`
   display: flex;
   align-items: center;
-  margin: 0 10px 20px 10px;
+  margin: 0 10px 10px 10px;
   background-color: white;
   border: 1px solid #c0c0c0;
   padding: 15px;
@@ -163,19 +163,19 @@ const ChatRoomName = styled.div`
   margin-bottom: 5px; // 간격 줄임
 `;
 
-const ChatButton = styled.button`
-  padding: 5px 10px;
-  background-color: #ff922b;
-  color: white;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  width: 60px;
-  height: 60px;
-  text-align: center;
-  font-size: 14px;
-  line-height: 1.2;
-`;
+// const ChatButton = styled.button`
+//   padding: 5px 10px;
+//   background-color: #ff922b;
+//   color: white;
+//   border: none;
+//   border-radius: 5px;
+//   cursor: pointer;
+//   width: 60px;
+//   height: 60px;
+//   text-align: center;
+//   font-size: 14px;
+//   line-height: 1.2;
+// `;
 
 const MessageTitle = styled.div`
   font-size: 16px;
