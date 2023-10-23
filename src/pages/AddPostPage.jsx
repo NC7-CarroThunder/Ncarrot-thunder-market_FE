@@ -5,7 +5,7 @@ import { BsCameraFill } from 'react-icons/bs';
 import { AiOutlineLeft } from 'react-icons/ai';
 import { RiDeleteBack2Fill } from 'react-icons/ri';
 
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { v4 as uuidv4 } from 'uuid';
 import ROUTER from '../constants/router';
 import Valid from '../validation/validation';
@@ -18,7 +18,6 @@ const axios = new Axios(QUERY.AXIOS_PATH.SEVER);
 
 
 export default function AddPostPage({ children, detail }) {
-
   const navigate = useNavigate();
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
@@ -27,20 +26,37 @@ export default function AddPostPage({ children, detail }) {
   const [image, setImage] = useState([]);
   const [preview, setPreview] = useState([]);
   const [formData, setFormData] = useState([]);
+  const [post, setPost] = useState();
   const dealingType = useRef();
   const category = useRef();
 
-  useEffect(() => {
-    if (detail) {
-      setTitle(detail.title);
-      setContent(detail.content);
-      setPrice(detail.price);
-      dealingType.current.value = detail.location;
-      setImage(detail.imageUrlList);
-      setPreview(detail.imageUrlList);
-      category.current.value = detail.location;
+
+  const location = useLocation();
+  if (location.state != undefined || location.state != null) {
+    const postDetail = location.state.detail;
+    if (post == undefined) {
+      setPost(postDetail);
     }
-  }, []);
+  }
+
+
+  useEffect(() => {
+    if (post != undefined) {
+      setTitle(post.title);
+      setContent(post.content);
+      setPrice(post.price);
+      setAddress(post.address);
+      dealingType.current.value = post.dealingType;
+      //setImage(postDetail.imageUrlList);
+      setPreview(post.attachedFilesPaths);
+      category.current.value = post.itemCategory;
+    }
+
+  }, [post])
+
+  useEffect(() => {
+    console.log(preview);
+  }, [preview])
 
   const handleSubmit = event => {
     event.preventDefault();

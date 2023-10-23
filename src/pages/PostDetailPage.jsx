@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import axios from 'axios';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate, useParams, useLocation } from 'react-router-dom';
 import Storage from '../utils/localStorage';
 import ROUTER from '../constants/router';
 import ImageSlider from '../components/ImageSlider';
@@ -83,8 +83,8 @@ export default function PostDetailPage() {
       if (response.data.success) {
         setIsLiked(!isLiked);
       } else {
-        console.error('위시리스트 설정 실패');
       }
+      console.error('위시리스트 설정 실패');
     } catch (error) {
       console.error('위시리스트 설정 오류:', error);
     }
@@ -103,6 +103,12 @@ export default function PostDetailPage() {
     } catch (error) {
       console.error('게시물 삭제 오류:', error);
     }
+  };
+  const handleUpdateButtonClick = async () => {
+    console.log(post);
+    navigate('/addPost', { state: { children: "수정", detail: post } });
+
+
   };
 
 
@@ -215,6 +221,7 @@ export default function PostDetailPage() {
 
               {Number(post.userid) === Number(currentUserId) && (
                 <ButtonWrapper>
+                  <DeleteButton onClick={handleUpdateButtonClick}>수정하기</DeleteButton>
                   <DeleteButton onClick={handleDeleteButtonClick}>삭제하기</DeleteButton>
 
                 </ButtonWrapper>)}
