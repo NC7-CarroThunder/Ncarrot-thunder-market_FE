@@ -9,49 +9,52 @@ import ROUTER from '../constants/router';
 
 const axios = new Axios(QUERY.AXIOS_PATH.SEVER);
 
-const MyChatRooms = ({onRoomSelect}) => {
+const MyChatRooms = ({ onRoomSelect }) => {
   const navigator = useNavigate();
   const [chatRooms, setChatRooms] = useState([]);
   const [images, setImages] = useState({});
   const userId = Storage.getUserId();
 
-  useEffect(() => {
-    const fetchChatRooms = async () => {
-      try {
-        const response = await axios.get(
-            `/api/chatting/myChatRooms?userId=${userId}`).catch((error) => {
+  const fetchChatRooms = async () => {
+    try {
+      const response = await axios
+        .get(`/api/chatting/myChatRooms?userId=${userId}`)
+        .catch((error) => {
           if (error.response.status == 401) {
-            navigator(ROUTER.PATH.LOGIN)
+            navigator(ROUTER.PATH.LOGIN);
           }
           console.error('Error fetching old messages:', error);
         });
 
-        setChatRooms(response.data.chatRooms);
+      setChatRooms(response.data.chatRooms);
 
-        const validChatRooms = response.data.chatRooms.filter(
-            room => room.postId !== 0);
+      const validChatRooms = response.data.chatRooms.filter(
+        (room) => room.postId !== 0
+      );
 
-        const imagePromises = validChatRooms.map(room =>
-            axios.get(
-                `/api/chatting/getFirstAttachment?postId=${room.postId}`).catch(
-                (error) => {
-                  if (error.response.status == 401) {
-                    navigator(ROUTER.PATH.LOGIN)
-                  }
-                  console.error('Error fetching ', error);
-                }));
+      const imagePromises = validChatRooms.map((room) =>
+        axios
+          .get(`/api/chatting/getFirstAttachment?postId=${room.postId}`)
+          .catch((error) => {
+            if (error.response.status == 401) {
+              navigator(ROUTER.PATH.LOGIN);
+            }
+            console.error('Error fetching ', error);
+          })
+      );
 
-        const imageResponses = await Promise.all(imagePromises);
-        const tempImages = {};
-        validChatRooms.forEach((room, index) => {
-          tempImages[room.postId] = `http://xflopvzfwqjk19996213.cdn.ntruss.com/article/${imageResponses[index].data}?type=f&w=250&h=250`;
-        });
-        setImages(tempImages);
-      } catch (error) {
-        console.error("Failed to fetch chat rooms:", error);
-      }
-    };
+      const imageResponses = await Promise.all(imagePromises);
+      const tempImages = {};
+      validChatRooms.forEach((room, index) => {
+        tempImages[room.postId] = `http://xflopvzfwqjk19996213.cdn.ntruss.com/article/${imageResponses[index].data}?type=f&w=250&h=250`;
+      });
+      setImages(tempImages);
+    } catch (error) {
+      console.error('Failed to fetch chat rooms:', error);
+    }
+  };
 
+  useEffect(() => {
     fetchChatRooms();
   }, [userId]);
 
@@ -75,6 +78,25 @@ const MyChatRooms = ({onRoomSelect}) => {
     onRoomSelect(roomId);
   };
 
+  const leaveChatRoom = async (roomId) => {
+    try {
+      const response = await axios.put(
+        `/api/chatting/leaveRoom?roomId=${roomId}&userId=${userId}`
+      );
+
+      if (response.status === 200) {
+        // 나가기에 성공한 경우, 채팅방 목록을 다시 불러옵니다.
+        fetchChatRooms();
+      } else {
+        console.error('Failed to leave chat room');
+      }
+    } catch (error) {
+      console.error('Error leaving chat room:', error);
+    }
+  };
+
+
+  
   return (
       <ChatRoomsContainer>
         <h3>전체대화</h3>
@@ -93,6 +115,7 @@ const MyChatRooms = ({onRoomSelect}) => {
                       ? room.lastMessage.slice(0, 13) + '...'
                       : room.lastMessage}</LastMessage>
                   <DateText>{formatTime(room.lastUpdated)}</DateText>
+                  <ChatButton onClick={() => leaveChatRoom(room.roomId)}>나가기</ChatButton>
                 </ChatRoomContent>
               </ChatRoomItem>
           ))}
@@ -164,19 +187,19 @@ const ChatRoomName = styled.div`
   margin-bottom: 5px;
 `;
 
-// const ChatButton = styled.button`
-//   padding: 5px 10px;
-//   background-color: #ff922b;
-//   color: white;
-//   border: none;
-//   border-radius: 5px;
-//   cursor: pointer;
-//   width: 60px;
-//   height: 60px;
-//   text-align: center;
-//   font-size: 14px;
-//   line-height: 1.2;
-// `;
+const ChatButton = styled.button`
+  padding: 5px 10px;
+  background-color: #ff922b;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  width: 60px;
+  height: 60px;
+  text-align: center;
+  font-size: 14px;
+  line-height: 1.2;
+`;
 
 const MessageTitle = styled.div`
   font-size: 15px;

@@ -294,10 +294,21 @@ function NotificationComponent({notification}) {
     }
   };
 
+  const isPreviewIncluded = notification.content.includes("미리보기");
+  let normalContent = notification.content;
+  let previewContent = "";
+
+  if (isPreviewIncluded) {
+    const splitContent = notification.content.split("미리보기:");
+    normalContent = splitContent[0];
+    previewContent = "미리보기:" + splitContent[1];
+  }
+
   return (
       <NotificationItem isRead={notification.isRead === "y"}
                         onClick={handleNotificationClick}>
-        {notification.content}
+        {normalContent}
+        {isPreviewIncluded && <PreviewText>{previewContent}</PreviewText>}
       </NotificationItem>
   );
 }
@@ -342,7 +353,7 @@ const ModalOverlay = styled.div`
 const ModalContent = styled.div`
   position: absolute;
   top: 60px; // 알림 아이콘 바로 아래로 조절
-  right: 250px; // 알림 아이콘 바로 우측으로 조절 (이 값을 조정해가며 위치를 맞춰보세요)
+  right: 300px; // 알림 아이콘 바로 우측으로 조절 (이 값을 조정해가며 위치를 맞춰보세요)
   width: 310px; // 원하는 너비로 조절
   max-height: 400px; // 모달창 내용이 너무 많아질 경우 스크롤 생성
   overflow-y: auto; // 세로 스크롤 생성
@@ -351,6 +362,7 @@ const ModalContent = styled.div`
   border-radius: 5px;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
   z-index: 1000;
+  white-space: pre-line;
 `;
 
 const ModalButtonContainer = styled.div`
@@ -532,7 +544,7 @@ const SlideBarWrapper = styled.div`
   position: fixed;
   top: 10%;
   right: 0;
-  width: 300px;
+  width: 280px;
   height: 60px;
   transform: ${({show}) => (show ? 'translateX(0)' : 'translateX(100%)')};
   transition: transform 0.3s ease-in-out;
@@ -559,4 +571,9 @@ const CloseButton = styled.button`
   position: absolute;
   top: 10px;
   right: 10px;
+`;
+
+const PreviewText = styled.span`
+  font-size: 83%; // 작은 폰트 크기로 조절
+  color: rgba(0, 0, 0, 0.7); // 색상을 아주 살짝 연하게 조정
 `;
