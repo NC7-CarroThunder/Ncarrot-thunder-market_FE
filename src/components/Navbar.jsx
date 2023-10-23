@@ -85,7 +85,7 @@ export default function Navbar({showMyMenu, onShowMyMenu, onLogOut}) {
 
   useEffect(() => {
     // const socket = new SockJS('http://localhost:8888/api/websocket', [],
-    const socket = new SockJS('https://carrothunder.store/api/websocket', [],
+    const socket = new SockJS('http://carrothunder.store/api/websocket', [],
         {withCredentials: true})
 
     const stompClient = new Client({

@@ -36,7 +36,7 @@ function ChatRoom({ roomId }) {
   useEffect(() => {
     setMessages([]);
     // const socket = new SockJS('http://localhost:8888/api/websocket',
-    const socket = new SockJS('https://carrothunder.store/api/websocket', [],
+    const socket = new SockJS('http://carrothunder.store/api/websocket', [],
       [], { withCredentials: true });
     const userId = Storage.getUserId();
 
