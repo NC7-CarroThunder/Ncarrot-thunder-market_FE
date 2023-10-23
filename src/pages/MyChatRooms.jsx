@@ -79,12 +79,10 @@ const MyChatRooms = ({ onRoomSelect }) => {
     onRoomSelect(roomId);
   };
 
-  const leaveChatRoom = async (roomId) => {
+  const deleteChatRoom = async (roomId) => {
     try {
-      const response = await axios.put(
-        `/api/chatting/leaveRoom?roomId=${roomId}&userId=${userId}`
-      );
-
+      const response = await axios.delete(`/api/chatting/delete/${roomId}`);
+  
       if (response.status === 200) {
         // 나가기에 성공한 경우, 채팅방 목록을 다시 불러오고 채팅방 비활성화
         fetchChatRooms();
@@ -96,8 +94,6 @@ const MyChatRooms = ({ onRoomSelect }) => {
       console.error('Error leaving chat room:', error);
     }
   };
-
-
   
   return (
       <ChatRoomsContainer>
@@ -119,7 +115,7 @@ const MyChatRooms = ({ onRoomSelect }) => {
                       : room.lastMessage}</LastMessage>
                   <DateText>{formatTime(room.lastUpdated)}</DateText>
                 </ChatRoomContent>
-                <ChatButton onClick={() => leaveChatRoom(room.roomId)}>나가기</ChatButton>
+                <ChatButton onClick={() =>deleteChatRoom(room.roomId)}>나가기</ChatButton>
               </ChatRoomItem>
           ))}
         </ul>
