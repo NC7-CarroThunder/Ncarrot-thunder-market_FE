@@ -5,7 +5,7 @@ const COOKIE = {
 
 const AXIOS_PATH = {
   LOCAL: 'http://localhost:8888',
-  SEVER: 'http://localhost:8888',
+  SEVER: 'http://175.45.194.45:8888',
   KAKAOSERVER: 'https://kauth.kakao.com',
   LOGIN: '/api/users/login',
   SIGNUP: '/api/users/signup',
