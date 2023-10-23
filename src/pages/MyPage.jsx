@@ -91,26 +91,6 @@ export default function MyPage() {
     return price.toLocaleString('en-US');
   };
 
-
-  const ongoing = [
-    { title: '거래중1', price: '12,000원', image: '2.jpg' },
-    { title: '거래중2', price: '22,000원', image: '3.jpg' },
-    { title: '거래중3', price: '32,000원', image: '4.jpg' },
-  ];
-
-
-  const followers = [
-    { name: '사용자1', image: 'dog.jpg' },
-    { name: '사용자2', image: 'rabbit.jpg' },
-    { name: '사용자3', image: '9.jpg' }
-  ];
-
-  const followings = [
-    { name: '사용자4', image: '1.jpg' },
-    { name: '사용자5', image: '2.jpg' },
-    { name: '사용자6', image: '3.jpg' },
-  ];
-
   const Profile = ({ onProfileEditClick }) => (
     <ProfileContainer>
       {(Storage.getPhoto() == undefined) ? (
@@ -141,7 +121,6 @@ export default function MyPage() {
       <p>{getPoint()}</p>
       <ButtonContainer>
         <Button onClick={openModal}>충전</Button>
-        <Button>환전</Button>
       </ButtonContainer>
     </AdditionalInfoContainer>
   );
@@ -192,27 +171,10 @@ export default function MyPage() {
 
         <TabContainer>
           <TabButton onClick={() => setTab('myposts')} active={tab === 'myposts'}>내 게시글</TabButton>
-          <TabButton onClick={() => setTab('ongoing')} active={tab === 'ongoing'}>거래중</TabButton>
           <TabButton onClick={() => setTab('wishlist')} active={tab === 'wishlist'}>찜</TabButton>
-          <TabButton onClick={() => setTab('following')} active={tab === 'following'}>팔로잉</TabButton>
-          <TabButton onClick={() => setTab('followers')} active={tab === 'followers'}>팔로워</TabButton>
         </TabContainer>
 
         <ListContainer>
-          {tab === 'following' && followings.map(user => (
-            <UserCard key={user.id}>
-              <UserImage src={user.background ? `${process.env.PUBLIC_URL}/${user.background}` : ''} alt="유저 이미지" />
-              {user.name}
-              <FollowButton>팔로잉</FollowButton>
-            </UserCard>
-          ))}
-          {tab === 'followers' && followers.map(user => (
-            <UserCard key={user.id}>
-              <UserImage src={user.background ? `${process.env.PUBLIC_URL}/${user.background}` : ''} alt="유저 이미지" />
-              {user.name}
-              <FollowButton>팔로우</FollowButton>
-            </UserCard>
-          ))}
           {tab === 'wishlist' && wishlists.map(wishlist => (
             <Link to={`/post/${wishlist.id}`} key={wishlist.id}>
               <ListCard>
@@ -234,15 +196,6 @@ export default function MyPage() {
                 <ListTitle>{item.title}</ListTitle>
                 <ListText><strong>{formatPrice(item.price)}원</strong></ListText>
               </ListBody>
-              </ListCard>
-            </Link>
-          ))}
-          {tab === 'ongoing' && ongoing.map(item => (
-            <Link to={`/post/${item.id}`} key={item.id}>
-              <ListCard>
-                <ListImage src={item.background ? `${process.env.PUBLIC_URL}/${item.background}` : ''} alt="리스트 이미지" />
-                <div>{item.title}</div>
-                <div>{item.price}</div>
               </ListCard>
             </Link>
           ))}
@@ -306,8 +259,8 @@ const ProfileButton = styled.button`
 `;
 
 const AdditionalInfoContainer = styled.div`
-  width: 40%;
-  margin-left: 17%;
+  width: 30%;
+  margin-left: 20%;
   background-color: white;
   border: 1px solid #c0c0c0;
   padding: 10px 20px;
@@ -330,7 +283,6 @@ const Button = styled.button`
   border: none;
   border-radius: 5px;
   cursor: pointer;
-  margin-right: 30px;
 `;
 
 const ChatButton = styled.button`
@@ -440,7 +392,7 @@ const TabContainer = styled.div`
 `;
 
 const TabButton = styled.button`
-  width: 210px;
+  width: 500px;
   padding: 10px;
   cursor: pointer;
   background-color: ${({ active }) => (active ? '#ddd' : 'transparent')};
@@ -469,32 +421,6 @@ const ListText = styled.p`
 
 const ListBody = styled.div`
   padding: 10px;
-`;
-
-const UserCard = styled.div`
-  width: 140px; 
-  height: 140px; 
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-`;
-
-const UserImage = styled.img`
-  width: 100px;
-  height: 100px;
-  border-radius: 50%;
-  margin-bottom: 10px; 
-`;
-
-const FollowButton = styled.button`
-  margin-top: 10px;
-  padding: 5px 10px;
-  border: none;
-  border-radius: 5px;
-  background-color: #ff922b;
-  color: white;
-  cursor: pointer;
 `;
 
 const ListCard = styled.div`
