@@ -9,7 +9,7 @@ import QUERY from "../constants/query";
 
 import axios from 'axios';
 
-const axiosForLoginUser = new Axios(QUERY.AXIOS_PATH.SEVER);
+const axiosForLoginUser = new axios(QUERY.AXIOS_PATH.SEVER);
 
 const Payment = () => {
   const navigator = useNavigate();
@@ -68,7 +68,7 @@ const Payment = () => {
           navigator(ROUTER.PATH.MYPAGE);
           return;
         }
-        const { data } = await axios.post('http://carrothunder.store:8888/api/payments'
+        const { data } = await axios.post('http://localhost:8888/api/payments'
           , { userId, chargePoint });
         console.log(data);
         Storage.setPoint(data);

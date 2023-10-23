@@ -6,17 +6,16 @@ import Storage from '../utils/localStorage';
 import ROUTER from '../constants/router';
 import ImageSlider from '../components/ImageSlider';
 import QUERY from '../constants/query';
-import Axios from '../utils/api/axios';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faHeart as solidHeart } from '@fortawesome/free-solid-svg-icons';
 import { faHeart as regularHeart } from '@fortawesome/free-regular-svg-icons';
 import MapComponent from '../components/MapComponent';
 
-
-const axiosForLoginUser = new Axios(QUERY.AXIOS_PATH.SEVER);
 const axios = new Axios(QUERY.AXIOS_PATH.SEVER);
 
+
 export default function PostDetailPage() {
+
   const { postId } = useParams();
   const navigate = useNavigate();
   const [post, setPost] = useState({});
