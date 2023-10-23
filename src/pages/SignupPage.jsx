@@ -20,13 +20,14 @@ export default function SignupPage() {
   const axios = new Axios(QUERY.AXIOS_PATH.SEVER);
   const navigate = useNavigate();
 
-  const onSubmit = async e => {
+  const onSubmit2 = async e => {
+    console.log("여기는 회원가입 버튼 누를떄만 동작해야해");
 
-    if (!emailCheck)  {
+    if (!emailCheck) {
       alert("이메일 중복 체크 확인 바랍니다!");
       return;
     }
-    if (!nicknameCheck)  {
+    if (!nicknameCheck) {
       alert("닉네임 중복 체크 확인 바랍니다!");
       return;
     }
@@ -45,12 +46,18 @@ export default function SignupPage() {
   };
 
 
-   // 이메일 중복확인 API
-   const handleEmailCheck = async () => {
+  // 이메일 중복확인 API
+  const handleEmailCheck = async (e) => {
+    e.preventDefault();
+
     try {
       const sendMail = email;
+      if (sendMail === "") {
+        alert('이메일을 입력해주시기 바랍니다.');
+        return;
+      }
       const response = await axios.post('/api/users/useremailcheck', { email: sendMail });
-  
+
       if (response.status === 200) {
         if (response.data.result) {
           alert('사용가능한 이메일 입니다!');
@@ -72,11 +79,16 @@ export default function SignupPage() {
 
 
   // 닉네임 중복 체크 API
-  const handleNicknameCheck = async () => {
+  const handleNicknameCheck = async (e) => {
+    e.preventDefault();
     try {
       const nicknameToCheck = nickname;
+      if (nicknameToCheck === "") {
+        alert('닉네임을 입력해주시기 바랍니다.');
+        return;
+      }
       const response = await axios.post('/api/users/nicknamecheck', { nickname: nicknameToCheck });
-  
+
       if (response.status === 200) {
         if (response.data.result) {
           alert('사용 가능한 닉네임입니다.');
@@ -100,7 +112,7 @@ export default function SignupPage() {
 
   return (
     <LoginContainer>
-      <Form onSubmit={onSubmit}>
+      <Form onSubmit={onSubmit2}>
         <Titleheader>회원가입</Titleheader>
         <Label htmlFor='username'>이메일</Label>
         <Input
@@ -124,7 +136,7 @@ export default function SignupPage() {
           value={nickname}
           onChange={e => setNickname(e.target.value)}
         />
-         <button onClick={handleNicknameCheck}>닉네임 중복 체크</button>
+        <button onClick={handleNicknameCheck}>닉네임 중복 체크</button>
         <Label htmlFor="phone">휴대폰 번호</Label>
         <Input
           type="text"
@@ -165,9 +177,10 @@ const LoginContainer = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 100vh;
+  height: 95vh;
   background-color: #f7f7f7;
   font-family: 'Nanum Gothic', sans-serif;
+   overflow-y: auto; /* 세로 스크롤을 표시하도록 설정 */
 `;
 
 const Titleheader = styled.div`
