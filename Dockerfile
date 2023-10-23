@@ -5,6 +5,7 @@ FROM node:20
 WORKDIR /app
 
 COPY package.json package-lock.json ./
+COPY .env ./
 COPY src/ ./src/
 COPY public/ ./public/
 
