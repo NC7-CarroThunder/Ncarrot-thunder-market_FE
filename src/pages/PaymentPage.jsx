@@ -48,7 +48,7 @@ const Payment = () => {
       pg: 'kakaopay.TC0ONETIME',
       pay_method: 'card',
       merchant_uid: new Date().getTime(),
-      name: '캐롯선더충전',
+      name: '캐롯썬더충전',
       amount: chargePoint,
       buyer_email: 'test@test.com',
       buyer_name: '코드쿡',
@@ -68,7 +68,7 @@ const Payment = () => {
           navigator(ROUTER.PATH.MYPAGE);
           return;
         }
-        const { data } = await axios.post('http://localhost:8888/api/payments'
+        const { data } = await axios.post('http://carrothunder:8888/api/payments'
           , { userId, chargePoint });
         console.log(data);
         Storage.setPoint(data);
