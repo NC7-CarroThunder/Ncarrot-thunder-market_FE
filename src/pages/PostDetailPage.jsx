@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
-import axios from 'axios';
+import Axios from '../utils/api/axios';
 import { useNavigate, useParams } from 'react-router-dom';
 import Storage from '../utils/localStorage';
 import ROUTER from '../constants/router';
@@ -14,6 +14,7 @@ import MapComponent from '../components/MapComponent';
 
 
 const axiosForLoginUser = new Axios(QUERY.AXIOS_PATH.SEVER);
+const axios = new Axios(QUERY.AXIOS_PATH.SEVER);
 
 export default function PostDetailPage() {
   const { postId } = useParams();
@@ -26,13 +27,13 @@ export default function PostDetailPage() {
     async function fetchPostDetails() {
       try {
         const response = await axios.get(
-          `${QUERY.AXIOS_PATH.SEVER}/api/posts/${postId}`);
+          `/api/posts/${postId}`);
         console.log(response.data.result);
         setPost(response.data.result);
         setLoading(false);
 
-        const wishlistStatusResponse = await axiosInstance.get(
-          `${QUERY.AXIOS_PATH.SEVER}/api/wishlist/status/${postId}`
+        const wishlistStatusResponse = await axios.get(
+          `/api/wishlist/status/${postId}`
         );
         setIsLiked(wishlistStatusResponse.data.isLiked);
       } catch (error) {
@@ -49,7 +50,7 @@ export default function PostDetailPage() {
       const currentUserId = Storage.getUserId();
       console.log('게시글 작성자 ID:', post.userid);
       const response = await axios.get(
-        `http://localhost:8888/api/chatting/createOrGetChatRoom`,
+          `api/chatting/createOrGetChatRoom`,
         {
           params: {
             sellerId: post.userid,
@@ -70,9 +71,6 @@ export default function PostDetailPage() {
       console.error('Error creating or accessing the chat room:', error);
     }
   };
-
-
-
   const axiosInstance = new Axios(QUERY.AXIOS_PATH.SEVER);
 
   const handleWishlistButtonClick = async () => {
@@ -120,7 +118,7 @@ export default function PostDetailPage() {
       const currentUserId = Storage.getUserId();
       console.log('게시글 작성자 ID:', post.userid);
       const response = await axios.get(
-        `http://localhost:8888/api/chatting/createOrGetChatRoom`,
+          `/api/chatting/createOrGetChatRoom`,
         {
           params: {
             sellerId: post.userid,
