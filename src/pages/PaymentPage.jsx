@@ -7,9 +7,7 @@ import ROUTER from '../constants/router';
 import Axios from '../utils/api/axios';
 import QUERY from "../constants/query";
 
-import axios from 'axios';
-
-const axiosForLoginUser = new axios(QUERY.AXIOS_PATH.SEVER);
+const axiosForLoginUser = new Axios(QUERY.AXIOS_PATH.SEVER);
 
 const Payment = () => {
   const navigator = useNavigate();
@@ -23,7 +21,7 @@ const Payment = () => {
     };
   }, []);
 
-  const requestPay = async () => {
+  const requestPay = () => {
     if (parseInt(chargePoint) < 1000) {
       alert("1000원 이상부터 충전 가능합니다");
       navigator(ROUTER.PATH.BACK);
@@ -31,7 +29,7 @@ const Payment = () => {
     }
     console.log("결제서비스 하기전에, 해당 유저가 로그인 했는지 확인하는 과정");
     console.log("결제서비스 하기전에, 해당 유저가 로그인 했는지 확인하는 과정1");
-    await axiosForLoginUser.get(`/api/profiles`)
+    axiosForLoginUser.get(`/api/profiles`)
       .then((response) => {
         console.log(response.data.result);
       })
