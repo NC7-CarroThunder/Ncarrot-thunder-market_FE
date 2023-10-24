@@ -159,7 +159,7 @@ const MainWrapper = styled.main`
   height: 90%;
   overflow-y: auto;
   overflow-x: hidden;
-  background-color: #f7f7f7;
+  background-color: #fff;
   align-items: center;
   margin: 0 auto;
 `;
@@ -167,12 +167,11 @@ const MainWrapper = styled.main`
 const DetailWrapper = styled.div`
   display: flex;
   width: 90vw;
-  height: 90%;
+  height: 85%;
   margin: 30px auto;
-  background-color: #fff;
   padding: 20px;
   border-radius: 10px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  justify-content: center;
 `;
 
 const PostContainer = styled.div`
@@ -182,8 +181,7 @@ const PostContainer = styled.div`
 const Card = styled.div`
   border: 1px solid #ddd;
   margin-bottom: 20px;
-  width: 30vw; 
-  border-radius: 5%;
+  width: 28vw; 
   margin-right: 20px;
 `;
 
@@ -194,11 +192,11 @@ const CardImg = styled.img`
 `;
 
 const CardBody = styled.div`
-  padding: 10px;
+  padding: 20px;
 `;
 
 const CardTitle = styled.div`
-  font-size: 16px;
+  font-size: 25px;
   overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;
@@ -207,7 +205,7 @@ const CardTitle = styled.div`
 
 
 const CardText = styled.p`
-  font-size: 16px;
+  font-size: 30px;
   margin-bottom: 5px;
 `;
 
@@ -233,8 +231,7 @@ const CardDescription = styled.p`
 const ChatRoomContainer = styled.div`
   flex: none;
   width: 25vw;
-  height: 50vh;
-  margin: 20px 0;
+  margin-bottom: 20px;
   display: flex;
   flex-direction: column;
   background-color: #f8f9fa;
