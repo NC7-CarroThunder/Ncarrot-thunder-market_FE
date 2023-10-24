@@ -207,7 +207,7 @@ function ChatRoom({ roomId }) {
         <>
           <ModalOverlay onClick={closeModal}></ModalOverlay> {/* 배경 클릭시 모달 닫기 */}
           <TranslationOptions>
-          <Title>언어 선택</Title>
+            <Title>언어 선택</Title>
             {languageOptions.map((option) => (
               <label key={option.value}>
                 <input
@@ -251,9 +251,13 @@ function ChatRoom({ roomId }) {
         <ShowMyMenu
           clickedMessageTop={clickedMessageTop}
           clickedMessageLeft={clickedMessageLeft}>
-          {(isClickedMessage === true) ? (<span onClick={() => handleUpdateMessage(messages[messageIndex].messageId)}>
-            삭제하기
-          </span>) : (<></>)}
+          {(isClickedMessage === true && messages[messageIndex].senderId === parseInt(Storage.getUserId())) ? (
+            <span onClick={() => handleUpdateMessage(messages[messageIndex].messageId)}>
+              삭제하기
+            </span>
+          ) : (
+            <></>
+          )}
         </ShowMyMenu>
 
         <div ref={messagesEndRef}></div>

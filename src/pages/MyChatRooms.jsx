@@ -1,6 +1,5 @@
 import React, {useEffect, useState} from 'react';
 import {Link, useNavigate} from 'react-router-dom';
-
 import Axios from '../utils/api/axios';
 import QUERY from '../constants/query';
 import styled from 'styled-components';
@@ -14,6 +13,7 @@ const MyChatRooms = ({ onRoomSelect }) => {
   const [chatRooms, setChatRooms] = useState([]);
   const [images, setImages] = useState({});
   const userId = Storage.getUserId();
+  const [selectedItemIndex, setSelectedItemIndex] = useState(null);
 
   const fetchChatRooms = async () => {
     try {
@@ -74,19 +74,19 @@ const MyChatRooms = ({ onRoomSelect }) => {
     return `${month}월 ${day}일 ${hours}:${minutes}분`;
   };
 
-  const handleChatButtonClick = (roomId) => {
+  const handleChatButtonClick = (roomId, index) => {
+    setSelectedItemIndex(index);
     onRoomSelect(roomId);
   };
 
-  const leaveChatRoom = async (roomId) => {
+  const deleteChatRoom = async (roomId) => {
     try {
-      const response = await axios.put(
-        `/api/chatting/leaveRoom?roomId=${roomId}&userId=${userId}`
-      );
-
+      const response = await axios.delete(`/api/chatting/delete/${roomId}`);
+  
       if (response.status === 200) {
-        // 나가기에 성공한 경우, 채팅방 목록을 다시 불러옵니다.
+        // 나가기에 성공한 경우, 채팅방 목록을 다시 불러오고 채팅방 비활성화
         fetchChatRooms();
+        onRoomSelect(null);
       } else {
         console.error('Failed to leave chat room');
       }
@@ -94,16 +94,15 @@ const MyChatRooms = ({ onRoomSelect }) => {
       console.error('Error leaving chat room:', error);
     }
   };
-
-
   
   return (
       <ChatRoomsContainer>
         <h3>전체대화</h3>
         <ul>
-          {chatRooms.map((room) => (
+          {chatRooms.map((room, index) => (
               <ChatRoomItem key={room.roomId}
-                            onClick={() => handleChatButtonClick(room.roomId)}>
+                            onClick={() => handleChatButtonClick(room.roomId, index)}
+                            selected={index === selectedItemIndex}>
                 <Link to={`/post/${room.postId}`}>
                   <ChatRoomImage src={images[room.postId]} alt="게시글 이미지"/>
                 </Link>
@@ -115,8 +114,8 @@ const MyChatRooms = ({ onRoomSelect }) => {
                       ? room.lastMessage.slice(0, 13) + '...'
                       : room.lastMessage}</LastMessage>
                   <DateText>{formatTime(room.lastUpdated)}</DateText>
-                  <ChatButton onClick={() => leaveChatRoom(room.roomId)}>나가기</ChatButton>
                 </ChatRoomContent>
+                <ChatButton onClick={() =>deleteChatRoom(room.roomId)}>나가기</ChatButton>
               </ChatRoomItem>
           ))}
         </ul>
@@ -168,7 +167,7 @@ const ChatRoomItem = styled.li`
   display: flex;
   align-items: center;
   margin: 0 10px 10px 10px;
-  background-color: white;
+  background-color: ${props => props.selected ? 'lightgray' : 'white'};
   border: 1px solid #c0c0c0;
   padding: 15px;
   border-radius: 10px;
@@ -188,6 +187,7 @@ const ChatRoomName = styled.div`
 `;
 
 const ChatButton = styled.button`
+
   padding: 5px 10px;
   background-color: #ff922b;
   color: white;
