@@ -23,7 +23,7 @@ const Payment = () => {
     };
   }, []);
 
-  const requestPay = () => {
+  const requestPay = async () => {
     if (parseInt(chargePoint) < 1000) {
       alert("1000원 이상부터 충전 가능합니다");
       navigator(ROUTER.PATH.BACK);
@@ -31,7 +31,7 @@ const Payment = () => {
     }
     console.log("결제서비스 하기전에, 해당 유저가 로그인 했는지 확인하는 과정");
     console.log("결제서비스 하기전에, 해당 유저가 로그인 했는지 확인하는 과정1");
-    axiosForLoginUser.get(`/api/profiles`)
+    await axiosForLoginUser.get(`/api/profiles`)
       .then((response) => {
         console.log(response.data.result);
       })
@@ -51,11 +51,6 @@ const Payment = () => {
       merchant_uid: new Date().getTime(),
       name: '캐롯썬더충전',
       amount: chargePoint,
-      buyer_email: 'test@test.com',
-      buyer_name: '코드쿡',
-      buyer_tel: '010-1234-5678',
-      buyer_addr: '서울특별시',
-      buyer_postcode: '123-456',
     }, async (rsp) => {
       try {
         // console.log(rsp.paid_amount);
