@@ -119,7 +119,8 @@ export default function Navbar({ showMyMenu, onShowMyMenu, onLogOut }) {
     if (!keyWord) {
       return;
     }
-    navigate(`/search/${keyWord}`);
+    navigate(ROUTER.PATH.MAIN, { state: { word: keyWord } });
+    //navigate(`/search/${keyWord}`);
   };
 
   const handleLogoClick = () => {
