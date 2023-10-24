@@ -28,6 +28,7 @@ export default function PostDetailPage() {
         const response = await axios.get(
           `/api/posts/${postId}`);
         console.log(response.data.result);
+        console.log(response);
         setPost(response.data.result);
         setLoading(false);
 
