@@ -1,39 +1,42 @@
-import React, { useEffect, useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import React, {useEffect, useRef, useState} from 'react';
+import {Link, useNavigate} from 'react-router-dom';
 import Axios from '../utils/api/axios';
 import QUERY from '../constants/query';
 import styled from 'styled-components';
 import Storage from '../utils/localStorage';
 import ROUTER from '../constants/router';
+import {Stomp} from '@stomp/stompjs';
+import SockJS from 'sockjs-client';
 
 const axios = new Axios(QUERY.AXIOS_PATH.SEVER);
 
-const MyChatRooms = ({ onRoomSelect }) => {
+const MyChatRooms = ({onRoomSelect}) => {
   const navigator = useNavigate();
   const [chatRooms, setChatRooms] = useState([]);
   const [images, setImages] = useState({});
   const userId = Storage.getUserId();
   const [selectedItemIndex, setSelectedItemIndex] = useState(null);
+  const chatRoomsContainerRef = useRef(null)
 
   const fetchChatRooms = async () => {
     try {
       const response = await axios
-        .get(`/api/chatting/myChatRooms?userId=${userId}`)
-        .catch((error) => {
-          if (error.response.status == 401) {
-            navigator(ROUTER.PATH.LOGIN);
-          }
-          console.error('Error fetching old messages:', error);
-        });
+      .get(`/api/chatting/myChatRooms?userId=${userId}`)
+      .catch((error) => {
+        if (error.response.status == 401) {
+          navigator(ROUTER.PATH.LOGIN);
+        }
+        console.error('Error fetching old messages:', error);
+      });
 
       setChatRooms(response.data.chatRooms);
 
       const validChatRooms = response.data.chatRooms.filter(
-        (room) => room.postId !== 0
+          (room) => room.postId !== 0
       );
 
       const imagePromises = validChatRooms.map((room) =>
-        axios
+          axios
           .get(`/api/chatting/getFirstAttachment?postId=${room.postId}`)
           .catch((error) => {
             if (error.response.status == 401) {
@@ -55,6 +58,10 @@ const MyChatRooms = ({ onRoomSelect }) => {
   };
 
   useEffect(() => {
+    scrollToTop();
+  }, [chatRooms]);
+
+  useEffect(() => {
     fetchChatRooms();
   }, [userId]);
 
@@ -63,6 +70,63 @@ const MyChatRooms = ({ onRoomSelect }) => {
       return room.buyerNickname;
     }
     return room.sellerNickname;
+  };
+
+  useEffect(() => {
+    const socket = new SockJS('http://localhost:8888/api/websocket');
+    const stompClient = Stomp.over(socket);
+
+    stompClient.connect({}, () => {
+      stompClient.subscribe('/topic/newChatRoom', (message) => {
+        if (message.body) {
+          updateChatRooms(message.body);
+        }
+      });
+    });
+
+    return () => {
+      stompClient.disconnect();
+    };
+  }, []);
+
+  const scrollToTop = () => {
+    if (chatRoomsContainerRef.current) {
+      chatRoomsContainerRef.current.scrollTop = 0;
+    }
+  }
+
+  const updateChatRooms = async (roomId) => {
+    const newRoom = await fetchNewChatRoom(roomId);
+    if (newRoom) {
+      const existingRoomIndex = chatRooms.findIndex(
+          room => room.roomId === roomId);
+      if (existingRoomIndex !== -1) {
+        const updatedRooms = [...chatRooms];
+        updatedRooms[existingRoomIndex] = newRoom;
+        setChatRooms(updatedRooms);
+        scrollToTop();  // 여기서 스크롤을 최상단으로 이동
+      } else {
+        fetchChatRooms();
+      }
+    }
+  };
+
+  const fetchNewChatRoom = async (roomId) => {
+
+    try {
+      const response = await axios.get(`/api/chatting/room/${roomId}`);
+      const newRoom = response.data.room;
+
+      const imageResponse = await axios.get(
+          `/api/chatting/getFirstAttachment?postId=${newRoom.postId}`);
+      const imageUrl = `http://xflopvzfwqjk19996213.cdn.ntruss.com/article/${imageResponse.data}?type=f&w=250&h=250`;
+      setImages(prevImages => ({...prevImages, [newRoom.postId]: imageUrl}));
+
+      return newRoom;  // Return new room
+    } catch (error) {
+      console.error('Failed to fetch new chat room:', error);
+      return null;
+    }
   };
 
   const formatTime = (dateString) => {
@@ -96,30 +160,32 @@ const MyChatRooms = ({ onRoomSelect }) => {
   };
 
   return (
-    <ChatRoomsContainer>
-      <h3>전체대화</h3>
-      <ul>
-        {chatRooms.map((room, index) => (
-          <ChatRoomItem key={room.roomId}
-            onClick={() => handleChatButtonClick(room.roomId, index)}
-            selected={index === selectedItemIndex}>
-            <Link to={`/post/${room.postId}`}>
-              <ChatRoomImage src={images[room.postId]} alt="게시글 이미지" />
-            </Link>
-            <ChatRoomContent>
-              <ChatRoomName>{room.postTitle}</ChatRoomName>
-              <MessageTitle>대화상대: {getCounterpartNickname(
-                room)}</MessageTitle>
-              <LastMessage>최근대화: {room.lastMessage?.length > 13
-                ? room.lastMessage.slice(0, 13) + '...'
-                : room.lastMessage}</LastMessage>
-              <DateText>{formatTime(room.lastUpdated)}</DateText>
-            </ChatRoomContent>
-            <ChatButton onClick={() => deleteChatRoom(room.roomId)}>나가기</ChatButton>
-          </ChatRoomItem>
-        ))}
-      </ul>
-    </ChatRoomsContainer>
+      <ChatRoomsContainer ref={chatRoomsContainerRef}>
+        <h3>전체대화</h3>
+        <ul>
+          {chatRooms.map((room, index) => (
+              <ChatRoomItem key={room.roomId}
+                            onClick={() => handleChatButtonClick(room.roomId,
+                                index)}
+                            selected={index === selectedItemIndex}>
+                <Link to={`/post/${room.postId}`}>
+                  <ChatRoomImage src={images[room.postId]} alt="게시글 이미지"/>
+                </Link>
+                <ChatRoomContent>
+                  <ChatRoomName>{room.postTitle}</ChatRoomName>
+                  <MessageTitle>대화상대: {getCounterpartNickname(
+                      room)}</MessageTitle>
+                  <LastMessage>최근대화: {room.lastMessage?.length > 13
+                      ? room.lastMessage.slice(0, 13) + '...'
+                      : room.lastMessage}</LastMessage>
+                  <DateText>{formatTime(room.lastUpdated)}</DateText>
+                </ChatRoomContent>
+                <ChatButton
+                    onClick={() => deleteChatRoom(room.roomId)}>나가기</ChatButton>
+              </ChatRoomItem>
+          ))}
+        </ul>
+      </ChatRoomsContainer>
   );
 };
 
