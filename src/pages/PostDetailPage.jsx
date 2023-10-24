@@ -26,7 +26,7 @@ export default function PostDetailPage() {
     async function fetchPostDetails() {
       try {
         const response = await axios.get(
-          `/api/posts/${postId}`);
+          `${QUERY.AXIOS_PATH.SEVER}/api/posts/${postId}`);
         console.log(response.data.result);
         console.log(response);
         setPost(response.data.result);
