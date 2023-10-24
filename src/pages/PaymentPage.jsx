@@ -31,6 +31,7 @@ const Payment = () => {
     }
     console.log("결제서비스 하기전에, 해당 유저가 로그인 했는지 확인하는 과정");
     const res = [];
+    console.log("결제서비스 하기전에, 해당 유저가 로그인 했는지 확인하는 과정1");
     const response = axiosForLoginUser.get(`/api/profiles`)
       .then((response) => {
         console.log(response.data.result);
@@ -41,6 +42,7 @@ const Payment = () => {
         }
         console.error('Error fetching old messages:', error);
       });
+    console.log("결제서비스 하기전에, 해당 유저가 로그인 했는지 확인하는 과정2");
     const { IMP } = window;
     IMP.init(`${process.env.REACT_APP_IMP}`);
 
