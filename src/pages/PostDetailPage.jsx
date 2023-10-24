@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import axios from 'axios';
+import Axios from '../utils/api/axios';
 import { useNavigate, useParams, useLocation } from 'react-router-dom';
 import Storage from '../utils/localStorage';
 import ROUTER from '../constants/router';
@@ -11,8 +12,7 @@ import { faHeart as solidHeart } from '@fortawesome/free-solid-svg-icons';
 import { faHeart as regularHeart } from '@fortawesome/free-regular-svg-icons';
 import MapComponent from '../components/MapComponent';
 
-const axios = new Axios(QUERY.AXIOS_PATH.SEVER);
-
+const axiosForLoginUser = new Axios(QUERY.AXIOS_PATH.SEVER);
 
 export default function PostDetailPage() {
 
