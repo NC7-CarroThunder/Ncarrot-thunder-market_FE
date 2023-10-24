@@ -15,8 +15,8 @@ const MyChatRooms = ({onRoomSelect}) => {
   const [chatRooms, setChatRooms] = useState([]);
   const [images, setImages] = useState({});
   const userId = Storage.getUserId();
-  const [selectedItemIndex, setSelectedItemIndex] = useState(null);
-  const chatRoomsContainerRef = useRef(null)
+  const chatRoomsContainerRef = useRef(null);
+  const [selectedRoomId, setSelectedRoomId] = useState(null);
 
   const fetchChatRooms = async () => {
     try {
@@ -138,8 +138,8 @@ const MyChatRooms = ({onRoomSelect}) => {
     return `${month}월 ${day}일 ${hours}:${minutes}분`;
   };
 
-  const handleChatButtonClick = (roomId, index) => {
-    setSelectedItemIndex(index);
+  const handleChatButtonClick = (roomId) => {
+    setSelectedRoomId(roomId);
     onRoomSelect(roomId);
   };
 
@@ -165,9 +165,8 @@ const MyChatRooms = ({onRoomSelect}) => {
         <ul>
           {chatRooms.map((room, index) => (
               <ChatRoomItem key={room.roomId}
-                            onClick={() => handleChatButtonClick(room.roomId,
-                                index)}
-                            selected={index === selectedItemIndex}>
+                            onClick={() => handleChatButtonClick(room.roomId)}
+                            selected={room.roomId === selectedRoomId}>
                 <Link to={`/post/${room.postId}`}>
                   <ChatRoomImage src={images[room.postId]} alt="게시글 이미지"/>
                 </Link>
