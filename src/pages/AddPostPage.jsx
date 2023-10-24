@@ -73,7 +73,7 @@ export default function AddPostPage({ children, detail }) {
       return;
     console.log("정상적으로 완료 필터 통과");
     const formData = new FormData();
-    let updatePost = {};
+    let myPost = {};
     let imageData = [];
     let contentKey = '';
     const parsePrice = /[,]/g.test(price) ? price.replace(/[,]/g, '') : price;
@@ -84,7 +84,7 @@ export default function AddPostPage({ children, detail }) {
       //imageData = image.filter(v => v.name);
       contentKey = 'postUpdateRequestDto';
       imageData = image;
-      updatePost = {
+      myPost = {
         title,
         content,
         price: parsePrice,
@@ -97,7 +97,7 @@ export default function AddPostPage({ children, detail }) {
       console.log("추가는 여기로타야함");
       imageData = image;
       contentKey = 'postRequestDto';
-      updatePost = {
+      myPost = {
         title,
         content,
         price: parsePrice,
@@ -110,7 +110,7 @@ export default function AddPostPage({ children, detail }) {
 
     formData.append(
       contentKey,
-      new Blob([JSON.stringify(post)], { type: 'application/json' })
+      new Blob([JSON.stringify(myPost)], { type: 'application/json' })
     );
 
     imageData &&
@@ -128,7 +128,6 @@ export default function AddPostPage({ children, detail }) {
           }
         });
     } else {
-      console.log(post.postId);
       axios.put(QUERY.AXIOS_PATH.ADDPOST + "/" + post.postId, formData)
         .then(() => {
           navigate(ROUTER.PATH.MAIN);
