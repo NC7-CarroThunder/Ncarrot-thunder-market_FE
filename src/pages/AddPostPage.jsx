@@ -54,9 +54,9 @@ export default function AddPostPage({ children, detail }) {
 
   }, [post])
 
-  useEffect(() => {
-    console.log(preview);
-  }, [preview])
+  // useEffect(() => {
+  //   console.log(preview);
+  // }, [preview])
 
   const handleSubmit = event => {
     event.preventDefault();
@@ -73,26 +73,31 @@ export default function AddPostPage({ children, detail }) {
       return;
     console.log("정상적으로 완료 필터 통과");
     const formData = new FormData();
-    let post = {};
+    let updatePost = {};
     let imageData = [];
     let contentKey = '';
     const parsePrice = /[,]/g.test(price) ? price.replace(/[,]/g, '') : price;
-    if (detail) {
+    console.log(post);
+    if (post) {
+      console.log("업데이트는 여기로타야함");
       const parsePreviewData = preview.filter(v => v[0] === 'h');
-      imageData = image.filter(v => v.name);
+      //imageData = image.filter(v => v.name);
       contentKey = 'postUpdateRequestDto';
-      post = {
+      imageData = image;
+      updatePost = {
         title,
         content,
         price: parsePrice,
         itemCategory: dealingType.current.value,
-        remainingImagesUrlList: parsePreviewData,
+        dealingType: dealingType.current.value,
+        //remainingImagesUrlList: parsePreviewData,
         address,
       };
     } else {
+      console.log("추가는 여기로타야함");
       imageData = image;
       contentKey = 'postRequestDto';
-      post = {
+      updatePost = {
         title,
         content,
         price: parsePrice,
@@ -112,16 +117,29 @@ export default function AddPostPage({ children, detail }) {
       imageData.forEach(multipartFiles =>
         formData.append('multipartFiles', multipartFiles)
       );
-
-    axios.post(QUERY.AXIOS_PATH.ADDPOST, formData)
-      .then(() => {
-        navigate(ROUTER.PATH.MAIN);
-      })
-      .catch((error) => {
-        if (error.response.status == 401) {
+    if (contentKey == 'postRequestDto') {
+      axios.post(QUERY.AXIOS_PATH.ADDPOST, formData)
+        .then(() => {
           navigate(ROUTER.PATH.MAIN);
-        }
-      });
+        })
+        .catch((error) => {
+          if (error.response.status == 401) {
+            navigate(ROUTER.PATH.MAIN);
+          }
+        });
+    } else {
+      console.log(post.postId);
+      axios.put(QUERY.AXIOS_PATH.ADDPOST + "/" + post.postId, formData)
+        .then(() => {
+          navigate(ROUTER.PATH.MAIN);
+        })
+        .catch((error) => {
+          if (error.response.status == 401) {
+            navigate(ROUTER.PATH.MAIN);
+          }
+        });
+    }
+
 
   };
 
