@@ -119,8 +119,11 @@ export default function PostDetailPage() {
 
   const currentUserId = Storage.getUserId();
   console.log('현재 사용자 ID:', currentUserId);
-  console.log('게시글 작성자 ID:', post.userid);
-  console.log('게시글 작성자 ID:', post.postId);
+  if (post != undefined && post != null) {
+    console.log('게시글 작성자 ID:', post.userid);
+    console.log('게시글 작성자 ID:', post.postId);
+  }
+
 
   const formatPrice = (price) => {
     return price.toLocaleString('en-US');
