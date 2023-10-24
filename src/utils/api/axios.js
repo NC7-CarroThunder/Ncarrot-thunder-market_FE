@@ -43,6 +43,8 @@ export default class Axios {
           removeCookie(QUERY.COOKIE.COOKIE_NAME);
           Storage.removeNickName();
           Storage.removeUserId();
+          Storage.removePoint();
+          Storage.removePhoto();
         }
 
         return Promise.reject(error);
