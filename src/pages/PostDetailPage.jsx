@@ -47,17 +47,14 @@ export default function PostDetailPage() {
   const handleChatButtonClick = async () => {
     try {
       const currentUserId = Storage.getUserId();
-      console.log('게시글 작성자 ID:', post.userid);
+      if (currentUserId == null || post == null) {
+        alert("로그인이 필요한 서비스 입니다");
+        navigate(ROUTER.PATH.LOGIN);
+      }
       const response = await axiosForLoginUser.get(
-        `/api/chatting/createOrGetChatRoom`,
-        {
-          params: {
-            sellerId: post.userid,
-            currentUserId: currentUserId,
-            postId: post.postId,
-          },
-        }
+        `/api/chatting/createOrGetChatRoom?sellerId=${post.userid}&currentUserId=${currentUserId}&postId=${post.postId}`
       );
+      console.log(response);
       setTimeout(async () => {
         const roomId = response.data.roomId;
         if (roomId) {
@@ -69,10 +66,6 @@ export default function PostDetailPage() {
     } catch (error) {
       if (error.response.status == 401) {
         navigate(ROUTER.PATH.MAIN);
-      }
-      if (error.response.status == 400) {
-        alert("로그인이 필요한 서비스입니다")
-        navigate(ROUTER.PATH.LOGIN);
       }
       console.error('Error creating or accessing the chat room:', error);
     }
@@ -139,15 +132,12 @@ export default function PostDetailPage() {
     try {
       const currentUserId = Storage.getUserId();
       console.log('게시글 작성자 ID:', post.userid);
+      if (currentUserId == null || post == null) {
+        alert("로그인이 필요한 서비스 입니다");
+        navigate(ROUTER.PATH.LOGIN);
+      }
       const response = await axiosForLoginUser.get(
-        `/api/chatting/createOrGetChatRoom`,
-        {
-          params: {
-            sellerId: post.userid,
-            currentUserId: currentUserId,
-            postId: post.postId,
-          },
-        }
+        `/api/chatting/createOrGetChatRoom?sellerId=${post.userid}&currentUserId=${currentUserId}&postId=${post.postId}`
       );
       setTimeout(async () => {
         const roomId = response.data.roomId;
@@ -162,10 +152,6 @@ export default function PostDetailPage() {
     } catch (error) {
       if (error.response.status == 401) {
         navigate(ROUTER.PATH.MAIN);
-      }
-      if (error.response.status == 400) {
-        alert("로그인이 필요한 서비스입니다")
-        navigate(ROUTER.PATH.LOGIN);
       }
       console.error('Error creating or accessing the chat room:', error);
     }
