@@ -88,8 +88,8 @@ export default function AddPostPage({ children, detail }) {
         title,
         content,
         price: parsePrice,
-        itemCategory: dealingType.current.value,
         dealingType: dealingType.current.value,
+        itemCategory: category.current.value,
         //remainingImagesUrlList: parsePreviewData,
         address,
       };
