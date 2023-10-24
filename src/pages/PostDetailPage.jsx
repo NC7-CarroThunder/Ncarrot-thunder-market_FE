@@ -22,6 +22,39 @@ export default function PostDetailPage() {
   const [loading, setLoading] = useState(true);
   const [isLiked, setIsLiked] = useState(false);
 
+
+
+    function getCategoryLabel(categoryValue) {
+        // 카테고리 값에 따라 레이블을 반환
+        switch (categoryValue) {
+            case 'DIGITAL':
+                return '디지털 기기';
+            case 'FURNITURE_INTERIOR':
+                return '가구/인테리어';
+            case 'CLOTHING':
+                return '의류';
+            case 'APPLIANCES':
+                return '생활가전';
+            case 'KITCHENWARE':
+                return '생활/주방';
+            case 'SPORTS_LEISURE':
+                return '스포츠/레저';
+            case 'CAR_TOOLS':
+                return '자동차/공구';
+            case 'BOOK':
+                return '도서';
+            case 'BEAUTY_COSMETIC':
+                return '뷰티/미용';
+            case 'PET':
+                return '반려동물용품';
+            case 'ETC':
+                return '기타';
+            default:
+                return categoryValue;
+        }
+    }
+
+
   useEffect(() => {
     async function fetchPostDetails() {
       try {
@@ -179,7 +212,7 @@ export default function PostDetailPage() {
               </ContentContainer>
               {post.address && <MapComponent address={post.address} />}
               <CardText>거래지역 : {post.address}</CardText>
-              <CardText>카테고리 : {post.itemCategory}</CardText>
+              <CardText>카테고리 : {getCategoryLabel(post.itemCategory)}</CardText>
               <CardText>판매자 :  {post.nickName}</CardText>
               <CardText>조회수 :  {post.viewCount}</CardText>
               {Number(post.userid) !== Number(currentUserId) && (
