@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import axios from 'axios';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import QUERY from '../constants/query';
 import ROUTER from '../constants/router';
 import { useNavigate } from 'react-router-dom';
@@ -19,6 +19,11 @@ export default function MainPage() {
   const [stop, setStop] = useState(false);
   const [loading, setLoading] = useState(false);
   const [isEmptyPost, setIsEmptyPost] = useState(false);
+  const [word, setWord] = useState(null);
+
+  const [categoryMap, setCategoryMap] = useState(new Map());
+
+  const location = useLocation();
 
 
 
@@ -26,7 +31,7 @@ export default function MainPage() {
     if (!isStop) {
       try {
         console.log("서버 요청하기전 데이터값  " + pageNo + "   " + selectedCategory)
-        const response = await axios.get(`${QUERY.AXIOS_PATH.SEVER}${QUERY.AXIOS_PATH.POSTLIST}?pageNo=${page}&category=${selectedCategory == null ? "TOTAL" : selectedCategory}`);
+        const response = await axios.get(`${QUERY.AXIOS_PATH.SEVER}${QUERY.AXIOS_PATH.POSTLIST}?pageNo=${page}&category=${selectedCategory == null ? "TOTAL" : selectedCategory}&word=${word ? word : ""}`);
 
         posts.concat(response.data.result);
         // console.log("데이터확인중 ----------------------------");
@@ -79,6 +84,7 @@ export default function MainPage() {
   useEffect(() => {
     // console.log("카테고리 갱신시 요구되는값 :  false   null   0아님   false");
     // console.log("카테고리 갱신 " + stop + "  " + posts + "  " + pageNo + "  " + loading);
+    console.log(selectedCategory)
     setStop((prevStop) => prevStop ? false : false);
     setPosts((posts) => []);
     if (pageNo != 1) {
@@ -90,6 +96,29 @@ export default function MainPage() {
   }, [selectedCategory]);
 
   //-------------------------------------------------
+
+  // Map 객체에 데이터 추가하는 함수
+
+
+
+  useEffect(() => {
+
+    if (location.state) {
+      console.log(wordContainsCategory(location.state.word))
+      console.log(categoryMap)
+      if (wordContainsCategory(location.state.word)) {
+        setWord(null);
+        setSelectedCategory(categoryMap.get(location.state.word));
+      } else {
+        console.log(location.state.word);
+        setWord(location.state.word);
+        setSelectedCategory(location.state.word);
+      }
+
+    }
+
+
+  }, [location.state])
 
   useEffect(() => {
 
@@ -139,6 +168,54 @@ export default function MainPage() {
         return '전체 카테고리';
     }
   };
+  //console.log(categoryMap.size);
+  if (categoryMap.size == 0) {
+    categoryMap.set('디지털 기기', 'DIGITAL');
+    categoryMap.set('가구/인테리어', 'FURNITURE_INTERIOR');
+    categoryMap.set('의류', 'CLOTHING');
+    categoryMap.set('생활가전', 'APPLIANCES');
+    categoryMap.set('생활/주방', 'KITCHENWARE');
+    categoryMap.set('스포츠/레저', 'SPORTS_LEISURE');
+    categoryMap.set('자동차/공구', 'CAR_TOOLS');
+    categoryMap.set('도서', 'BOOK');
+    categoryMap.set('뷰티/미용', 'BEAUTY_COSMETIC');
+    categoryMap.set('반려동물용품', 'PET');
+    categoryMap.set('기타', 'ETC');
+    categoryMap.set('전체 게시글', 'TOTAL');
+  }
+  const wordContainsCategory = (myWord) => {
+    switch (myWord) {
+      case '디지털 기기':
+        return true;
+      case '가구/인테리어':
+        return true;
+      case '의류':
+        return true;
+      case '생활가전':
+        return true;
+      case '생활/주방':
+        return true;
+      case '스포츠/레저':
+        return true;
+      case '자동차/공구':
+        return true;
+      case '도서':
+        return true;
+      case '뷰티/미용':
+        return true;
+      case '반려동물용품':
+        return true;
+      case '기타':
+        return true;
+      default:
+        return false;
+    }
+  };
+  const changeCategory = (change) => {
+    setWord(null);
+    setSelectedCategory(change);
+  }
+
 
   // 게시글 등록시 카테고리선택이 구현이 되면 setSelectedCategory에 카테고리 명을 적으면 됩니다
 
@@ -147,20 +224,20 @@ export default function MainPage() {
       <CategoryTitle>{getCategoryTitle()}</CategoryTitle>
       <div>
         <CategoryButton onClick={showAllPosts}>전체 게시글</CategoryButton>
-        <CategoryButton onClick={() => setSelectedCategory('DIGITAL')}>디지털 기기</CategoryButton>
-        <CategoryButton onClick={() => setSelectedCategory('FURNITURE_INTERIOR')}>가구/인테리어</CategoryButton>
-        <CategoryButton onClick={() => setSelectedCategory('CLOTHING')}>의류</CategoryButton>
-        <CategoryButton onClick={() => setSelectedCategory('APPLIANCES')}>생활가전</CategoryButton>
-        <CategoryButton onClick={() => setSelectedCategory('KITCHENWARE')}>생활/주방</CategoryButton>
+        <CategoryButton onClick={() => changeCategory('DIGITAL')}>디지털 기기</CategoryButton>
+        <CategoryButton onClick={() => changeCategory('FURNITURE_INTERIOR')}>가구/인테리어</CategoryButton>
+        <CategoryButton onClick={() => changeCategory('CLOTHING')}>의류</CategoryButton>
+        <CategoryButton onClick={() => changeCategory('APPLIANCES')}>생활가전</CategoryButton>
+        <CategoryButton onClick={() => changeCategory('KITCHENWARE')}>생활/주방</CategoryButton>
       </div>
       <CategoryButtonRow>
         <div>
-          <CategoryButton onClick={() => setSelectedCategory('SPORTS_LEISURE')}>스포츠/레저</CategoryButton>
-          <CategoryButton onClick={() => setSelectedCategory('CAR_TOOLS')}>자동차/공구</CategoryButton>
-          <CategoryButton onClick={() => setSelectedCategory('BOOK')}>도서</CategoryButton>
-          <CategoryButton onClick={() => setSelectedCategory('BEAUTY_COSMETIC')}>뷰티/미용</CategoryButton>
-          <CategoryButton onClick={() => setSelectedCategory('PET')}>반려동물용품</CategoryButton>
-          <CategoryButton onClick={() => setSelectedCategory('ETC')}>기타</CategoryButton>
+          <CategoryButton onClick={() => changeCategory('SPORTS_LEISURE')}>스포츠/레저</CategoryButton>
+          <CategoryButton onClick={() => changeCategory('CAR_TOOLS')}>자동차/공구</CategoryButton>
+          <CategoryButton onClick={() => changeCategory('BOOK')}>도서</CategoryButton>
+          <CategoryButton onClick={() => changeCategory('BEAUTY_COSMETIC')}>뷰티/미용</CategoryButton>
+          <CategoryButton onClick={() => changeCategory('PET')}>반려동물용품</CategoryButton>
+          <CategoryButton onClick={() => changeCategory('ETC')}>기타</CategoryButton>
         </div>
       </CategoryButtonRow>
       <Container>

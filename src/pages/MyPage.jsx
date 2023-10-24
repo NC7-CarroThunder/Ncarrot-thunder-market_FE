@@ -402,8 +402,8 @@ const TabButton = styled.button`
 const ListContainer = styled.div`
   display: grid;
   grid-template-columns: repeat(4, 220px);
-  margin-left: 310px;
   grid-row-gap: 40px;
+  justify-content: center;
 `;
 
 const ListTitle = styled.div`
