@@ -30,7 +30,6 @@ const Payment = () => {
       return;
     }
     console.log("결제서비스 하기전에, 해당 유저가 로그인 했는지 확인하는 과정");
-    const res = [];
     console.log("결제서비스 하기전에, 해당 유저가 로그인 했는지 확인하는 과정1");
     const response = axiosForLoginUser.get(`/api/profiles`)
       .then((response) => {
