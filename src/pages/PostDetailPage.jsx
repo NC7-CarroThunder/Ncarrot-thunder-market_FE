@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
-import Axios from '../utils/api/axios';
-import { useNavigate, useParams } from 'react-router-dom';
+import axios from 'axios';
+import { useNavigate, useParams, useLocation } from 'react-router-dom';
 import Storage from '../utils/localStorage';
 import ROUTER from '../constants/router';
 import ImageSlider from '../components/ImageSlider';
@@ -32,7 +32,7 @@ export default function PostDetailPage() {
         setLoading(false);
 
         const wishlistStatusResponse = await axios.get(
-          `/api/wishlist/status/${postId}`
+          `${QUERY.AXIOS_PATH.SEVER}/api/wishlist/status/${postId}`
         );
         setIsLiked(wishlistStatusResponse.data.isLiked);
       } catch (error) {
@@ -47,17 +47,15 @@ export default function PostDetailPage() {
   const handleChatButtonClick = async () => {
     try {
       const currentUserId = Storage.getUserId();
-      console.log('게시글 작성자 ID:', post.userid);
-      const response = await axios.get(
-          `api/chatting/createOrGetChatRoom`,
-        {
-          params: {
-            sellerId: post.userid,
-            currentUserId: currentUserId,
-            postId: post.postId,
-          },
-        }
+      if (currentUserId == null || post == null) {
+        alert("로그인이 필요한 서비스 입니다");
+        navigate(ROUTER.PATH.LOGIN);
+      }
+      const response = await axiosForLoginUser.get(
+        `/api/chatting/createOrGetChatRoom?sellerId=${post.userid}&currentUserId=${currentUserId}&postId=${post.postId}`
+
       );
+      console.log(response);
       setTimeout(async () => {
         const roomId = response.data.roomId;
         if (roomId) {
@@ -67,6 +65,9 @@ export default function PostDetailPage() {
         }
       },);
     } catch (error) {
+      if (error.response.status == 401) {
+        navigate(ROUTER.PATH.MAIN);
+      }
       console.error('Error creating or accessing the chat room:', error);
     }
   };
@@ -80,9 +81,16 @@ export default function PostDetailPage() {
       if (response.data.success) {
         setIsLiked(!isLiked);
       } else {
-        console.error('위시리스트 설정 실패');
       }
+      console.error('위시리스트 설정 실패');
     } catch (error) {
+      if (error.response.status == 401) {
+        navigate(ROUTER.PATH.MAIN);
+      }
+      if (error.response.status == 400) {
+        alert("로그인이 필요한 서비스입니다")
+        navigate(ROUTER.PATH.LOGIN);
+      }
       console.error('위시리스트 설정 오류:', error);
     }
   };
@@ -101,6 +109,12 @@ export default function PostDetailPage() {
       console.error('게시물 삭제 오류:', error);
     }
   };
+  const handleUpdateButtonClick = async () => {
+    console.log(post);
+    navigate('/addPost', { state: { children: "수정", detail: post } });
+
+
+  };
 
 
   const currentUserId = Storage.getUserId();
@@ -116,15 +130,12 @@ export default function PostDetailPage() {
     try {
       const currentUserId = Storage.getUserId();
       console.log('게시글 작성자 ID:', post.userid);
-      const response = await axios.get(
-          `/api/chatting/createOrGetChatRoom`,
-        {
-          params: {
-            sellerId: post.userid,
-            currentUserId: currentUserId,
-            postId: post.postId,
-          },
-        }
+      if (currentUserId == null || post == null) {
+        alert("로그인이 필요한 서비스 입니다");
+        navigate(ROUTER.PATH.LOGIN);
+      }
+      const response = await axiosForLoginUser.get(
+        `/api/chatting/createOrGetChatRoom?sellerId=${post.userid}&currentUserId=${currentUserId}&postId=${post.postId}`
       );
       setTimeout(async () => {
         const roomId = response.data.roomId;
@@ -137,6 +148,9 @@ export default function PostDetailPage() {
         }
       },);
     } catch (error) {
+      if (error.response.status == 401) {
+        navigate(ROUTER.PATH.MAIN);
+      }
       console.error('Error creating or accessing the chat room:', error);
     }
   };
@@ -212,6 +226,7 @@ export default function PostDetailPage() {
 
               {Number(post.userid) === Number(currentUserId) && (
                 <ButtonWrapper>
+                  <DeleteButton onClick={handleUpdateButtonClick}>수정하기</DeleteButton>
                   <DeleteButton onClick={handleDeleteButtonClick}>삭제하기</DeleteButton>
 
                 </ButtonWrapper>)}

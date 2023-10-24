@@ -1,5 +1,5 @@
-import React, {useEffect, useState} from 'react';
-import {Link, useNavigate} from 'react-router-dom';
+import React, { useEffect, useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import Axios from '../utils/api/axios';
 import QUERY from '../constants/query';
 import styled from 'styled-components';
@@ -37,7 +37,7 @@ const MyChatRooms = ({ onRoomSelect }) => {
           .get(`/api/chatting/getFirstAttachment?postId=${room.postId}`)
           .catch((error) => {
             if (error.response.status == 401) {
-              navigator(ROUTER.PATH.LOGIN);
+              navigator(ROUTER.PATH.MAIN);
             }
             console.error('Error fetching ', error);
           })
@@ -82,7 +82,7 @@ const MyChatRooms = ({ onRoomSelect }) => {
   const deleteChatRoom = async (roomId) => {
     try {
       const response = await axios.delete(`/api/chatting/delete/${roomId}`);
-  
+
       if (response.status === 200) {
         // 나가기에 성공한 경우, 채팅방 목록을 다시 불러오고 채팅방 비활성화
         fetchChatRooms();
@@ -94,32 +94,32 @@ const MyChatRooms = ({ onRoomSelect }) => {
       console.error('Error leaving chat room:', error);
     }
   };
-  
+
   return (
-      <ChatRoomsContainer>
-        <h3>전체대화</h3>
-        <ul>
-          {chatRooms.map((room, index) => (
-              <ChatRoomItem key={room.roomId}
-                            onClick={() => handleChatButtonClick(room.roomId, index)}
-                            selected={index === selectedItemIndex}>
-                <Link to={`/post/${room.postId}`}>
-                  <ChatRoomImage src={images[room.postId]} alt="게시글 이미지"/>
-                </Link>
-                <ChatRoomContent>
-                  <ChatRoomName>{room.postTitle}</ChatRoomName>
-                  <MessageTitle>대화상대: {getCounterpartNickname(
-                      room)}</MessageTitle>
-                  <LastMessage>최근대화: {room.lastMessage?.length > 13
-                      ? room.lastMessage.slice(0, 13) + '...'
-                      : room.lastMessage}</LastMessage>
-                  <DateText>{formatTime(room.lastUpdated)}</DateText>
-                </ChatRoomContent>
-                <ChatButton onClick={() =>deleteChatRoom(room.roomId)}>나가기</ChatButton>
-              </ChatRoomItem>
-          ))}
-        </ul>
-      </ChatRoomsContainer>
+    <ChatRoomsContainer>
+      <h3>전체대화</h3>
+      <ul>
+        {chatRooms.map((room, index) => (
+          <ChatRoomItem key={room.roomId}
+            onClick={() => handleChatButtonClick(room.roomId, index)}
+            selected={index === selectedItemIndex}>
+            <Link to={`/post/${room.postId}`}>
+              <ChatRoomImage src={images[room.postId]} alt="게시글 이미지" />
+            </Link>
+            <ChatRoomContent>
+              <ChatRoomName>{room.postTitle}</ChatRoomName>
+              <MessageTitle>대화상대: {getCounterpartNickname(
+                room)}</MessageTitle>
+              <LastMessage>최근대화: {room.lastMessage?.length > 13
+                ? room.lastMessage.slice(0, 13) + '...'
+                : room.lastMessage}</LastMessage>
+              <DateText>{formatTime(room.lastUpdated)}</DateText>
+            </ChatRoomContent>
+            <ChatButton onClick={() => deleteChatRoom(room.roomId)}>나가기</ChatButton>
+          </ChatRoomItem>
+        ))}
+      </ul>
+    </ChatRoomsContainer>
   );
 };
 

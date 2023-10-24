@@ -79,6 +79,7 @@ const SliderContainer = styled.div`
   height: 45vh;
   overflow: hidden;
   position: relative;
+  z-index: 1000;
 `;
 
 const SliderContent = styled.div`
