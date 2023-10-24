@@ -68,7 +68,7 @@ function ChatRoom({ roomId }) {
         })
         .catch((error) => {
           if (error.response && error.response.status === 401) {
-            navigator(ROUTER.PATH.LOGIN);
+            navigator(ROUTER.PATH.MAIN);
           }
           console.error('Error fetching old messages:', error);
         });

@@ -31,7 +31,7 @@ export default function PostDetailPage() {
         setPost(response.data.result);
         setLoading(false);
 
-        const wishlistStatusResponse = await axiosInstance.get(
+        const wishlistStatusResponse = await axios.get(
           `${QUERY.AXIOS_PATH.SEVER}/api/wishlist/status/${postId}`
         );
         setIsLiked(wishlistStatusResponse.data.isLiked);
@@ -48,8 +48,8 @@ export default function PostDetailPage() {
     try {
       const currentUserId = Storage.getUserId();
       console.log('게시글 작성자 ID:', post.userid);
-      const response = await axios.get(
-        `http://localhost:8888/api/chatting/createOrGetChatRoom`,
+      const response = await axiosForLoginUser.get(
+        `/api/chatting/createOrGetChatRoom`,
         {
           params: {
             sellerId: post.userid,
@@ -67,6 +67,13 @@ export default function PostDetailPage() {
         }
       },);
     } catch (error) {
+      if (error.response.status == 401) {
+        navigate(ROUTER.PATH.MAIN);
+      }
+      if (error.response.status == 400) {
+        alert("로그인이 필요한 서비스입니다")
+        navigate(ROUTER.PATH.LOGIN);
+      }
       console.error('Error creating or accessing the chat room:', error);
     }
   };
@@ -86,6 +93,13 @@ export default function PostDetailPage() {
       }
       console.error('위시리스트 설정 실패');
     } catch (error) {
+      if (error.response.status == 401) {
+        navigate(ROUTER.PATH.MAIN);
+      }
+      if (error.response.status == 400) {
+        alert("로그인이 필요한 서비스입니다")
+        navigate(ROUTER.PATH.LOGIN);
+      }
       console.error('위시리스트 설정 오류:', error);
     }
   };
@@ -125,8 +139,8 @@ export default function PostDetailPage() {
     try {
       const currentUserId = Storage.getUserId();
       console.log('게시글 작성자 ID:', post.userid);
-      const response = await axios.get(
-        `http://localhost:8888/api/chatting/createOrGetChatRoom`,
+      const response = await axiosForLoginUser.get(
+        `/api/chatting/createOrGetChatRoom`,
         {
           params: {
             sellerId: post.userid,
@@ -146,6 +160,13 @@ export default function PostDetailPage() {
         }
       },);
     } catch (error) {
+      if (error.response.status == 401) {
+        navigate(ROUTER.PATH.MAIN);
+      }
+      if (error.response.status == 400) {
+        alert("로그인이 필요한 서비스입니다")
+        navigate(ROUTER.PATH.LOGIN);
+      }
       console.error('Error creating or accessing the chat room:', error);
     }
   };
