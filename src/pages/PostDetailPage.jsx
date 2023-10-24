@@ -6,16 +6,16 @@ import Storage from '../utils/localStorage';
 import ROUTER from '../constants/router';
 import ImageSlider from '../components/ImageSlider';
 import QUERY from '../constants/query';
-import Axios from '../utils/api/axios';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faHeart as solidHeart } from '@fortawesome/free-solid-svg-icons';
 import { faHeart as regularHeart } from '@fortawesome/free-regular-svg-icons';
 import MapComponent from '../components/MapComponent';
 
+const axios = new Axios(QUERY.AXIOS_PATH.SEVER);
 
-const axiosForLoginUser = new Axios(QUERY.AXIOS_PATH.SEVER);
 
 export default function PostDetailPage() {
+
   const { postId } = useParams();
   const navigate = useNavigate();
   const [post, setPost] = useState({});
@@ -26,7 +26,7 @@ export default function PostDetailPage() {
     async function fetchPostDetails() {
       try {
         const response = await axios.get(
-          `${QUERY.AXIOS_PATH.SEVER}/api/posts/${postId}`);
+          `/api/posts/${postId}`);
         console.log(response.data.result);
         setPost(response.data.result);
         setLoading(false);
@@ -53,6 +53,7 @@ export default function PostDetailPage() {
       }
       const response = await axiosForLoginUser.get(
         `/api/chatting/createOrGetChatRoom?sellerId=${post.userid}&currentUserId=${currentUserId}&postId=${post.postId}`
+
       );
       console.log(response);
       setTimeout(async () => {
@@ -70,9 +71,6 @@ export default function PostDetailPage() {
       console.error('Error creating or accessing the chat room:', error);
     }
   };
-
-
-
   const axiosInstance = new Axios(QUERY.AXIOS_PATH.SEVER);
 
   const handleWishlistButtonClick = async () => {
