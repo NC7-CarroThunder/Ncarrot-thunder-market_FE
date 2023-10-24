@@ -16,7 +16,7 @@ const AXIOS_PATH = {
   POSTDETAIL: '/api/posts/:postId',
   MYPAGE: '/api/mypage/',
   TOGGLE_WISHLIST: '/api/wishlist/toggle',
-  CHECK_WISHLIST: '/api/wishlist/check',
+  CHECK_WISHLIST: '/api/wishlist/status',
   POSTDELETE: '/api/posts/:postId',
   WISHLIST: '/api/wishlist',
   MYPOSTS: '/api/mypost',
