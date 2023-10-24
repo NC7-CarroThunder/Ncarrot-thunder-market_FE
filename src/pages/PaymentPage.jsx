@@ -31,7 +31,7 @@ const Payment = () => {
     }
     console.log("결제서비스 하기전에, 해당 유저가 로그인 했는지 확인하는 과정");
     console.log("결제서비스 하기전에, 해당 유저가 로그인 했는지 확인하는 과정1");
-    const response = axiosForLoginUser.get(`/api/profiles`)
+    axiosForLoginUser.get(`/api/profiles`)
       .then((response) => {
         console.log(response.data.result);
       })
