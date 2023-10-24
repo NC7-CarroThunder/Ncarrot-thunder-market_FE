@@ -11,6 +11,8 @@ FROM nginx:stable-alpine
 
 # 이전 빌드 단계에서 빌드한 결과물 복사
 COPY --from=build /app/build /usr/share/nginx/html
+COPY fullchain.pem /etc/nginx/ssl/cert.pem
+COPY privkey.pem /etc/nginx/ssl/key.pem
 
 # 기본 nginx 설정 파일 삭제
 RUN rm /etc/nginx/conf.d/default.conf
@@ -19,6 +21,7 @@ RUN rm /etc/nginx/conf.d/default.conf
 COPY nginx/nginx.conf /etc/nginx/conf.d
 
 EXPOSE 80
+EXPOSE 443
 
 CMD ["nginx", "-g", "daemon off;"]
 
