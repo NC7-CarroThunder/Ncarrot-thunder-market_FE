@@ -267,6 +267,7 @@ function NotificationModal({
     <ModalOverlay>
       <ModalContent ref={modalRef}>
         <CloseButton onClick={onClose}>X</CloseButton>
+        <Title>내 알림</Title>
         <ModalButtonContainer>
           <ModalButton onClick={onMarkAllAsRead}>전체 읽기</ModalButton>
           <ModalButton onClick={onDeleteAll}>전체 삭제</ModalButton>
@@ -364,10 +365,18 @@ const ModalContent = styled.div`
   white-space: pre-line;
 `;
 
+const Title = styled.div`
+  text-align: center;
+  font-weight: bold;
+  // margin-bottom: 5px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid #c0c0c0;
+`;
+
 const ModalButtonContainer = styled.div`
   display: flex;
   justify-content: space-between;
-  margin-top: 20px;
+  margin-top: 10px;
 `;
 
 const ModalButton = styled.button`
