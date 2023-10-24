@@ -73,7 +73,7 @@ const MyChatRooms = ({onRoomSelect}) => {
   };
 
   useEffect(() => {
-    const socket = new SockJS('http://localhost:8888/api/websocket');
+    const socket = new SockJS('http://carrothunder.store:8888/api/websocket');
     const stompClient = Stomp.over(socket);
 
     stompClient.connect({}, () => {
