@@ -6,6 +6,7 @@ import { useNavigate } from 'react-router-dom';
 import ROUTER from '../constants/router';
 import Axios from '../utils/api/axios';
 import QUERY from "../constants/query";
+import axios from 'axios';
 
 const axiosForLoginUser = new Axios(QUERY.AXIOS_PATH.SEVER);
 
