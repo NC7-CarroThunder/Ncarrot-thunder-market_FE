@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
-import Axios from '../utils/api/axios';
+import axios from 'axios';
 import { Link } from 'react-router-dom';
 import QUERY from '../constants/query';
 import ROUTER from '../constants/router';
 import { useNavigate } from 'react-router-dom';
 
-const axios = new Axios(QUERY.AXIOS_PATH.SEVER);
+//const axios = new Axios(QUERY.AXIOS_PATH.SEVER);
 
 
 
@@ -26,7 +26,7 @@ export default function MainPage() {
     if (!isStop) {
       try {
         console.log("서버 요청하기전 데이터값  " + pageNo + "   " + selectedCategory)
-        const response = await axios.get(`${QUERY.AXIOS_PATH.POSTLIST}?pageNo=${page}&category=${selectedCategory == null ? "TOTAL" : selectedCategory}`);
+        const response = await axios.get(`${QUERY.AXIOS_PATH.SEVER}${QUERY.AXIOS_PATH.POSTLIST}?pageNo=${page}&category=${selectedCategory == null ? "TOTAL" : selectedCategory}`);
 
         posts.concat(response.data.result);
         // console.log("데이터확인중 ----------------------------");
@@ -295,11 +295,11 @@ const Col = styled.div`
 
 const DealingTypeBadge = styled.div`
 background-color: ${({ dealingType }) => {
-  if (dealingType === 'FOR_PAY') return '#00cc00';
-  if (dealingType === 'WITHPERSONAL') return '#4A90E2';
-  if (dealingType === 'FOR_FREE') return '#ff922b';
-  return '#999';
-}};
+    if (dealingType === 'FOR_PAY') return '#00cc00';
+    if (dealingType === 'WITHPERSONAL') return '#4A90E2';
+    if (dealingType === 'FOR_FREE') return '#ff922b';
+    return '#999';
+  }};
 color: #fff;
   font-size: 14px;
   padding: 5px 10px;
