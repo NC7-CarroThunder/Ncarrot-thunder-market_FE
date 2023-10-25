@@ -96,6 +96,7 @@ function ChatRoom({ roomId }) {
       const chatMessage = {
         roomId: roomId,
         content: inputValue,
+        sentAt: new Date(),
         senderId: parseInt(Storage.getUserId()),
         targetLang: targetLang,
       };
@@ -524,6 +525,7 @@ const SentTime = styled.div`
 font-size: 12px;
 align-self: ${props => props.time ? 'flex-start' : 'flex-end'};
 margin-bottom: 10px;
+color: ffffff;
 `;
 
 
