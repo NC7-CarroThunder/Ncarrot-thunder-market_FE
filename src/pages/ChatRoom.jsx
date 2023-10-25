@@ -1,6 +1,6 @@
-import React, {useEffect, useRef, useState} from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
-import {Client} from '@stomp/stompjs';
+import { Client } from '@stomp/stompjs';
 import SockJS from 'sockjs-client';
 import Storage from '../utils/localStorage';
 import Axios from '../utils/api/axios';
@@ -10,7 +10,7 @@ import FormatChatTime from '../components/FormatChatTime';
 
 const axios = new Axios(QUERY.AXIOS_PATH.SEVER);
 
-function ChatRoom({roomId}) {
+function ChatRoom({ roomId }) {
   const [clickedMessageTop, setClickedMessageTop] = useState(0);
   const [clickedMessageLeft, setClickedMessageLeft] = useState(0);
   const [messages, setMessages] = useState([]);
@@ -23,7 +23,7 @@ function ChatRoom({roomId}) {
   const [messageIndex, setMessageIndex] = useState(0);
 
   const [isTranslationOptionsVisible, setTranslationOptionsVisible] = useState(
-      false);
+    false);
   const [isEmojiPickerVisible, setEmojiPickerVisible] = useState(false);
 
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -36,7 +36,7 @@ function ChatRoom({roomId}) {
   const handleDocumentClick = (event) => {
     // 클릭한 요소가 메시지 또는 삭제 버튼 모달창인 경우 return
     if (event.target.closest('.message') || event.target.closest(
-        '.delete-modal')) {
+      '.delete-modal')) {
       return;
     }
 
@@ -62,7 +62,7 @@ function ChatRoom({roomId}) {
   useEffect(() => {
     setMessages([]);
     const socket = new SockJS('http://localhost:8888/api/websocket',
-        [], {withCredentials: true});
+      [], { withCredentials: true });
     const userId = Storage.getUserId();
 
     stompClient.current = new Client({
@@ -87,17 +87,17 @@ function ChatRoom({roomId}) {
         ]);
       });
       axios
-      .get(`/api/chatting/message/${roomId}`)
-      .then((response) => response.data)
-      .then((data) => {
-        setMessages(data);
-      })
-      .catch((error) => {
-        if (error.response && error.response.status === 401) {
-          navigator(ROUTER.PATH.MAIN);
-        }
-        console.error('Error fetching old messages:', error);
-      });
+        .get(`/api/chatting/message/${roomId}`)
+        .then((response) => response.data)
+        .then((data) => {
+          setMessages(data);
+        })
+        .catch((error) => {
+          if (error.response && error.response.status === 401) {
+            navigator(ROUTER.PATH.MAIN);
+          }
+          console.error('Error fetching old messages:', error);
+        });
     };
 
     stompClient.current.activate();
@@ -114,13 +114,13 @@ function ChatRoom({roomId}) {
 
   useEffect(() => {
     if (messagesEndRef.current) {
-      messagesEndRef.current.scrollIntoView({behavior: 'smooth'});
+      messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
     }
   }, [messages]);
 
   const sendMessage = () => {
     if (roomId && inputValue.trim() !== '' && stompClient.current
-        && stompClient.current.connected) {
+      && stompClient.current.connected) {
       const chatMessage = {
         roomId: roomId,
         content: inputValue,
@@ -129,7 +129,7 @@ function ChatRoom({roomId}) {
         targetLang: targetLang,
       };
       stompClient.current.publish(
-          {destination: '/app/send', body: JSON.stringify(chatMessage)});
+        { destination: '/app/send', body: JSON.stringify(chatMessage) });
       setInputValue('');
     }
   };
@@ -142,19 +142,19 @@ function ChatRoom({roomId}) {
   };
 
   const languageOptions = [
-    {value: 'ko', label: '한국어'},
-    {value: 'en', label: '영어 English'},
-    {value: 'ja', label: '일본어 日本語'},
-    {value: 'zh-CN', label: '중국어 간체 中文(简体)'},
-    {value: 'zh-TW', label: '중국어 번체 中文(繁體)'},
-    {value: 'vi', label: '베트남어 Tiếng Việt'},
-    {value: 'th', label: '태국어 ไทย'},
-    {value: 'id', label: '인도네시아어 Bahasa Indonesia'},
-    {value: 'fr', label: '프랑스어 Français'},
-    {value: 'es', label: '스페인어 Español'},
-    {value: 'ru', label: '러시아어 Русский'},
-    {value: 'de', label: '독일어 Deutsch'},
-    {value: 'it', label: '이탈리아어 Italiano'},
+    { value: 'ko', label: '한국어' },
+    { value: 'en', label: '영어 English' },
+    { value: 'ja', label: '일본어 日本語' },
+    { value: 'zh-CN', label: '중국어 간체 中文(简体)' },
+    { value: 'zh-TW', label: '중국어 번체 中文(繁體)' },
+    { value: 'vi', label: '베트남어 Tiếng Việt' },
+    { value: 'th', label: '태국어 ไทย' },
+    { value: 'id', label: '인도네시아어 Bahasa Indonesia' },
+    { value: 'fr', label: '프랑스어 Français' },
+    { value: 'es', label: '스페인어 Español' },
+    { value: 'ru', label: '러시아어 Русский' },
+    { value: 'de', label: '독일어 Deutsch' },
+    { value: 'it', label: '이탈리아어 Italiano' },
   ];
 
   const sendEmojiMessage = (emojiCode) => {
@@ -165,7 +165,7 @@ function ChatRoom({roomId}) {
       targetLang: targetLang,
     };
     stompClient.current.publish(
-        {destination: '/app/send', body: JSON.stringify(chatMessage)});
+      { destination: '/app/send', body: JSON.stringify(chatMessage) });
     setEmojiPickerVisible(false);
   };
 
@@ -173,7 +173,7 @@ function ChatRoom({roomId}) {
     if (messageContent.startsWith(":emoji") && messageContent.endsWith(":")) {
       const emojiNumber = messageContent.split(":")[1].replace("emoji", "");
       return <img src={`/img/emoji${emojiNumber}.png`}
-                  alt={`emoji${emojiNumber}`}/>;
+        alt={`emoji${emojiNumber}`} />;
     }
     return messageContent;
   };
@@ -206,131 +206,129 @@ function ChatRoom({roomId}) {
 
   const handleUpdateMessage = (messageId) => {
     console.log("메세지 확인", messageId)
-    const updatedMessage = {content: '삭제된 메시지입니다'};
+    const updatedMessage = { content: '삭제된 메시지입니다' };
     axios
-    .put(`${QUERY.AXIOS_PATH.DELETECHAT}/${messageId}`, updatedMessage)
-    .then(() => {
-      setMessages((prevMessages) => {
-        const updatedMessages = prevMessages.map((message) => {
-          if (message.messageId === messageId) {
-            message.content = '삭제된 메시지입니다';
-            message.transContent = '';
-          }
-          return message;
+      .put(`${QUERY.AXIOS_PATH.DELETECHAT}/${messageId}`, updatedMessage)
+      .then(() => {
+        setMessages((prevMessages) => {
+          const updatedMessages = prevMessages.map((message) => {
+            if (message.messageId === messageId) {
+              message.content = '삭제된 메시지입니다';
+              message.transContent = '';
+            }
+            return message;
+          });
+          return updatedMessages;
         });
-        return updatedMessages;
+      })
+      .catch((error) => {
+        console.error('Error updating message:', error);
       });
-    })
-    .catch((error) => {
-      console.error('Error updating message:', error);
-    });
   };
 
   return (
-      <>
-        <OpenButton onClick={openModal}>언어 선택</OpenButton>
-        {isModalOpen && (
-            <>
-              <ModalOverlay
-                  onClick={closeModal}></ModalOverlay> {/* 배경 클릭시 모달 닫기 */}
-              <TranslationOptions>
-                <Title>언어 선택</Title>
-                {languageOptions.map((option) => (
-                    <label key={option.value}>
-                      <input
-                          type="radio"
-                          name="language"
-                          value={option.value}
-                          checked={targetLang === option.value}
-                          onChange={(e) => {
-                            setTargetLang(e.target.value);
-                            setSelectedLanguage(option.label);
-                          }}
-                      />
-                      {option.label}
-                    </label>
-                ))}
-                <Button onClick={() => setIsModalOpen(false)}>확인</Button>
-              </TranslationOptions>
-            </>
-        )}
-        <MessagesContainer>
-          {messages.map((message, index) => (
-              <MessageBox
-                  sender={Storage.getUserId() === String(message.senderId)}>
-                {Storage.getUserId() === String(message.senderId) && (
-                    <SentTime style={{marginRight: '5px'}}>
-                      <FormatChatTime sentAt={message.sentAt}/>
-                    </SentTime>
-                )}
-                <MessageBubble
-                    className="message"
-                    onClick={(e) => clickMessage(index, e)} // 변경된 부분
-                    key={index}
-                    sender={Storage.getUserId() === String(message.senderId)}
-                >
-                  <span
-                      className="senderNickname">{message.senderNickname}</span>
-                  {message.content === '삭제된 메세지입니다' ? (
-                      renderMessageContent(message.content)
-                  ) : (
-                      <>
-                        {renderMessageContent(message.content)}
-                        {message.transContent && (
-                            <span><br/>({message.transContent})</span>
-                        )}
-                      </>
+    <>
+      <OpenButton onClick={openModal}>번역할 언어 선택</OpenButton>
+      {isModalOpen && (
+        <>
+          <ModalOverlay
+            onClick={closeModal}></ModalOverlay> {/* 배경 클릭시 모달 닫기 */}
+          <TranslationOptions>
+            <Title>언어 선택</Title>
+            {languageOptions.map((option) => (
+              <label key={option.value}>
+                <input
+                  type="radio"
+                  name="language"
+                  value={option.value}
+                  checked={targetLang === option.value}
+                  onChange={(e) => {
+                    setTargetLang(e.target.value);
+                    setSelectedLanguage(option.label);
+                  }}
+                />
+                {option.label}
+              </label>
+            ))}
+            <Button onClick={() => setIsModalOpen(false)}>확인</Button>
+          </TranslationOptions>
+        </>
+      )}
+      <MessagesContainer>
+        {messages.map((message, index) => (
+          <MessageBox
+            sender={Storage.getUserId() === String(message.senderId)}>
+            {Storage.getUserId() === String(message.senderId) && (
+              <SentTime style={{ marginRight: '5px' }}>
+                <FormatChatTime sentAt={message.sentAt} />
+              </SentTime>
+            )}
+            <MessageBubble
+              className="message"
+              onClick={(e) => clickMessage(index, e)} // 변경된 부분
+              key={index}
+              sender={Storage.getUserId() === String(message.senderId)}
+            >
+              <span
+                className="senderNickname">{message.senderNickname}</span>
+              {message.content === '삭제된 메세지입니다' ? (
+                renderMessageContent(message.content)
+              ) : (
+                <>
+                  {renderMessageContent(message.content)}
+                  {message.transContent && (
+                    <span><br />({message.transContent})</span>
                   )}
+                </>
+              )}
 
-                </MessageBubble>
-                {Storage.getUserId() !== String(message.senderId) && (
-                    <SentTime style={{marginLeft: '5px'}}>
-                      <FormatChatTime sentAt={message.sentAt}/>
-                    </SentTime>
-                )}
-              </MessageBox>
-          ))}
-          <ShowMyMenu
-              className="delete-modal"
-              clickedMessageTop={clickedMessageTop}
-              clickedMessageLeft={clickedMessageLeft}>
-            {(isClickedMessage === true && messages[messageIndex].senderId
-                === parseInt(Storage.getUserId())) ? (
-                <span onClick={() => handleUpdateMessage(
-                    messages[messageIndex].messageId)}>
+            </MessageBubble>
+            {Storage.getUserId() !== String(message.senderId) && (
+              <SentTime style={{ marginLeft: '5px' }}>
+                <FormatChatTime sentAt={message.sentAt} />
+              </SentTime>
+            )}
+          </MessageBox>
+        ))}
+        <ShowMyMenu
+          className="delete-modal"
+          clickedMessageTop={clickedMessageTop}
+          clickedMessageLeft={clickedMessageLeft}>
+          {(isClickedMessage === true && messages[messageIndex].senderId === parseInt(Storage.getUserId()) && messages[messageIndex].content !== '삭제된 메세지입니다') ? (
+            <span onClick={() => handleUpdateMessage(messages[messageIndex].messageId)}>
               삭제하기
             </span>
-            ) : (
-                <></>
-            )}
-          </ShowMyMenu>
-
-          <div ref={messagesEndRef}></div>
-        </MessagesContainer>
-        <InputContainer>
-          <EmojiPickerButton onClick={() => setEmojiPickerVisible(
-              !isEmojiPickerVisible)}>+</EmojiPickerButton>
-          {isEmojiPickerVisible && (
-              <EmojiPicker>
-                <Emoji onClick={() => sendEmojiMessage(":emoji1:")}><img
-                    src="/img/emoji1.png" alt="emoji1"/></Emoji>
-                <Emoji onClick={() => sendEmojiMessage(":emoji2:")}><img
-                    src="/img/emoji2.png" alt="emoji2"/></Emoji>
-                <Emoji onClick={() => sendEmojiMessage(":emoji3:")}><img
-                    src="/img/emoji3.png" alt="emoji3"/></Emoji>
-                <Emoji onClick={() => sendEmojiMessage(":emoji4:")}><img
-                    src="/img/emoji4.png" alt="emoji4"/></Emoji>
-                <Emoji onClick={() => sendEmojiMessage(":emoji5:")}><img
-                    src="/img/emoji5.png" alt="emoji5"/></Emoji>
-              </EmojiPicker>
+          ) : (
+            <></>
           )}
-          <TextInput value={inputValue}
-                     ref={inputRef}
-                     onChange={(e) => setInputValue(e.target.value)}
-                     onKeyDown={handleKeyDown} placeholder="메시지를 입력해주세요..."/>
-          <SendButton onClick={sendMessage}>보내기</SendButton>
-        </InputContainer>
-      </>
+        </ShowMyMenu>
+
+        <div ref={messagesEndRef}></div>
+      </MessagesContainer>
+      <InputContainer>
+        <EmojiPickerButton onClick={() => setEmojiPickerVisible(
+          !isEmojiPickerVisible)}>+</EmojiPickerButton>
+        {isEmojiPickerVisible && (
+          <EmojiPicker>
+            <Emoji onClick={() => sendEmojiMessage(":emoji1:")}><img
+              src="/img/emoji1.png" alt="emoji1" /></Emoji>
+            <Emoji onClick={() => sendEmojiMessage(":emoji2:")}><img
+              src="/img/emoji2.png" alt="emoji2" /></Emoji>
+            <Emoji onClick={() => sendEmojiMessage(":emoji3:")}><img
+              src="/img/emoji3.png" alt="emoji3" /></Emoji>
+            <Emoji onClick={() => sendEmojiMessage(":emoji4:")}><img
+              src="/img/emoji4.png" alt="emoji4" /></Emoji>
+            <Emoji onClick={() => sendEmojiMessage(":emoji5:")}><img
+              src="/img/emoji5.png" alt="emoji5" /></Emoji>
+          </EmojiPicker>
+        )}
+        <TextInput value={inputValue}
+          ref={inputRef}
+          onChange={(e) => setInputValue(e.target.value)}
+          onKeyDown={handleKeyDown} placeholder="메시지를 입력해주세요..." />
+        <SendButton onClick={sendMessage}>보내기</SendButton>
+      </InputContainer>
+    </>
   );
 }
 
@@ -376,7 +374,7 @@ const MessageBubble = styled.div.withConfig({
   margin-bottom: 10px;
   background-color: ${props => props.sender ? ' #ff922b;' : '#7c7979'};
   border-radius: ${props => props.sender ? '10px 10px 10px 0'
-          : '10px 10px 0 10px'};
+    : '10px 10px 0 10px'};
   align-self: ${props => props.sender ? 'flex-end' : 'flex-start'};
   color: #ffffff;
   display: inline-block;
