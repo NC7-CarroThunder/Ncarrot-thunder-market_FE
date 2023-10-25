@@ -194,13 +194,12 @@ const CardImg = styled.img`
 `;
 
 const CardBody = styled.div`
-  padding: 20px;
+    width: 15vw;
+    margin-top: 20px;
 `;
 
 const CardTitle = styled.div`
   font-size: 20px;
-  overflow: hidden;
-  white-space: nowrap;
   text-overflow: ellipsis;
   width: 100%;
 `;

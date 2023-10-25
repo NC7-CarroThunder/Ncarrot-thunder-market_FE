@@ -78,7 +78,14 @@ export default function AddPostPage({ children, detail }) {
     let myPost = {};
     let imageData = [];
     let contentKey = '';
-    const parsePrice = /[,]/g.test(price) ? price.replace(/[,]/g, '') : price;
+    let parsePrice = price;
+      if (dealingType.current.value === 'FOR_FREE') {
+          parsePrice = '0';
+      } else  {
+          parsePrice = price.replace(/[^\d]/g, ''); // 숫자가 아닌 문자를 모두 제거
+      }
+
+
     console.log(post);
     if (post) {
       console.log("업데이트는 여기로타야함");
