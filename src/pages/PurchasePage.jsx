@@ -132,16 +132,18 @@ export default function PurchasePage() {
                     <CardBody>
                       <CardTitle>{post.title}</CardTitle>
                       <CardText><strong>{formatPrice(post.price)}원</strong></CardText>
+                      <CardDescription>{post.content}</CardDescription>
                     </CardBody>
                     </PostContainer>
                     <ContentContainer>
-              <CardDescription>{post.content}</CardDescription>
-              내 포인트: {currentPoint}
-              <CreditButton onClick={CreditButtonClick}>충전하기</CreditButton>
-                {(post.itemStatus == "ONGOING" && post.buyerId == Storage.getUserId()) ? (<BuyButton onClick={ComfirmedPurchaseBuyClick}>구매확정</BuyButton>) : (<></>)}
-                {(post.itemStatus == "ONGOING" && post.buyerId == Storage.getUserId()) ? (<BuyButton onClick={CancelBuyClick}>구매취소</BuyButton>) : (<></>)}
-                {(post.itemStatus == "SELLING") ? (<BuyButton onClick={PurchaseBuyClick}>구매버튼</BuyButton>) : (<></>)}
-            </ContentContainer>
+                      내 포인트: {currentPoint}
+                      <ButtonContainer>
+                        <CreditButton onClick={CreditButtonClick}>충전하기</CreditButton>
+                        {(post.itemStatus == "SELLING") ? (<BuyButton onClick={PurchaseBuyClick}>구매버튼</BuyButton>) : (<></>)}
+                        </ButtonContainer>
+                        {(post.itemStatus == "ONGOING" && post.buyerId == Storage.getUserId()) ? (<BuyButton onClick={ComfirmedPurchaseBuyClick}>구매확정</BuyButton>) : (<></>)}
+                        {(post.itemStatus == "ONGOING" && post.buyerId == Storage.getUserId()) ? (<BuyButton onClick={CancelBuyClick}>구매취소</BuyButton>) : (<></>)}
+                        </ContentContainer>
                   </Card>
             <ChatRoomContainer>
             <ChatRoom roomId={roomId} />
@@ -196,7 +198,7 @@ const CardBody = styled.div`
 `;
 
 const CardTitle = styled.div`
-  font-size: 25px;
+  font-size: 20px;
   overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;
@@ -205,21 +207,23 @@ const CardTitle = styled.div`
 
 
 const CardText = styled.p`
-  font-size: 30px;
+  font-size: 25px;
   margin-bottom: 5px;
 `;
 
 
-
-
-
 const ContentContainer = styled.div`
-  flex: 1;
-  padding: 20px;
+padding: 80px 20px 20px 20px;
   display: flex;
   flex-direction: column;
   align-items: center;
+  border: 2px solid #ff922b;
+  padding: 10px;
+  width: 80%; 
+  margin: 0 auto; 
+  border-radius: 10px; 
 `;
+
 
 
 const CardDescription = styled.p`
@@ -274,4 +278,9 @@ const CreditButton = styled.button`
   &:hover {
     background-color: #ffad6d;
   }
+`;
+
+const ButtonContainer = styled.div`
+  display: flex;
+  gap: 15px; // 두 버튼 사이의 간격을 조절합니다.
 `;
