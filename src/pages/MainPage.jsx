@@ -253,7 +253,7 @@ export default function MainPage() {
         ) : (
           <Row>
             {posts.map((post) => (
-              <Col key={post.postid} md={3}>
+              <div key={post.postid}>
                 <Link to={`/post/${post.postid}`}>
                   <Card>
                     <CardImg
@@ -275,7 +275,7 @@ export default function MainPage() {
                   </Card>
 
                 </Link>
-              </Col>
+              </div>
             ))
             }
 
@@ -366,15 +366,10 @@ const CardText = styled.p`
 `;
 
 const Row = styled.div`
-  display: flex;
-  flex-wrap: wrap;
-  max-width: 1000px; /* 최대 너비 설정 */
-`;
-
-const Col = styled.div`
-  max-width: calc(25% - 20px);
-  width: 250px;
-  margin: 10px;
+  display: grid;
+  grid-template-columns: repeat(4, 230px);
+  justify-content: center;
+  grid-gap: 30px; 
 `;
 
 const DealingTypeBadge = styled.div`
