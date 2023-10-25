@@ -24,6 +24,7 @@ export default function AddPostPage({ children, detail }) {
   const [price, setPrice] = useState('');
   const [address, setAddress] = useState('');
   const [image, setImage] = useState([]);
+  const [imageUrl, setImageUrl] = useState([]);
   const [preview, setPreview] = useState([]);
   const [formData, setFormData] = useState([]);
   const [post, setPost] = useState();
@@ -64,6 +65,7 @@ export default function AddPostPage({ children, detail }) {
     if (
       !Valid.emptyPostAddCheck(
         image,
+        preview,
         title,
         content,
         price,
@@ -82,6 +84,7 @@ export default function AddPostPage({ children, detail }) {
       console.log("업데이트는 여기로타야함");
       const parsePreviewData = preview.filter(v => v[0] === 'h');
       //imageData = image.filter(v => v.name);
+      console.log(preview);
       contentKey = 'postUpdateRequestDto';
       imageData = image;
       myPost = {
@@ -90,11 +93,12 @@ export default function AddPostPage({ children, detail }) {
         price: parsePrice,
         dealingType: dealingType.current.value,
         itemCategory: category.current.value,
-        //remainingImagesUrlList: parsePreviewData,
+        attachedFiles: preview,
         address,
       };
     } else {
       console.log("추가는 여기로타야함");
+
       imageData = image;
       contentKey = 'postRequestDto';
       myPost = {
@@ -146,12 +150,16 @@ export default function AddPostPage({ children, detail }) {
     const files = event.target.files;
     const urlList = [...files].map(url => URL.createObjectURL(url));
     setImage([...image].concat(...files));
-    setPreview([...preview].concat(urlList));
+    setImageUrl([...imageUrl].concat(urlList));
   };
 
   const handleDeleteImg = index => {
     setImage([...image].filter((_, i) => i !== index));
-    setPreview([...preview].filter((_, i) => i !== index));
+    setImageUrl([...imageUrl].filter((_, i) => i !== index));
+  };
+
+  const handleDeletePrevImg = index => {
+    setPreview([...preview].filter((i) => i.id !== index));
   };
 
   const handlePrice = e => {
@@ -216,7 +224,16 @@ export default function AddPostPage({ children, detail }) {
         </InputDealingType>
         <LableBorder preview={preview.length !== 0 ? true : false}>
           {preview.length !== 0 &&
-            preview.map((url, index) => (
+            preview.map((element) => (
+              <ImgConatiner key={element.id}>
+                <Delete onClick={() => handleDeletePrevImg(element.id)}>
+                  <RiDeleteBack2Fill />
+                </Delete>
+                <PrevImg src={`http://xflopvzfwqjk19996213.cdn.ntruss.com/article/${element.filePath}?type=f&w=250&h=250`} alt='preview' />
+              </ImgConatiner>
+            ))}
+          {imageUrl.length !== 0 &&
+            imageUrl.map((url, index) => (
               <ImgConatiner key={uuidv4()}>
                 <Delete onClick={() => handleDeleteImg(index)}>
                   <RiDeleteBack2Fill />
@@ -322,6 +339,16 @@ const Img = styled.div`
   border-radius: 0.5rem;
   object-fit: cover;
   background-image: url(${props => props.srcImg});
+  background-size: 100% 100%;
+`;
+
+const PrevImg = styled.img`
+  height: 15rem;
+  width: 15rem;
+  //padding-bottom: 100%;
+  border-radius: 0.5rem;
+  object-fit: cover;
+  //background-image: url(${props => props.srcImg});
   background-size: 100% 100%;
 `;
 
