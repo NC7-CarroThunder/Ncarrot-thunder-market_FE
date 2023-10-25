@@ -301,6 +301,7 @@ const DetailWrapper = styled.div`
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 `;
 
+
 const ImageContainer = styled.div`
   flex: 1;
   padding: 20px;
@@ -309,7 +310,7 @@ const ImageContainer = styled.div`
 
 const PostInfoContainer = styled.div`
   flex: 1;
-  padding: 20px;
+  // padding: 10px;
 `;
 
 const ContentContainer = styled.div`
