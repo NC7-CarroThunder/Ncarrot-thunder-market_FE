@@ -15,7 +15,6 @@ import MapComponent from '../components/MapComponent';
 const axiosForLoginUser = new Axios(QUERY.AXIOS_PATH.SEVER);
 
 export default function PostDetailPage() {
-
   const {postId} = useParams();
   const navigate = useNavigate();
   const [post, setPost] = useState({});
@@ -62,10 +61,16 @@ export default function PostDetailPage() {
         setPost(response.data.result);
         setLoading(false);
 
-        const wishlistStatusResponse = await axiosInstance.get(
-            `${QUERY.AXIOS_PATH.SEVER}/api/wishlist/status/${postId}`
-        );
-        setIsLiked(wishlistStatusResponse.data.isLiked);
+        if (Storage.getUserId()) {
+          try {
+            const wishlistStatusResponse = await axiosInstance.get(
+                `${QUERY.AXIOS_PATH.SEVER}/api/wishlist/status/${postId}`
+            );
+            setIsLiked(wishlistStatusResponse.data.isLiked);
+          } catch (wishlistError) {
+            navigate(ROUTER.PATH.MAIN);
+          }
+        }
       } catch (error) {
         console.error('게시물 정보 가져오기 오류:', error);
         setLoading(false);
@@ -101,6 +106,7 @@ export default function PostDetailPage() {
       console.error('Error creating or accessing the chat room:', error);
     }
   };
+
   const axiosInstance = new Axios(QUERY.AXIOS_PATH.SEVER);
 
   const handleWishlistButtonClick = async () => {
@@ -119,7 +125,7 @@ export default function PostDetailPage() {
       }
     } catch (error) {
       if (error.response.status == 401) {
-        navigate(ROUTER.PATH.MAIN);
+        navigate(ROUTER.PATH.LOGIN);
       }
       if (error.response.status == 400) {
         alert("로그인이 필요한 서비스입니다")
