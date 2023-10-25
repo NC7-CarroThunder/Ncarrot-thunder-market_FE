@@ -14,23 +14,22 @@ export default function MainPage() {
   const [target, setTarget] = useState(null);
   const [posts, setPosts] = useState([]);
   const navigate = useNavigate();
-  const [pageNo, setpageNo] = useState(0);
+  const [pageNo, setpageNo] = useState(-1);
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [stop, setStop] = useState(false);
   const [loading, setLoading] = useState(false);
   const [isEmptyPost, setIsEmptyPost] = useState(false);
   const [word, setWord] = useState(null);
-
+  //const [location, setLocation] = useState(null);
   const [categoryMap, setCategoryMap] = useState(new Map());
 
   const location = useLocation();
 
 
-
   async function fetchPosts(page, isStop) {
     if (!isStop) {
       try {
-        console.log("서버 요청하기전 데이터값  " + pageNo + "   " + selectedCategory)
+        //console.log("서버 요청하기전 데이터값  " + pageNo + "   " + selectedCategory)
         const response = await axios.get(`${QUERY.AXIOS_PATH.SEVER}${QUERY.AXIOS_PATH.POSTLIST}?pageNo=${page}&category=${selectedCategory == null ? "TOTAL" : selectedCategory}&word=${word ? word : ""}`);
 
         posts.concat(response.data.result);
@@ -68,10 +67,15 @@ export default function MainPage() {
 
 
   useEffect(() => {
+    //console.log("페이지 숫자 업데이트  " + pageNo)
     if (pageNo > 0) {
       fetchPosts(pageNo, stop);
     }
   }, [pageNo]);
+
+  useEffect(() => {
+    console.log("새로고침진행했습니다")
+  }, []);
 
 
   const callback = () => {
@@ -84,14 +88,17 @@ export default function MainPage() {
   useEffect(() => {
     // console.log("카테고리 갱신시 요구되는값 :  false   null   0아님   false");
     // console.log("카테고리 갱신 " + stop + "  " + posts + "  " + pageNo + "  " + loading);
-    console.log(selectedCategory)
-    setStop((prevStop) => prevStop ? false : false);
-    setPosts((posts) => []);
-    if (pageNo != 1) {
-      setpageNo((prevPageNo) => prevPageNo - prevPageNo + 1);
-    } else {
-      fetchPosts(1, false);
+    // console.log(selectedCategory)
+    if (selectedCategory) {
+      setStop((prevStop) => prevStop ? false : false);
+      setPosts((posts) => []);
+      if (pageNo != 1) {
+        setpageNo((prevPageNo) => prevPageNo - prevPageNo + 1);
+      } else {
+        fetchPosts(1, false);
+      }
     }
+
 
   }, [selectedCategory]);
 
@@ -124,7 +131,7 @@ export default function MainPage() {
 
     let observer;
     if (target) {
-      console.log("무한스크롤 세팅");
+      //console.log("무한스크롤 세팅");
       observer = new IntersectionObserver(callback);
       observer.observe(target);
     }
