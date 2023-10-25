@@ -98,7 +98,7 @@ export default function Navbar({showMyMenu, onShowMyMenu, onLogOut}) {
 
         setUnreadCount((prevCount) => prevCount + 1);
 
-        if (notification.content.includes("개설")) {
+        if (notification.content.includes("희망")) {
           setSlideBarMessage(notification.content);
           setShowSlideBar(true);
         }
@@ -292,7 +292,7 @@ function NotificationComponent({notification, onClose}) {
   const handleNotificationClick = () => {
     console.log("Notification clicked with content:", notification.content);
     if (notification.content.includes("메시지") || notification.content.includes(
-        "개설")) {
+        "희망")) {
       onClose();
       navigate(ROUTER.PATH.CHATTING);
     }
