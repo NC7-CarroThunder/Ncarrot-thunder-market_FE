@@ -11,6 +11,8 @@ import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
 import {faHeart as solidHeart} from '@fortawesome/free-solid-svg-icons';
 import {faHeart as regularHeart} from '@fortawesome/free-regular-svg-icons';
 import MapComponent from '../components/MapComponent';
+import { confirmAlert } from 'react-confirm-alert';
+import '../styles/ConfirmAlert.css';
 
 const axiosForLoginUser = new Axios(QUERY.AXIOS_PATH.SEVER);
 
@@ -20,6 +22,7 @@ export default function PostDetailPage() {
   const [post, setPost] = useState({});
   const [loading, setLoading] = useState(true);
   const [isLiked, setIsLiked] = useState(false);
+  const axios = new Axios(QUERY.AXIOS_PATH.SEVER);
 
   function getCategoryLabel(categoryValue) {
     // 카테고리 값에 따라 레이블을 반환
@@ -135,18 +138,39 @@ export default function PostDetailPage() {
     }
   };
 
-  const handleDeleteButtonClick = async () => {
-    try {
-      const apiUrl = `${QUERY.AXIOS_PATH.POSTDELETE.replace(':postId',
-          postId)}`;
-      const response = await axiosInstance.delete(apiUrl);
 
-      console.log('게시물이 성공적으로 삭제되었습니다.');
-      navigate(ROUTER.PATH.BACK); // 삭제 후 POSTLIST 페이지로 이동
-    } catch (error) {
-      console.error('게시물 삭제 오류:', error);
-    }
-  };
+    const handleDeleteButtonClick = () => {
+        confirmAlert({
+
+            message: '게시글을 삭제하시겠습니까?',
+            buttons: [
+                {
+                    label: '예',
+                    onClick: async () => {
+                        try {
+                            const apiUrl = `${QUERY.AXIOS_PATH.POSTDELETE.replace(':postId', postId)}`;
+                            const response = await axios.delete(apiUrl);
+                            if (response.status === 200) {
+                                alert('게시글이 성공적으로 삭제되었습니다.')
+                                navigate(ROUTER.PATH.BACK); // 삭제 후 POSTLIST 페이지로 이동
+                            } else {
+                                console.error('게시글 삭제 실패');
+                            }
+                        } catch (error) {
+                            console.error('게시물 삭제 오류:', error);
+                        }
+                    },
+                },
+                {
+                    label: '아니요',
+                    onClick: () => {
+                        console.log('게시물 삭제를 취소했습니다.');
+                    },
+                },
+            ],
+        });
+    };
+
   const handleUpdateButtonClick = async () => {
     console.log(post);
     navigate('/addPost', {state: {children: "수정", detail: post}});
