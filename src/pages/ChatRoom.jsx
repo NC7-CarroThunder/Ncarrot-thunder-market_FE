@@ -6,6 +6,7 @@ import Storage from '../utils/localStorage';
 import Axios from '../utils/api/axios';
 import QUERY from '../constants/query';
 import ROUTER from '../constants/router';
+import FormatChatTime from '../components/FormatChatTime';
 
 const axios = new Axios(QUERY.AXIOS_PATH.SEVER);
 
@@ -95,6 +96,7 @@ function ChatRoom({ roomId }) {
       const chatMessage = {
         roomId: roomId,
         content: inputValue,
+        sentAt: new Date(),
         senderId: parseInt(Storage.getUserId()),
         targetLang: targetLang,
       };
@@ -228,6 +230,12 @@ function ChatRoom({ roomId }) {
       )}
       <MessagesContainer>
         {messages.map((message, index) => (
+          <MessageBox sender={Storage.getUserId() === String(message.senderId)}>
+                {Storage.getUserId() === String(message.senderId) && (
+          <SentTime style={{ marginRight: '5px' }}>
+            <FormatChatTime sentAt={message.sentAt} />
+          </SentTime>
+        )}
           <MessageBubble
             onClick={(e) => clickMessage(index, e)} // 변경된 부분
             key={index}
@@ -244,8 +252,14 @@ function ChatRoom({ roomId }) {
                 )}
               </>
             )}
-
-          </MessageBubble>
+          
+            </MessageBubble>
+            {Storage.getUserId() !== String(message.senderId) && (
+        <SentTime style={{ marginLeft: '5px' }}>
+          <FormatChatTime sentAt={message.sentAt} />
+        </SentTime>
+      )}
+        </MessageBox>
         ))}
         <ShowMyMenu
           clickedMessageTop={clickedMessageTop}
@@ -337,7 +351,7 @@ const MessageBubble = styled.div.withConfig({
   .senderNickname {
     font-size: 0.7em;
     display: block;
-    margin-bottom: 5px;
+    margin-bottom: 10px;
     border-bottom: 1px solid rgba(255, 255, 255, 0.5);
     padding-bottom: 2px;
   }
@@ -506,4 +520,17 @@ const Button = styled.button`
   border-radius: 5px;
   cursor: pointer;
   float: right; 
+`;
+const SentTime = styled.div`
+font-size: 12px;
+align-self: ${props => props.time ? 'flex-start' : 'flex-end'};
+margin-bottom: 10px;
+color: ffffff;
+`;
+
+
+const MessageBox = styled.div`
+display: flex;
+  justify-content: ${props => props.sender ? 'flex-end' : 'flex-start'};
+flex-direction: row;
 `;
