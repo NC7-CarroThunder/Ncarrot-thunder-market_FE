@@ -89,15 +89,14 @@ export default function MainPage() {
     // console.log("카테고리 갱신시 요구되는값 :  false   null   0아님   false");
     // console.log("카테고리 갱신 " + stop + "  " + posts + "  " + pageNo + "  " + loading);
     // console.log(selectedCategory)
-    if (selectedCategory) {
-      setStop((prevStop) => prevStop ? false : false);
-      setPosts((posts) => []);
-      if (pageNo != 1) {
-        setpageNo((prevPageNo) => prevPageNo - prevPageNo + 1);
-      } else {
-        fetchPosts(1, false);
-      }
+    setStop((prevStop) => prevStop ? false : false);
+    setPosts((posts) => []);
+    if (pageNo != 1) {
+      setpageNo((prevPageNo) => prevPageNo - prevPageNo + 1);
+    } else {
+      fetchPosts(1, false);
     }
+
 
 
   }, [selectedCategory]);
