@@ -1,12 +1,12 @@
 import React, {useEffect, useState} from 'react';
 import styled from 'styled-components';
 import axios from 'axios';
+import Axios from '../utils/api/axios';
 import {useNavigate, useParams} from 'react-router-dom';
 import Storage from '../utils/localStorage';
 import ROUTER from '../constants/router';
 import ImageSlider from '../components/ImageSlider';
 import QUERY from '../constants/query';
-import Axios from '../utils/api/axios';
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
 import {faHeart as solidHeart} from '@fortawesome/free-solid-svg-icons';
 import {faHeart as regularHeart} from '@fortawesome/free-regular-svg-icons';
@@ -57,6 +57,7 @@ export default function PostDetailPage() {
         const response = await axios.get(
             `${QUERY.AXIOS_PATH.SEVER}/api/posts/${postId}`);
         console.log(response.data.result);
+        console.log(response);
         setPost(response.data.result);
         setLoading(false);
 
@@ -70,7 +71,6 @@ export default function PostDetailPage() {
             navigate(ROUTER.PATH.MAIN);
           }
         }
-
       } catch (error) {
         console.error('게시물 정보 가져오기 오류:', error);
         setLoading(false);
@@ -155,8 +155,10 @@ export default function PostDetailPage() {
 
   const currentUserId = Storage.getUserId();
   console.log('현재 사용자 ID:', currentUserId);
-  console.log('게시글 작성자 ID:', post.userid);
-  console.log('게시글 작성자 ID:', post.postId);
+  if (post != undefined && post != null) {
+    console.log('게시글 작성자 ID:', post.userid);
+    console.log('게시글 작성자 ID:', post.postId);
+  }
 
   const formatPrice = (price) => {
     return price.toLocaleString('en-US');
