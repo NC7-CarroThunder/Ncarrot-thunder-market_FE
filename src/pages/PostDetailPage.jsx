@@ -1,25 +1,32 @@
-import React, {useEffect, useState} from 'react';
+import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import axios from 'axios';
 import Axios from '../utils/api/axios';
+
 import {useNavigate, useParams} from 'react-router-dom';
+
 import Storage from '../utils/localStorage';
 import ROUTER from '../constants/router';
 import ImageSlider from '../components/ImageSlider';
 import QUERY from '../constants/query';
+
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
 import {faHeart as solidHeart} from '@fortawesome/free-solid-svg-icons';
 import {faHeart as regularHeart} from '@fortawesome/free-regular-svg-icons';
+
 import MapComponent from '../components/MapComponent';
+import { confirmAlert } from 'react-confirm-alert';
+import '../styles/ConfirmAlert.css';
 
 const axiosForLoginUser = new Axios(QUERY.AXIOS_PATH.SEVER);
 
 export default function PostDetailPage() {
-  const {postId} = useParams();
+  const { postId } = useParams();
   const navigate = useNavigate();
   const [post, setPost] = useState({});
   const [loading, setLoading] = useState(true);
   const [isLiked, setIsLiked] = useState(false);
+  const axios = new Axios(QUERY.AXIOS_PATH.SEVER);
 
   function getCategoryLabel(categoryValue) {
     // 카테고리 값에 따라 레이블을 반환
@@ -55,7 +62,7 @@ export default function PostDetailPage() {
     async function fetchPostDetails() {
       try {
         const response = await axios.get(
-            `${QUERY.AXIOS_PATH.SEVER}/api/posts/${postId}`);
+          `${QUERY.AXIOS_PATH.SEVER}/api/posts/${postId}`);
         console.log(response.data.result);
         console.log(response);
         setPost(response.data.result);
@@ -64,7 +71,7 @@ export default function PostDetailPage() {
         if (Storage.getUserId()) {
           try {
             const wishlistStatusResponse = await axiosInstance.get(
-                `${QUERY.AXIOS_PATH.SEVER}/api/wishlist/status/${postId}`
+              `${QUERY.AXIOS_PATH.SEVER}/api/wishlist/status/${postId}`
             );
             setIsLiked(wishlistStatusResponse.data.isLiked);
           } catch (wishlistError) {
@@ -88,7 +95,7 @@ export default function PostDetailPage() {
         navigate(ROUTER.PATH.LOGIN);
       }
       const response = await axiosForLoginUser.get(
-          `/api/chatting/createOrGetChatRoom?sellerId=${post.userid}&currentUserId=${currentUserId}&postId=${post.postId}`
+        `/api/chatting/createOrGetChatRoom?sellerId=${post.userid}&currentUserId=${currentUserId}&postId=${post.postId}`
       );
       console.log(response);
       setTimeout(async () => {
@@ -116,7 +123,7 @@ export default function PostDetailPage() {
     }
     try {
       const apiUrl = QUERY.AXIOS_PATH.TOGGLE_WISHLIST;
-      const response = await axiosInstance.post(apiUrl, {articleId: postId});
+      const response = await axiosInstance.post(apiUrl, { articleId: postId });
 
       if (response.data.success) {
         setIsLiked(!isLiked);
@@ -135,21 +142,42 @@ export default function PostDetailPage() {
     }
   };
 
-  const handleDeleteButtonClick = async () => {
-    try {
-      const apiUrl = `${QUERY.AXIOS_PATH.POSTDELETE.replace(':postId',
-          postId)}`;
-      const response = await axiosInstance.delete(apiUrl);
 
-      console.log('게시물이 성공적으로 삭제되었습니다.');
-      navigate(ROUTER.PATH.BACK); // 삭제 후 POSTLIST 페이지로 이동
-    } catch (error) {
-      console.error('게시물 삭제 오류:', error);
-    }
+  const handleDeleteButtonClick = () => {
+    confirmAlert({
+
+      message: '게시글을 삭제하시겠습니까?',
+      buttons: [
+        {
+          label: '예',
+          onClick: async () => {
+            try {
+              const apiUrl = `${QUERY.AXIOS_PATH.POSTDELETE.replace(':postId', postId)}`;
+              const response = await axios.delete(apiUrl);
+              if (response.status === 200) {
+                alert('게시글이 성공적으로 삭제되었습니다.')
+                navigate(ROUTER.PATH.BACK); // 삭제 후 POSTLIST 페이지로 이동
+              } else {
+                console.error('게시글 삭제 실패');
+              }
+            } catch (error) {
+              console.error('게시물 삭제 오류:', error);
+            }
+          },
+        },
+        {
+          label: '아니요',
+          onClick: () => {
+            console.log('게시물 삭제를 취소했습니다.');
+          },
+        },
+      ],
+    });
   };
+
   const handleUpdateButtonClick = async () => {
     console.log(post);
-    navigate('/addPost', {state: {children: "수정", detail: post}});
+    navigate('/addPost', { state: { children: "수정", detail: post } });
 
   };
 
@@ -173,7 +201,7 @@ export default function PostDetailPage() {
         navigate(ROUTER.PATH.LOGIN);
       }
       const response = await axiosForLoginUser.get(
-          `/api/chatting/createOrGetChatRoom?sellerId=${post.userid}&currentUserId=${currentUserId}&postId=${post.postId}`
+        `/api/chatting/createOrGetChatRoom?sellerId=${post.userid}&currentUserId=${currentUserId}&postId=${post.postId}`
       );
       setTimeout(async () => {
         const roomId = response.data.roomId;
@@ -196,87 +224,87 @@ export default function PostDetailPage() {
   // navigate(`/purchase/${postId}`);
 
   return (
-      <MainWrapper>
-        <DetailWrapper>
-          {loading ? (
-              <p>로딩 중...</p>
-          ) : (
-              <>
-                <ImageContainer>
-                  <ImageSlider images={post.attachedFilesPaths}/>
-                </ImageContainer>
-                <PostInfoContainer>
-                  <TitleText>{post.title}</TitleText>
-                  <PriceText>
-                    <strong>{formatPrice(post.price)} 원</strong>
-                  </PriceText>
-                  <ContentContainer>
-                    <CardDescription>{post.content}</CardDescription>
-                  </ContentContainer>
-                  {post.address && <MapComponent address={post.address}/>}
-                  <CardText>거래지역 : {post.address}</CardText>
-                  <CardText>카테고리 : {getCategoryLabel(
-                      post.itemCategory)}</CardText>
-                  <CardText>판매자 : {post.nickName}</CardText>
-                  <CardText>조회수 : {post.viewCount}</CardText>
-                  {Number(post.userid) !== Number(currentUserId) && (
-                      <ButtonWrapper>
-                        {post.dealingType === 'FOR_PAY' && (
-                            <>
-                              <LikeButton onClick={handleWishlistButtonClick}
-                                          isLiked={isLiked}>
-                                <HeartIcon isLiked={isLiked}
-                                           icon={isLiked ? solidHeart
-                                               : regularHeart}/>
-                              </LikeButton>
-                              <ChatButton
-                                  onClick={handleChatButtonClick}>캐럿톡</ChatButton>
-                              <SafePaymentButton
-                                  onClick={handleSafePaymentButtonClick}>안전결제하기</SafePaymentButton>
-                            </>
-                        )}
-                        {post.dealingType === 'WITHPERSONAL' && (
-                            <>
-                              <LikeButton onClick={handleWishlistButtonClick}
-                                          isLiked={isLiked}>
-                                <HeartIcon isLiked={isLiked}
-                                           icon={isLiked ? solidHeart
-                                               : regularHeart}/>
-                              </LikeButton>
-                              <ChatButton
-                                  onClick={handleChatButtonClick}>캐럿톡</ChatButton>
-                            </>
-                        )}
-                        {post.dealingType === 'FOR_FREE' && (
-                            <>
-                              <LikeButton onClick={handleWishlistButtonClick}
-                                          isLiked={isLiked}>
-                                <HeartIcon isLiked={isLiked}
-                                           icon={isLiked ? solidHeart
-                                               : regularHeart}/>
-                              </LikeButton>
-                              <FreeShareText>나눔</FreeShareText>
-                              <CarrotEmoji>🥕</CarrotEmoji>
-                              <ChatButton
-                                  onClick={handleChatButtonClick}>캐럿톡</ChatButton>
-                            </>
-                        )}
-                      </ButtonWrapper>
+    <MainWrapper>
+      <DetailWrapper>
+        {loading ? (
+          <p>로딩 중...</p>
+        ) : (
+          <>
+            <ImageContainer>
+              <ImageSlider images={post.attachedFilesPaths} />
+            </ImageContainer>
+            <PostInfoContainer>
+              <TitleText>{post.title}</TitleText>
+              <PriceText>
+                <strong>{formatPrice(post.price)} 원</strong>
+              </PriceText>
+              <ContentContainer>
+                <CardDescription>{post.content}</CardDescription>
+              </ContentContainer>
+              {post.address && <MapComponent address={post.address} />}
+              <CardText>거래지역 : {post.address}</CardText>
+              <CardText>카테고리 : {getCategoryLabel(
+                post.itemCategory)}</CardText>
+              <CardText>판매자 : {post.nickName}</CardText>
+              <CardText>조회수 : {post.viewCount}</CardText>
+              {Number(post.userid) !== Number(currentUserId) && (
+                <ButtonWrapper>
+                  {post.dealingType === 'FOR_PAY' && (
+                    <>
+                      <LikeButton onClick={handleWishlistButtonClick}
+                        isLiked={isLiked}>
+                        <HeartIcon isLiked={isLiked}
+                          icon={isLiked ? solidHeart
+                            : regularHeart} />
+                      </LikeButton>
+                      <ChatButton
+                        onClick={handleChatButtonClick}>캐럿톡</ChatButton>
+                      <SafePaymentButton
+                        onClick={handleSafePaymentButtonClick}>안전결제하기</SafePaymentButton>
+                    </>
                   )}
+                  {post.dealingType === 'WITHPERSONAL' && (
+                    <>
+                      <LikeButton onClick={handleWishlistButtonClick}
+                        isLiked={isLiked}>
+                        <HeartIcon isLiked={isLiked}
+                          icon={isLiked ? solidHeart
+                            : regularHeart} />
+                      </LikeButton>
+                      <ChatButton
+                        onClick={handleChatButtonClick}>캐럿톡</ChatButton>
+                    </>
+                  )}
+                  {post.dealingType === 'FOR_FREE' && (
+                    <>
+                      <LikeButton onClick={handleWishlistButtonClick}
+                        isLiked={isLiked}>
+                        <HeartIcon isLiked={isLiked}
+                          icon={isLiked ? solidHeart
+                            : regularHeart} />
+                      </LikeButton>
+                      <FreeShareText>나눔</FreeShareText>
+                      <CarrotEmoji>🥕</CarrotEmoji>
+                      <ChatButton
+                        onClick={handleChatButtonClick}>캐럿톡</ChatButton>
+                    </>
+                  )}
+                </ButtonWrapper>
+              )}
 
-                  {Number(post.userid) === Number(currentUserId) && (
-                      <ButtonWrapper>
-                        <DeleteButton
-                            onClick={handleUpdateButtonClick}>수정하기</DeleteButton>
-                        <DeleteButton
-                            onClick={handleDeleteButtonClick}>삭제하기</DeleteButton>
+              {Number(post.userid) === Number(currentUserId) && (
+                <ButtonWrapper>
+                  <DeleteButton
+                    onClick={handleUpdateButtonClick}>수정하기</DeleteButton>
+                  <DeleteButton
+                    onClick={handleDeleteButtonClick}>삭제하기</DeleteButton>
 
-                      </ButtonWrapper>)}
-                </PostInfoContainer>
-              </>
-          )}
-        </DetailWrapper>
-      </MainWrapper>
+                </ButtonWrapper>)}
+            </PostInfoContainer>
+          </>
+        )}
+      </DetailWrapper>
+    </MainWrapper>
   );
 }
 

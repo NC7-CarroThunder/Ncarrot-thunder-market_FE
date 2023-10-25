@@ -69,12 +69,12 @@ const Valid = {
     return true;
   },
 
-  emptyPostAddCheck(img, ...input) {
+  emptyPostAddCheck(img, preview, ...input) {
     if (!formEmpty(...input)) {
       alert('공백은 추가할수 없습니다.');
       return false;
     }
-    if (!imgEmpty(img)) {
+    if (!imgEmpty(img) && !imgEmpty(preview)) {
       alert('이미지를 추가해 주세요.');
       return false;
     }

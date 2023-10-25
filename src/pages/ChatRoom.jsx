@@ -22,17 +22,42 @@ function ChatRoom({ roomId }) {
   const [isClickedMessage, setIsClickedMessage] = useState(false);
   const [messageIndex, setMessageIndex] = useState(0);
 
-
   const [isTranslationOptionsVisible, setTranslationOptionsVisible] = useState(
     false);
   const [isEmojiPickerVisible, setEmojiPickerVisible] = useState(false);
-
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const openModal = () => setIsModalOpen(true);
   const closeModal = () => setIsModalOpen(false);
   const [selectedLanguage, setSelectedLanguage] = useState('');
 
+  const inputRef = useRef(null);
+
+  const handleDocumentClick = (event) => {
+    // 클릭한 요소가 메시지 또는 삭제 버튼 모달창인 경우 return
+    if (event.target.closest('.message') || event.target.closest(
+      '.delete-modal')) {
+      return;
+    }
+
+    setIsClickedMessage(false);  // 메시지 클릭 상태를 false로 설정
+  };
+
+  useEffect(() => {
+    if (inputRef.current) {
+      inputRef.current.focus();
+    }
+  }, []);
+
+  useEffect(() => {
+    // 클릭 이벤트를 document에 추가
+    document.addEventListener('click', handleDocumentClick);
+
+    // 클릭 이벤트를 제거 (cleanup function)
+    return () => {
+      document.removeEventListener('click', handleDocumentClick);
+    };
+  }, []);  // 빈 의존성 배열로 useEffect는 컴포넌트가 마운트될 때만 실행
 
   useEffect(() => {
     setMessages([]);
@@ -82,6 +107,9 @@ function ChatRoom({ roomId }) {
       if (stompClient.current.connected) {
         stompClient.current.deactivate();
       }
+      if (inputRef.current) {
+        inputRef.current.focus();
+      }
     };
   }, [roomId, targetLang]);
 
@@ -113,7 +141,6 @@ function ChatRoom({ roomId }) {
       sendMessage();
     }
   };
-
 
   const languageOptions = [
     { value: 'ko', label: '한국어' },
@@ -151,7 +178,6 @@ function ChatRoom({ roomId }) {
     }
     return messageContent;
   };
-
 
   // const renderMessageContent = (messageContent) => {
   //   if (messageContent.startsWith(":emoji") && messageContent.endsWith(":")) {
@@ -201,13 +227,13 @@ function ChatRoom({ roomId }) {
       });
   };
 
-
   return (
     <>
-      <OpenButton onClick={openModal}>언어 선택</OpenButton>
+      <OpenButton onClick={openModal}>번역할 언어 선택</OpenButton>
       {isModalOpen && (
         <>
-          <ModalOverlay onClick={closeModal}></ModalOverlay> {/* 배경 클릭시 모달 닫기 */}
+          <ModalOverlay
+            onClick={closeModal}></ModalOverlay> {/* 배경 클릭시 모달 닫기 */}
           <TranslationOptions>
             <Title>언어 선택</Title>
             {languageOptions.map((option) => (
@@ -231,41 +257,45 @@ function ChatRoom({ roomId }) {
       )}
       <MessagesContainer>
         {messages.map((message, index) => (
-          <MessageBox sender={Storage.getUserId() === String(message.senderId)}>
-                {Storage.getUserId() === String(message.senderId) && (
-          <SentTime style={{ marginRight: '5px' }}>
-            <FormatChatTime sentAt={message.sentAt} />
-          </SentTime>
-        )}
-          <MessageBubble
-            onClick={(e) => clickMessage(index, e)} // 변경된 부분
-            key={index}
-            sender={Storage.getUserId() === String(message.senderId)}
-          >
-            <span className="senderNickname">{message.senderNickname}</span>
-            {message.content === '삭제된 메세지입니다' ? (
-              renderMessageContent(message.content)
-            ) : (
-              <>
-                {renderMessageContent(message.content)}
-                {message.transContent && (
-                  <span><br />({message.transContent})</span>
-                )}
-              </>
+          <MessageBox
+            sender={Storage.getUserId() === String(message.senderId)}>
+            {Storage.getUserId() === String(message.senderId) && (
+              <SentTime style={{ marginRight: '5px' }}>
+                <FormatChatTime sentAt={message.sentAt} />
+              </SentTime>
             )}
-          
+            <MessageBubble
+              className="message"
+              onClick={(e) => clickMessage(index, e)} // 변경된 부분
+              key={index}
+              sender={Storage.getUserId() === String(message.senderId)}
+            >
+              <span
+                className="senderNickname">{message.senderNickname}</span>
+              {message.content === '삭제된 메세지입니다' ? (
+                renderMessageContent(message.content)
+              ) : (
+                <>
+                  {renderMessageContent(message.content)}
+                  {message.transContent && (
+                    <span><br />({message.transContent})</span>
+                  )}
+                </>
+              )}
+
             </MessageBubble>
             {Storage.getUserId() !== String(message.senderId) && (
-        <SentTime style={{ marginLeft: '5px' }}>
-          <FormatChatTime sentAt={message.sentAt} />
-        </SentTime>
-      )}
-        </MessageBox>
+              <SentTime style={{ marginLeft: '5px' }}>
+                <FormatChatTime sentAt={message.sentAt} />
+              </SentTime>
+            )}
+          </MessageBox>
         ))}
         <ShowMyMenu
+          className="delete-modal"
           clickedMessageTop={clickedMessageTop}
           clickedMessageLeft={clickedMessageLeft}>
-          {(isClickedMessage === true && messages[messageIndex].senderId === parseInt(Storage.getUserId())) ? (
+          {(isClickedMessage === true && messages[messageIndex].senderId === parseInt(Storage.getUserId()) && messages[messageIndex].content !== '삭제된 메세지입니다') ? (
             <span onClick={() => handleUpdateMessage(messages[messageIndex].messageId)}>
               삭제하기
             </span>
@@ -294,6 +324,7 @@ function ChatRoom({ roomId }) {
           </EmojiPicker>
         )}
         <TextInput value={inputValue}
+          ref={inputRef}
           onChange={(e) => setInputValue(e.target.value)}
           onKeyDown={handleKeyDown} placeholder="메시지를 입력해주세요..." />
         <SendButton onClick={sendMessage}>보내기</SendButton>
@@ -365,7 +396,7 @@ const InputContainer = styled.div`
   position: relative; // 이 부분을 추가합니다.
 
   :focus {
-    outline: 1px solid orange;  // 2px 테두리의 두께를 설정하며, 'orange'로 색상을 설정
+    outline: 1px solid orange; // 2px 테두리의 두께를 설정하며, 'orange'로 색상을 설정
   }
 `;
 
@@ -378,7 +409,7 @@ const TextInput = styled.input`
 `;
 
 const SendButton = styled.button`
-  background-color:  #ff922b;
+  background-color: #ff922b;
   color: #ffffff;
   padding: 10px 20px;
   border: none;
@@ -451,17 +482,17 @@ const Emoji = styled.div`
 `;
 
 const ShowMyMenu = styled.div`
-position: absolute;
-top: ${props => props.clickedMessageTop}px; // 변경된 부분
-left: ${props => props.clickedMessageLeft}px;
-display: flex;
-flex-direction: column;
-justify-content: center;
-align-items: center;
-border: 0.25px solid ${props => props.theme.color.messenger};
-border-radius: 0.5rem;
-background-color: ${props => props.theme.color.white};
-z-index: 1000;
+  position: absolute;
+  top: ${props => props.clickedMessageTop}px; // 변경된 부분
+  left: ${props => props.clickedMessageLeft}px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  border: 0.25px solid ${props => props.theme.color.messenger};
+  border-radius: 0.5rem;
+  background-color: ${props => props.theme.color.white};
+  z-index: 1000;
 
   span {
     display: flex;
@@ -505,7 +536,7 @@ const Title = styled.div`
 `;
 
 const OpenButton = styled.button`
-  background-color:  #ff922b;
+  background-color: #ff922b;
   color: #ffffff;
   padding: 5px;
   border: none;
@@ -514,24 +545,23 @@ const OpenButton = styled.button`
 `;
 
 const Button = styled.button`
-  background-color:  #ff922b;
+  background-color: #ff922b;
   color: #ffffff;
   padding: 8px;
   border: none;
   border-radius: 5px;
   cursor: pointer;
-  float: right; 
+  float: right;
 `;
 const SentTime = styled.div`
-font-size: 12px;
-align-self: ${props => props.time ? 'flex-start' : 'flex-end'};
-margin-bottom: 10px;
-color: ffffff;
+  font-size: 12px;
+  align-self: ${props => props.time ? 'flex-start' : 'flex-end'};
+  margin-bottom: 10px;
+  color: ffffff;
 `;
 
-
 const MessageBox = styled.div`
-display: flex;
+  display: flex;
   justify-content: ${props => props.sender ? 'flex-end' : 'flex-start'};
-flex-direction: row;
+  flex-direction: row;
 `;

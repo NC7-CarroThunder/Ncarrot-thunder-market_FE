@@ -1,20 +1,20 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import styled from 'styled-components';
 import Button from '../elements/Button';
 import Input from '../elements/Input';
 import Text from '../elements/Text';
-import { FaBell, FaUserCircle } from 'react-icons/fa';
-import { AiOutlineSearch } from 'react-icons/ai';
-import { Link, useNavigate } from 'react-router-dom';
+import {FaBell, FaUserCircle} from 'react-icons/fa';
+import {AiOutlineSearch} from 'react-icons/ai';
+import {Link, useNavigate} from 'react-router-dom';
 import ROUTER from '../constants/router';
 import Storage from '../utils/localStorage';
-import { useQueryClient } from '@tanstack/react-query';
-import { Client } from '@stomp/stompjs';
+import {useQueryClient} from '@tanstack/react-query';
+import {Client} from '@stomp/stompjs';
 import SockJS from 'sockjs-client';
 import QUERY from '../constants/query';
 import Axios from '../utils/api/axios';
 
-export default function Navbar({ showMyMenu, onShowMyMenu, onLogOut }) {
+export default function Navbar({showMyMenu, onShowMyMenu, onLogOut}) {
   const [keyWord, setKeyWord] = useState('');
   const navigate = useNavigate();
   const nickname = Storage.getNickName();
@@ -33,7 +33,7 @@ export default function Navbar({ showMyMenu, onShowMyMenu, onLogOut }) {
       if (userId) {
         try {
           const response = await AxiosInstance.get(
-            `/api/countUnread?userId=${userId}`);
+              `/api/countUnread?userId=${userId}`);
           setUnreadCount(response.data);
           console.log("Unread count:", response.data);  // <- 여기 추가
         } catch (error) {
@@ -50,7 +50,7 @@ export default function Navbar({ showMyMenu, onShowMyMenu, onLogOut }) {
       try {
         await AxiosInstance.put(`/api/markAsRead?userId=${userId}`);
         setNotifications(notifications => notifications.map(
-          noti => ({ ...noti, isRead: "y" })));
+            noti => ({...noti, isRead: "y"})));
         setUnreadCount(0);
       } catch (error) {
         console.error("Error marking all notifications as read:", error);
@@ -75,7 +75,7 @@ export default function Navbar({ showMyMenu, onShowMyMenu, onLogOut }) {
     if (!showModal && userId) {
       try {
         const response = await AxiosInstance.get(
-          `/api/notifications?userId=${userId}`);
+            `/api/notifications?userId=${userId}`);
         setNotifications(response.data);
       } catch (error) {
         console.error("Error fetching notifications:", error);
@@ -84,6 +84,7 @@ export default function Navbar({ showMyMenu, onShowMyMenu, onLogOut }) {
   };
 
   useEffect(() => {
+
 
     // const socket = new SockJS('http://localhost:8888/api/websocket', [],
     const socket = new SockJS('http://carrothunder.store:8888/api/websocket', [],
@@ -100,7 +101,7 @@ export default function Navbar({ showMyMenu, onShowMyMenu, onLogOut }) {
 
         setUnreadCount((prevCount) => prevCount + 1);
 
-        if (notification.content.includes("개설")) {
+        if (notification.content.includes("희망")) {
           setSlideBarMessage(notification.content);
           setShowSlideBar(true);
         }
@@ -121,7 +122,7 @@ export default function Navbar({ showMyMenu, onShowMyMenu, onLogOut }) {
     if (!keyWord) {
       return;
     }
-    navigate(ROUTER.PATH.MAIN, { state: { word: keyWord } });
+    navigate(ROUTER.PATH.MAIN, {state: {word: keyWord}});
     //navigate(`/search/${keyWord}`);
   };
 
@@ -155,92 +156,93 @@ export default function Navbar({ showMyMenu, onShowMyMenu, onLogOut }) {
   }, [imageClick]);
 
   return (
-    <NavbarWrapper>
-      <NavbarContainer>
-        <LogoContainer>
-          <Link to={ROUTER.PATH.MAIN}>
-            <Logo onClick={handleLogoClick}>
-              <img src='/img/chatroom.png' alt='' />
-            </Logo>
-          </Link>
-          <Link to={ROUTER.PATH.HOT_ARTICLES}>
-            <Text large_regular onClick={handleTransaction}>
-              CarrortThunder
-            </Text>
-          </Link>
-        </LogoContainer>
-        <FormContainer onSubmit={handleSubmit}>
-          <Input
-            placeholder='물품이나 동네를 검색해 보세요.'
-            inLineLabel
-            label={<AiOutlineSearch />}
-            value={keyWord}
-            onChange={(e) => setKeyWord(e.target.value)}
-          />
-          {nickname && (
-            <NotificationIcon onClick={handleNotificationClick}>
-              <FaBell size={30} />
-              <NotificationBadge>{unreadCount}</NotificationBadge>
-            </NotificationIcon>
-          )}
-          {nickname ? (
-            <ShowMyMenuContainer>
-              <Text large_medium>
-                {(Storage.getPhoto() === undefined || Storage.getPhoto() === null) ? (
-                  <FaUserCircle id='MyMenu' onClick={clickImage} />
-                ) : (
-                  <img
-                    src={`https://kr.object.ncloudstorage.com/carrot-thunder/user/${Storage.getPhoto()}`}
-                    style={{
-                      width: '1.2cm',
-                      height: '1.2cm',
-                      overflow: 'hidden',
-                      borderRadius: '50%',
-                      cursor: 'pointer',
-                    }}
-                    onClick={clickImage}
-                  />
-                )}
+      <NavbarWrapper>
+        <NavbarContainer>
+          <LogoContainer>
+            <Link to={ROUTER.PATH.MAIN}>
+              <Logo onClick={handleLogoClick}>
+                <img src='/img/chatroom.png' alt=''/>
+              </Logo>
+            </Link>
+            <Link to={ROUTER.PATH.HOT_ARTICLES}>
+              <Text large_regular onClick={handleTransaction}>
+                CarrortThunder
               </Text>
-              <span>{nickname}</span>
-              {showMyMenu ? (
-                <ShowMyMenu>
-                  <span onClick={handleChatButtonClick}>캐럿톡</span>
-                  <span>
+            </Link>
+          </LogoContainer>
+          <FormContainer onSubmit={handleSubmit}>
+            <Input
+                placeholder='물품이나 동네를 검색해 보세요.'
+                inLineLabel
+                label={<AiOutlineSearch/>}
+                value={keyWord}
+                onChange={(e) => setKeyWord(e.target.value)}
+            />
+            {nickname && (
+                <NotificationIcon onClick={handleNotificationClick}>
+                  <FaBell size={30}/>
+                  <NotificationBadge>{unreadCount}</NotificationBadge>
+                </NotificationIcon>
+            )}
+            {nickname ? (
+                <ShowMyMenuContainer>
+                  <Text large_medium>
+                    {(Storage.getPhoto() === undefined || Storage.getPhoto()
+                        === null) ? (
+                        <FaUserCircle id='MyMenu' onClick={clickImage}/>
+                    ) : (
+                        <img
+                            src={`https://kr.object.ncloudstorage.com/carrot-thunder/user/${Storage.getPhoto()}`}
+                            style={{
+                              width: '1.2cm',
+                              height: '1.2cm',
+                              overflow: 'hidden',
+                              borderRadius: '50%',
+                              cursor: 'pointer',
+                            }}
+                            onClick={clickImage}
+                        />
+                    )}
+                  </Text>
+                  <span>{nickname}</span>
+                  {showMyMenu ? (
+                      <ShowMyMenu>
+                        <span onClick={handleChatButtonClick}>캐럿톡</span>
+                        <span>
                     <Link to={ROUTER.PATH.MYPAGE}> 마이페이지 </Link>
                   </span>
-                  <span>
+                        <span>
                     <Link to={ROUTER.PATH.ADDPOST}>게시글 작성 </Link>
                   </span>
-                  <span onClick={handleLogout}>로그아웃</span>
-                </ShowMyMenu>
-              ) : (
-                ''
-              )}
-            </ShowMyMenuContainer>
-          ) : (
-            <Link to={ROUTER.PATH.LOGIN}>
-              <Button small type='button'>
-                로그인
-              </Button>
-            </Link>
-          )}
-        </FormContainer>
-      </NavbarContainer>
-      {showModal && (
-        <NotificationModal
-          notifications={notifications}
-          onClose={() => setShowModal(false)}
-          onMarkAllAsRead={markAllNotificationsAsRead}
-          onDeleteAll={deleteAllNotifications}
+                        <span onClick={handleLogout}>로그아웃</span>
+                      </ShowMyMenu>
+                  ) : (
+                      ''
+                  )}
+                </ShowMyMenuContainer>
+            ) : (
+                <Link to={ROUTER.PATH.LOGIN}>
+                  <Button small type='button'>
+                    로그인
+                  </Button>
+                </Link>
+            )}
+          </FormContainer>
+        </NavbarContainer>
+        {showModal && (
+            <NotificationModal
+                notifications={notifications}
+                onClose={() => setShowModal(false)}
+                onMarkAllAsRead={markAllNotificationsAsRead}
+                onDeleteAll={deleteAllNotifications}
+            />
+        )}
+        <NotificationSlideBar
+            show={showSlideBar}
+            message={slideBarMessage}
+            onClose={() => setShowSlideBar(false)}
         />
-      )}
-      <NotificationSlideBar
-        show={showSlideBar}
-        message={slideBarMessage}
-        onClose={() => setShowSlideBar(false)}
-      />
-    </NavbarWrapper>
+      </NavbarWrapper>
   );
 }
 
@@ -267,32 +269,34 @@ function NotificationModal({
   }, [onClose]);
 
   return (
-    <ModalOverlay>
-      <ModalContent ref={modalRef}>
-        <CloseButton onClick={onClose}>X</CloseButton>
-        <Title>내 알림</Title>
-        <ModalButtonContainer>
-          <ModalButton onClick={onMarkAllAsRead}>전체 읽기</ModalButton>
-          <ModalButton onClick={onDeleteAll}>전체 삭제</ModalButton>
-        </ModalButtonContainer>
-        <NotificationList>
-          {notifications.map((notification) => (
-            <NotificationComponent key={notification.id}
-              notification={notification} />
-          ))}
-        </NotificationList>
-      </ModalContent>
-    </ModalOverlay>
+      <ModalOverlay>
+        <ModalContent ref={modalRef}>
+          <CloseButton onClick={onClose}>X</CloseButton>
+          <Title>내 알림</Title>
+          <ModalButtonContainer>
+            <ModalButton onClick={onMarkAllAsRead}>전체 읽기</ModalButton>
+            <ModalButton onClick={onDeleteAll}>전체 삭제</ModalButton>
+          </ModalButtonContainer>
+          <NotificationList>
+            {notifications.map((notification) => (
+                <NotificationComponent key={notification.id}
+                                       notification={notification}
+                                       onClose={onClose}/>
+            ))}
+          </NotificationList>
+        </ModalContent>
+      </ModalOverlay>
   );
 }
 
-function NotificationComponent({ notification }) {
+function NotificationComponent({notification, onClose}) {
   const navigate = useNavigate();
 
   const handleNotificationClick = () => {
     console.log("Notification clicked with content:", notification.content);
     if (notification.content.includes("메시지") || notification.content.includes(
-      "개설")) {
+        "희망")) {
+      onClose();
       navigate(ROUTER.PATH.CHATTING);
     }
   };
@@ -308,15 +312,15 @@ function NotificationComponent({ notification }) {
   }
 
   return (
-    <NotificationItem isRead={notification.isRead === "y"}
-      onClick={handleNotificationClick}>
-      {normalContent}
-      {isPreviewIncluded && <PreviewText>{previewContent}</PreviewText>}
-    </NotificationItem>
+      <NotificationItem isRead={notification.isRead === "y"}
+                        onClick={handleNotificationClick}>
+        {normalContent}
+        {isPreviewIncluded && <PreviewText>{previewContent}</PreviewText>}
+      </NotificationItem>
   );
 }
 
-function NotificationSlideBar({ show, message, onClose }) {
+function NotificationSlideBar({show, message, onClose}) {
   useEffect(() => {
     if (show) {
       const timeoutId = setTimeout(() => {
@@ -330,12 +334,12 @@ function NotificationSlideBar({ show, message, onClose }) {
   }, [show, onClose]);
 
   return (
-    <SlideBarWrapper show={show}>
-      <SlideBarContent>
-        <SlideBarCloseButton onClick={onClose}>X</SlideBarCloseButton>
-        {message}
-      </SlideBarContent>
-    </SlideBarWrapper>
+      <SlideBarWrapper show={show}>
+        <SlideBarContent>
+          <SlideBarCloseButton onClick={onClose}>X</SlideBarCloseButton>
+          {message}
+        </SlideBarContent>
+      </SlideBarWrapper>
   );
 }
 
@@ -542,9 +546,9 @@ const NotificationList = styled.ul`
 const NotificationItem = styled.li`
   padding: 12px 0;
   border-bottom: 1px solid #eee;
-  color: ${({ isRead }) => (isRead ? "#aaa"
-    : "black")}; // 읽은 항목은 연한 색, 읽지 않은 항목은 진한색
-  font-weight: ${({ isRead }) => (isRead ? "normal" : "bold")}; // 읽지 않은 항목은 볼드체
+  color: ${({isRead}) => (isRead ? "#aaa"
+          : "black")}; // 읽은 항목은 연한 색, 읽지 않은 항목은 진한색
+  font-weight: ${({isRead}) => (isRead ? "normal" : "bold")}; // 읽지 않은 항목은 볼드체
 
   &:last-child {
     border-bottom: none;
@@ -557,7 +561,7 @@ const SlideBarWrapper = styled.div`
   right: 0;
   width: 280px;
   height: 60px;
-  transform: ${({ show }) => (show ? 'translateX(0)' : 'translateX(100%)')};
+  transform: ${({show}) => (show ? 'translateX(0)' : 'translateX(100%)')};
   transition: transform 0.3s ease-in-out;
   z-index: 1001;
 `;
