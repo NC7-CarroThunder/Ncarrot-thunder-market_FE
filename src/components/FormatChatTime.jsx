@@ -6,6 +6,7 @@ const FormatChatTime = ({ sentAt }) => {
 
   const timeDifference = currentDate - messageDate;
   const dayDifference = Math.floor(timeDifference / (1000 * 60 * 60 * 24));
+  const weeksDifference = Math.floor(dayDifference / 7);
   const monthDifference =
     currentDate.getMonth() - messageDate.getMonth() +
     12 * (currentDate.getFullYear() - messageDate.getFullYear());
@@ -25,8 +26,10 @@ const FormatChatTime = ({ sentAt }) => {
     return '1일 전';
   } else if (dayDifference < 7) {
     return `${dayDifference}일 전`;
-  } else if (dayDifference >= 7 && monthDifference === 0) {
-    return `${Math.floor(dayDifference / 7)}주 전`;
+  } else if (weeksDifference === 1) {
+    return '1주 전';
+  } else if (weeksDifference > 1 && weeksDifference < 4) {
+    return `${weeksDifference}주 전`;
   } else if (monthDifference === 1) {
     return '1달 전';
   } else if (monthDifference < 12) {
@@ -35,5 +38,5 @@ const FormatChatTime = ({ sentAt }) => {
     return `${yearDifference}년 전`;
   }
 };
-  
+
 export default FormatChatTime;
