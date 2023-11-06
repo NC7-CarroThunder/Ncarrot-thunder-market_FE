@@ -25,8 +25,8 @@ const FormatChatTime = ({ sentAt }) => {
     return '1일 전';
   } else if (dayDifference < 7) {
     return `${dayDifference}일 전`;
-  } else if (monthDifference === 0) {
-    return '1주 전';
+  } else if (dayDifference >= 7 && monthDifference === 0) {
+    return `${Math.floor(dayDifference / 7)}주 전`;
   } else if (monthDifference === 1) {
     return '1달 전';
   } else if (monthDifference < 12) {
@@ -35,5 +35,5 @@ const FormatChatTime = ({ sentAt }) => {
     return `${yearDifference}년 전`;
   }
 };
-
+  
 export default FormatChatTime;
