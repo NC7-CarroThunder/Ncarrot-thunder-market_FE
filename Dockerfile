@@ -8,7 +8,8 @@ COPY . .
 RUN npm run build
 
 FROM nginx:stable-alpine
-
+RUN apk add --no-cache tzdata
+ENV TZ Asia/Seoul
 # 이전 빌드 단계에서 빌드한 결과물 복사
 COPY --from=build /app/build /usr/share/nginx/html
 
