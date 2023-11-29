@@ -19,7 +19,6 @@ const FormatChatTime = ({ sentAt }) => {
           hour: '2-digit',
           minute: '2-digit',
           hour12: false,
-          timeZone: timezone, // 전달된 시간대 정보 사용
         })}
       </span>
     );
