@@ -133,6 +133,7 @@ function ChatRoom({ roomId }) {
         { destination: '/app/send', body: JSON.stringify(chatMessage) });
       setInputValue('');
     }
+    console.log(new Date())
   };
   const handleKeyDown = (e) => {
     if (e.key === 'Enter' && !e.shiftKey) {
