@@ -163,6 +163,7 @@ function ChatRoom({ roomId }) {
     const chatMessage = {
       roomId: roomId,
       content: emojiCode,
+      sentAt: new Date(),
       senderId: parseInt(Storage.getUserId()),
       targetLang: targetLang,
     };
