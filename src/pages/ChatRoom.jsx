@@ -133,7 +133,6 @@ function ChatRoom({ roomId }) {
         { destination: '/app/send', body: JSON.stringify(chatMessage) });
       setInputValue('');
     }
-    console.log(new Date())
   };
   const handleKeyDown = (e) => {
     if (e.key === 'Enter' && !e.shiftKey) {
@@ -167,6 +166,7 @@ function ChatRoom({ roomId }) {
       senderId: parseInt(Storage.getUserId()),
       targetLang: targetLang,
     };
+    console.log(new Date())
     stompClient.current.publish(
       { destination: '/app/send', body: JSON.stringify(chatMessage) });
     setEmojiPickerVisible(false);
