@@ -14,11 +14,12 @@ const FormatChatTime = ({ sentAt }) => {
 
   if (dayDifference === 0) {
     return (
-      <span>
+        <span>
         {new Date(sentAt).toLocaleTimeString([], {
           hour: '2-digit',
           minute: '2-digit',
           hour12: false,
+          timeZone: timezone, // 전달된 시간대 정보 사용
         })}
       </span>
     );

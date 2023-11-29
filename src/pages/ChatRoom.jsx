@@ -125,9 +125,10 @@ function ChatRoom({ roomId }) {
       const chatMessage = {
         roomId: roomId,
         content: inputValue,
-        sentAt: new Date(),
+        sentAt: new Date().toISOString(), // 컴포넌트의 사용되는 시간대로 변경
         senderId: parseInt(Storage.getUserId()),
         targetLang: targetLang,
+        timezone: 'Asia/Seoul', // 클라이언트 시간대 정보 전달
       };
       stompClient.current.publish(
         { destination: '/app/send', body: JSON.stringify(chatMessage) });
